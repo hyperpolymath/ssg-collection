@@ -1,0 +1,129 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# prodigy-ssg Mustfile - Global Deployment Authority
+# RSR Gold compliant deployment specification
+# Engine: Nickel-Augmented
+
+version: 1.0
+identity: "prodigy-ssg-authority"
+
+config:
+  engine: nickel
+  source: "./ncl/main.ncl"
+  fallback: justfile
+
+project:
+  name: "prodigy-ssg"
+  short_alias: "prodigy"
+  version: "1.1.0"
+  language: "Prolog"
+  interpreter: "swipl"
+
+# ============================================================================
+# Deployment Targets
+# ============================================================================
+
+targets:
+  # Primary: Podman Immutable Container Route
+  container:
+    if: "has_podman"
+    priority: 1
+    steps:
+      - run: just container-build
+      - run: podman tag {{project.name}}:{{project.version}} {{project.name}}:latest
+      - verify: podman images | grep {{project.name}}
+      - run: podman run --name {{project.short_alias}}-test --rm {{project.name}}:latest swipl --version
+    rollback:
+      - run: podman rmi {{project.name}}:{{project.version}} || true
+
+  # Secondary: Native System Installation
+  system:
+    if: "has_swipl"
+    priority: 2
+    steps:
+      - run: just bootstrap
+      - run: just check
+      - run: just test
+      - verify: just version
+    rollback:
+      - run: just clean
+
+  # Tertiary: Development Environment
+  dev:
+    priority: 3
+    steps:
+      - run: just bootstrap
+      - run: just adapter-build
+      - run: just check
+      - verify: just test-unit
+
+  # CI/CD Pipeline Target
+  ci:
+    if: "is_ci"
+    steps:
+      - run: just check
+      - run: just lint
+      - run: just test
+      - run: just audit
+
+# ============================================================================
+# Sync Targets
+# ============================================================================
+
+sync:
+  # Shell configuration sync
+  shells:
+    steps:
+      - run: bash scripts/sync-shells.sh
+      - verify: just version
+
+  # Cloud configuration sync
+  cloud:
+    if: "has_cloud_config"
+    steps:
+      - run: must check-mounts --all
+      - run: must verify-cloud-config
+
+# ============================================================================
+# Verification Gates
+# ============================================================================
+
+gates:
+  pre-deploy:
+    - check: just test
+      required: true
+    - check: just audit
+      required: false
+      warn_on_fail: true
+
+  post-deploy:
+    - check: "{{project.interpreter}} --version"
+      required: true
+    - check: just build
+      required: true
+
+# ============================================================================
+# Environment Detection
+# ============================================================================
+
+detection:
+  has_podman:
+    command: "command -v podman"
+
+  has_swipl:
+    command: "command -v swipl"
+
+  is_ci:
+    env: "CI"
+
+  has_cloud_config:
+    file: "~/.config/prodigy/cloud.yml"
+
+# ============================================================================
+# Variables
+# ============================================================================
+
+variables:
+  install_prefix: "/usr/local"
+  config_dir: "~/.config/prodigy"
+  cache_dir: "~/.cache/prodigy"
+  data_dir: "~/.local/share/prodigy"

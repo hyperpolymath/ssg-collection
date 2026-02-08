@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Tool versions for asdf version manager
+# Install: asdf install
+
+nodejs 20.18.1

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
+  "compilerOptions": {
+    "lib": ["deno.window", "esnext"],
+    "strict": true
+  },
+  "imports": {
+    "@std/assert": "https://deno.land/std@0.210.0/assert/mod.ts",
+    "@std/fs": "https://deno.land/std@0.210.0/fs/mod.ts",
+    "@std/testing": "https://deno.land/std@0.210.0/testing/mod.ts",
+    "@std/testing/mock": "https://deno.land/std@0.210.0/testing/mock.ts"
+  },
+  "tasks": {
+    "test": "deno test --allow-read --allow-run tests/",
+    "test:unit": "deno test --allow-read --allow-run tests/unit/",
+    "test:e2e": "deno test --allow-all tests/e2e/",
+    "test:integration": "deno test --allow-read --allow-run tests/integration/",
+    "test:benchmark": "deno test --allow-read --allow-run tests/benchmark/",
+    "lint": "deno lint src/ adapters/",
+    "fmt": "deno fmt src/ adapters/ tests/",
+    "fmt:check": "deno fmt --check src/ adapters/ tests/",
+    "check": "deno check src/**/*.js adapters/**/*.js",
+    "rescript:build": "rescript build",
+    "rescript:watch": "rescript build -w",
+    "rescript:clean": "rescript clean"
+  },
+  "lint": {
+    "include": ["src/", "adapters/", "tests/"],
+    "exclude": ["node_modules/", "lib/"],
+    "rules": {
+      "tags": ["recommended"],
+      "include": ["ban-untagged-todo", "no-eval"],
+      "exclude": []
+    }
+  },
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 100,
+    "indentWidth": 2,
+    "semiColons": false,
+    "singleQuote": false,
+    "proseWrap": "preserve",
+    "include": ["src/", "adapters/", "tests/"],
+    "exclude": ["node_modules/", "lib/"]
+  },
+  "lock": false
+}

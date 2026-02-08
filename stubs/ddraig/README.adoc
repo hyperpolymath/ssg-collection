@@ -1,0 +1,79 @@
+= ddraig-ssg
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+
+
+
+image:https://img.shields.io/badge/Philosophy-Palimpsest-indigo.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+
+:toc: auto
+:toclevels: 2
+
+image:https://img.shields.io/badge/RSR-compliant-gold[RSR Compliant,link=https://github.com/hyperpolymath/rhodium-standard-repositories]
+image:https://img.shields.io/badge/poly--ssg-satellite-blue[poly-ssg,link=https://github.com/hyperpolymath/poly-ssg]
+
+
+== Who Is This For?
+
+* **Idris 2 developers** who want type-safe web content
+* **Type theory researchers** exploring practical dependent types
+* **Teams requiring provable correctness** in their build pipelines
+* **Anyone frustrated** by template errors discovered in production
+
+== Why ddraig-ssg?
+
+=== Dependent Types for Templates
+
+Your templates carry their structure in their types. A template expecting a `Post` cannot receive a `Page`. The compiler enforces it.
+
+=== Totality Checking
+
+Prove your templates are total - they handle all possible inputs. No more partial functions silently failing.
+
+=== First-Class Schema Enforcement
+
+Frontmatter schemas are types. Invalid frontmatter doesn't compile. Type errors tell you exactly what's wrong.
+
+=== Refinement Types
+
+Constrain your content with precision. A `NonEmpty String` title can never be empty. A `ValidURL` is always valid.
+
+== Quick Start
+
+[source,bash]
+----
+# Install
+pack install ddraig-ssg
+
+# Create a site
+ddraig init my-site
+cd my-site
+
+# Build
+ddraig build
+
+# Type-check without building
+ddraig check
+----
+
+== Features
+
+* **Total template functions** - all inputs handled, no runtime errors
+* **Dependent frontmatter types** - schemas as types, not runtime checks
+* **Proof-carrying links** - internal links verified at compile time
+* **Effect tracking** - IO separated from pure transformations
+* **Quantitative types** - track resource usage in templates
+
+== Requirements
+
+* Idris 2 (0.6.0 or later)
+* Pack package manager
+
+== Part of poly-ssg
+
+ddraig-ssg is part of the https://github.com/hyperpolymath/poly-ssg[poly-ssg] family of language-native static site generators, unified through https://github.com/hyperpolymath/poly-ssg-mcp[MCP integration].
+
+== License
+
+PMPL-1.0-or-later

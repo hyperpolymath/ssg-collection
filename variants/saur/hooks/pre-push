@@ -1,0 +1,75 @@
+#!/bin/bash
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 hyperpolymath
+#
+# Pre-push hook for saur-ssg
+# Install: cp hooks/pre-push .git/hooks/ && chmod +x .git/hooks/pre-push
+# Or: just hooks-install
+
+set -euo pipefail
+
+echo "🚀 Running pre-push checks..."
+
+# ─────────────────────────────────────────────────────────────────────────────
+# RUN TESTS
+# ─────────────────────────────────────────────────────────────────────────────
+
+echo "  → Running tests..."
+if command -v deno &> /dev/null; then
+    if [ -d "tests" ]; then
+        if ! deno test --allow-read --allow-run tests/ 2>/dev/null; then
+            echo "❌ Tests failed. Fix tests before pushing."
+            exit 1
+        fi
+        echo "  ✓ Tests passed"
+    else
+        echo "  ⚠ No tests directory found"
+    fi
+else
+    echo "  ⚠ Deno not installed, skipping tests"
+fi
+
+# ─────────────────────────────────────────────────────────────────────────────
+# VALIDATE ADAPTERS
+# ─────────────────────────────────────────────────────────────────────────────
+
+echo "  → Validating adapters..."
+if command -v deno &> /dev/null; then
+    failed=0
+    for f in adapters/*.js; do
+        name=$(basename "$f" .js)
+        if ! deno eval "
+            import * as a from './$f';
+            if (!a.name) throw new Error('Missing: name');
+            if (!a.language) throw new Error('Missing: language');
+            if (!a.tools) throw new Error('Missing: tools');
+        " 2>/dev/null; then
+            echo "  ❌ $name failed validation"
+            failed=1
+        fi
+    done
+    if [ $failed -eq 1 ]; then
+        echo "❌ Some adapters failed validation"
+        exit 1
+    fi
+    echo "  ✓ All adapters valid"
+else
+    echo "  ⚠ Deno not installed, skipping adapter validation"
+fi
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SCM FILES CHECK
+# ─────────────────────────────────────────────────────────────────────────────
+
+echo "  → Checking SCM files..."
+required_scm=("META.scm" "STATE.scm" "ECOSYSTEM.scm")
+for scm in "${required_scm[@]}"; do
+    if [ ! -f "$scm" ]; then
+        echo "  ❌ Missing: $scm"
+        exit 1
+    fi
+done
+echo "  ✓ SCM files present"
+
+echo ""
+echo "✅ All pre-push checks passed!"

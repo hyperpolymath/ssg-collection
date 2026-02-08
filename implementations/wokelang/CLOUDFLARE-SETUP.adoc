@@ -1,0 +1,59 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= Cloudflare Pages Setup
+
+## Required Secrets
+
+Add these secrets to the GitHub repository:
+
+1. **CLOUDFLARE_API_TOKEN**: Your Cloudflare API token
+   - Value: `7a515ea1cffbff120f66cd08e6d3e41f02415`
+   - Go to: https://github.com/hyperpolymath/wokelang-ssg/settings/secrets/actions
+   - Click "New repository secret"
+   - Name: `CLOUDFLARE_API_TOKEN`
+   - Value: (paste token above)
+
+2. **CLOUDFLARE_ACCOUNT_ID**: Your Cloudflare account ID
+   - Find it at: https://dash.cloudflare.com/ → Click on your domain → Overview → Account ID (right sidebar)
+   - Name: `CLOUDFLARE_ACCOUNT_ID`
+   - Value: (your account ID)
+
+## Domain Configuration
+
+- **Domain**: wokelang.org
+- **Project Name**: wokelang
+- **Branch**: main
+
+## Deployment
+
+The site will automatically deploy to Cloudflare Pages on every push to `main` branch.
+
+## Manual Deployment
+
+To manually trigger a deployment:
+
+1. Go to: https://github.com/hyperpolymath/wokelang-ssg/actions/workflows/cloudflare-pages.yml
+2. Click "Run workflow"
+3. Select branch: main
+4. Click "Run workflow"
+
+## Local Build
+
+```bash
+./scripts/build.sh
+```
+
+Output will be in `dist/` directory.
+
+## Architecture
+
+```
+frontend/ (ReScript + TEA)
+    ↓
+  Build
+    ↓
+ssg/ (WokeLang)
+    ↓
+ Generate
+    ↓
+  dist/ ← Deployed to Cloudflare Pages
+```

@@ -1,0 +1,16 @@
+{
+  "name": "forth-estate",
+  "language": "Forth",
+  "implementation": "Gforth",
+  "version": "0.1.0",
+  "build_command": ["gforth", "forth-estate.fs", "-e"],
+  "build_args": ["build"],
+  "features": ["markdown", "frontmatter", "templates"],
+  "dependencies": {
+    "runtime": ["gforth >= 0.7"],
+    "optional": []
+  },
+  "description": "Stack-based SSG embracing Forth's concatenative paradigm",
+  "author": "hyperpolymath",
+  "repository": "https://github.com/hyperpolymath/forth-estate-ssg"
+}

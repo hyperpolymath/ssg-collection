@@ -1,0 +1,652 @@
+-- SQLite Database Demo - Ephapax Implementation
+-- SPDX-License-Identifier: AGPL-3.0-or-later
+--
+-- Demonstrates database operations with linear/affine types.
+-- Linear connections ensure proper resource cleanup.
+-- Linear transactions guarantee commit or rollback.
+
+module Database
+
+--------------------------------------------------------------------------------
+-- TYPE SYSTEM MODE TOGGLE
+--------------------------------------------------------------------------------
+-- Ephapax supports two ownership modes:
+--
+-- LINEAR MODE (default): Resources must be used EXACTLY once
+--   - Compile: ephapax build --mode=linear database.epx
+--   - Connections MUST be closed (error if not)
+--   - Transactions MUST be committed or rolled back (error if not)
+--   - Query results MUST be consumed (error if ignored)
+--
+-- AFFINE MODE: Resources can be used AT MOST once
+--   - Compile: ephapax build --mode=affine database.epx
+--   - Unclosed connections auto-close on scope exit (warning)
+--   - Uncommitted transactions auto-rollback (warning)
+--   - Better for REPL/debugging, not production
+--
+-- Toggle via pragma (overrides CLI flag):
+#![type_mode = "linear"]  -- Options: "linear" | "affine"
+
+-- Database resources and linear/affine semantics:
+--
+-- CONNECTION (linear):
+--   type Connection = linear { handle: SQLiteHandle, ... }
+--   LINEAR:  Must call conn.close() explicitly
+--   AFFINE:  Auto-closes when scope exits (with warning)
+--
+-- TRANSACTION (linear):
+--   type Transaction = linear { conn: &mut Connection, committed: Bool }
+--   LINEAR:  Must call tx.commit() OR tx.rollback()
+--   AFFINE:  Auto-rollback if neither called (with warning)
+--
+-- QUERY RESULTS (linear):
+--   fn query@r(&mut self, sql: &str) -> Result<Vec<Row>, String>
+--   LINEAR:  Returned Vec<Row> must be consumed (iterate, drop, etc.)
+--   AFFINE:  Unused results auto-drop (with warning)
+--
+-- Why linear mode for databases:
+--   - No leaked connections (connection pool exhaustion)
+--   - No forgotten transactions (data corruption)
+--   - Explicit resource lifecycle = predictable behavior
+--------------------------------------------------------------------------------
+
+import Runtime.IO (print)
+import Runtime.Drop (drop)  -- Explicit drop for linear mode
+import Runtime.SQLite (sqlite_open, sqlite_close, sqlite_exec, sqlite_query)
+
+-- DATABASE CONNECTION
+-- Linear connection ensures it's closed exactly once
+
+type Connection = linear {
+    handle: SQLiteHandle,
+    path: String,
+}
+
+impl Connection:
+    -- Open a new database connection (takes ownership of path)
+    fn open@r(path: String) -> Result<Connection, String>:
+        match sqlite_open(&path):
+            | Ok(handle):
+                Ok(Connection { handle, path })
+            | Err(e):
+                Err(format!("Failed to open database: {}", e))
+
+    -- Close connection (consumes self)
+    fn close(self) -> Result<(), String>:
+        sqlite_close(self.handle)
+
+    -- Execute SQL without results (borrows connection)
+    fn execute(&mut self, sql: &str) -> Result<(), String>:
+        sqlite_exec(self.handle, sql)
+
+    -- Query with results (borrows connection, allocates results in region)
+    fn query@r(&mut self, sql: &str) -> Result<Vec<Row>, String>:
+        sqlite_query@r(self.handle, sql)
+
+-- TRANSACTION
+-- Linear transaction must be committed or rolled back
+
+type Transaction = linear {
+    conn: &mut Connection,
+    committed: Bool,
+}
+
+impl Transaction:
+    -- Begin a new transaction
+    fn begin(conn: &mut Connection) -> Result<Transaction, String>:
+        conn.execute("BEGIN TRANSACTION")?
+        Ok(Transaction { conn, committed: false })
+
+    -- Commit transaction (consumes self)
+    fn commit(mut self) -> Result<(), String>:
+        self.conn.execute("COMMIT")?
+        self.committed = true
+        Ok(())
+
+    -- Rollback transaction (consumes self)
+    fn rollback(mut self) -> Result<(), String>:
+        self.conn.execute("ROLLBACK")?
+        self.committed = true  -- Marked as handled
+        Ok(())
+
+    -- Execute within transaction
+    fn execute(&mut self, sql: &str) -> Result<(), String>:
+        self.conn.execute(sql)
+
+    -- Query within transaction
+    fn query@r(&mut self, sql: &str) -> Result<Vec<Row>, String>:
+        self.conn.query@r(sql)
+
+-- Ensure transaction is completed on drop
+impl Drop for Transaction:
+    fn drop(mut self):
+        if !self.committed:
+            -- Auto-rollback uncommitted transaction
+            let _ = self.conn.execute("ROLLBACK")
+
+-- ROW REPRESENTATION
+type Row = {
+    columns: Map<String, Value>,
+}
+
+enum Value:
+    | Null
+    | Integer(Int)
+    | Real(Float)
+    | Text(String)
+    | Blob(Vec<Byte>)
+
+impl Row:
+    fn get_int(&self, column: &str) -> Option<Int>:
+        match self.columns.get(column):
+            | Some(Value.Integer(i)): Some(i)
+            | _: None
+
+    fn get_text(&self, column: &str) -> Option<&str>:
+        match self.columns.get(column):
+            | Some(Value.Text(s)): Some(s)
+            | _: None
+
+    fn get_float(&self, column: &str) -> Option<Float>:
+        match self.columns.get(column):
+            | Some(Value.Real(f)): Some(f)
+            | _: None
+
+-- MIGRATIONS
+-- Migration system using linear transactions
+
+module Migrations:
+    fn run_all(conn: &mut Connection) -> Result<(), String>:
+        -- Create migrations table
+        conn.execute("
+            CREATE TABLE IF NOT EXISTS migrations (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL UNIQUE,
+                executed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ")?
+
+        -- Run migrations in transaction
+        let mut tx = Transaction.begin(conn)?
+
+        -- Migration 1: Users table
+        if !migration_executed(&mut tx, "create_users")?:
+            tx.execute("
+                CREATE TABLE users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    username TEXT NOT NULL UNIQUE,
+                    email TEXT NOT NULL UNIQUE,
+                    password_hash TEXT NOT NULL,
+                    full_name TEXT,
+                    is_active BOOLEAN DEFAULT 1,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            ")?
+            tx.execute("CREATE INDEX idx_users_email ON users(email)")?
+            tx.execute("CREATE INDEX idx_users_username ON users(username)")?
+            record_migration(&mut tx, "create_users")?
+
+        -- Migration 2: Posts table
+        if !migration_executed(&mut tx, "create_posts")?:
+            tx.execute("
+                CREATE TABLE posts (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER NOT NULL,
+                    title TEXT NOT NULL,
+                    content TEXT,
+                    status TEXT DEFAULT 'draft',
+                    view_count INTEGER DEFAULT 0,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+                )
+            ")?
+            tx.execute("CREATE INDEX idx_posts_user_id ON posts(user_id)")?
+            tx.execute("CREATE INDEX idx_posts_status ON posts(status)")?
+            record_migration(&mut tx, "create_posts")?
+
+        -- Migration 3: Tags table
+        if !migration_executed(&mut tx, "create_tags")?:
+            tx.execute("
+                CREATE TABLE tags (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL UNIQUE,
+                    slug TEXT NOT NULL UNIQUE,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            ")?
+            tx.execute("CREATE INDEX idx_tags_slug ON tags(slug)")?
+            record_migration(&mut tx, "create_tags")?
+
+        -- Migration 4: Post-Tags junction
+        if !migration_executed(&mut tx, "create_post_tags")?:
+            tx.execute("
+                CREATE TABLE post_tags (
+                    post_id INTEGER NOT NULL,
+                    tag_id INTEGER NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (post_id, tag_id),
+                    FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+                    FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
+                )
+            ")?
+            record_migration(&mut tx, "create_post_tags")?
+
+        -- Migration 5: Comments table
+        if !migration_executed(&mut tx, "create_comments")?:
+            tx.execute("
+                CREATE TABLE comments (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    post_id INTEGER NOT NULL,
+                    user_id INTEGER NOT NULL,
+                    content TEXT NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+                    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+                )
+            ")?
+            tx.execute("CREATE INDEX idx_comments_post_id ON comments(post_id)")?
+            record_migration(&mut tx, "create_comments")?
+
+        -- Commit all migrations
+        tx.commit()
+
+    fn migration_executed(tx: &mut Transaction, name: &str) -> Result<Bool, String>:
+        region r:
+            let rows = tx.query@r(format!("SELECT COUNT(*) as cnt FROM migrations WHERE name = '{}'", name))?
+            match rows.first():
+                | Some(row):
+                    match row.get_int("cnt"):
+                        | Some(n): Ok(n > 0)
+                        | None: Ok(false)
+                | None: Ok(false)
+
+    fn record_migration(tx: &mut Transaction, name: &str) -> Result<(), String>:
+        tx.execute(format!("INSERT INTO migrations (name) VALUES ('{}')", name))
+
+-- USER REPOSITORY
+-- Repository provides data access with linear ownership semantics
+
+module UserRepository:
+    type User = {
+        id: Int,
+        username: String,
+        email: String,
+        full_name: Option<String>,
+        is_active: Bool,
+    }
+
+    fn create@r(conn: &mut Connection, username: String, email: String,
+                password_hash: String, full_name: Option<String>) -> Result<Int, String>:
+        let full_name_sql = match &full_name:
+            | Some(n): format!("'{}'", n)
+            | None: "NULL".to_string()
+
+        conn.execute(format!("
+            INSERT INTO users (username, email, password_hash, full_name)
+            VALUES ('{}', '{}', '{}', {})
+        ", &username, &email, &password_hash, full_name_sql))?
+
+        region r:
+            let rows = conn.query@r("SELECT last_insert_rowid() as id")?
+            match rows.first().and_then(|r| r.get_int("id")):
+                | Some(id): Ok(id)
+                | None: Err("Failed to get last insert ID".to_string@r())
+
+    fn find_by_id@r(conn: &mut Connection, user_id: Int) -> Result<Option<User>, String>:
+        let rows = conn.query@r(format!("SELECT * FROM users WHERE id = {}", user_id))?
+        match rows.into_iter().next():
+            | Some(row): Ok(Some(row_to_user@r(row)))
+            | None: Ok(None)
+
+    fn find_by_email@r(conn: &mut Connection, email: &str) -> Result<Option<User>, String>:
+        let rows = conn.query@r(format!("SELECT * FROM users WHERE email = '{}'", email))?
+        match rows.into_iter().next():
+            | Some(row): Ok(Some(row_to_user@r(row)))
+            | None: Ok(None)
+
+    fn find_all@r(conn: &mut Connection, limit: Int, offset: Int) -> Result<Vec<User>, String>:
+        let rows = conn.query@r(format!(
+            "SELECT * FROM users ORDER BY created_at DESC LIMIT {} OFFSET {}",
+            limit, offset
+        ))?
+        Ok(rows.into_iter().map(|r| row_to_user@r(r)).collect@r())
+
+    fn update(conn: &mut Connection, user_id: Int, updates: UserUpdate) -> Result<Bool, String>:
+        let mut sets = Vec.new()
+
+        if let Some(username) = updates.username:
+            sets.push(format!("username = '{}'", username))
+        if let Some(email) = updates.email:
+            sets.push(format!("email = '{}'", email))
+        if let Some(full_name) = updates.full_name:
+            sets.push(format!("full_name = '{}'", full_name))
+        if let Some(is_active) = updates.is_active:
+            sets.push(format!("is_active = {}", if is_active { 1 } else { 0 }))
+
+        if sets.is_empty():
+            return Ok(false)
+
+        sets.push("updated_at = CURRENT_TIMESTAMP".to_string())
+
+        conn.execute(format!(
+            "UPDATE users SET {} WHERE id = {}",
+            sets.join(", "),
+            user_id
+        ))?
+        Ok(true)
+
+    fn delete(conn: &mut Connection, user_id: Int) -> Result<Bool, String>:
+        conn.execute(format!("DELETE FROM users WHERE id = {}", user_id))?
+        Ok(true)
+
+    fn get_stats@r(conn: &mut Connection, user_id: Int) -> Result<UserStats, String>:
+        let post_rows = conn.query@r(format!(
+            "SELECT COUNT(*) as cnt FROM posts WHERE user_id = {}", user_id
+        ))?
+        let comment_rows = conn.query@r(format!(
+            "SELECT COUNT(*) as cnt FROM comments WHERE user_id = {}", user_id
+        ))?
+        let view_rows = conn.query@r(format!(
+            "SELECT COALESCE(SUM(view_count), 0) as total FROM posts WHERE user_id = {}", user_id
+        ))?
+
+        Ok(UserStats {
+            post_count: post_rows.first().and_then(|r| r.get_int("cnt")).unwrap_or(0),
+            comment_count: comment_rows.first().and_then(|r| r.get_int("cnt")).unwrap_or(0),
+            total_views: view_rows.first().and_then(|r| r.get_int("total")).unwrap_or(0),
+        })
+
+    -- Helper: Convert row to user
+    fn row_to_user@r(row: Row) -> User:
+        User {
+            id: row.get_int("id").unwrap_or(0),
+            username: row.get_text("username").unwrap_or("").to_string@r(),
+            email: row.get_text("email").unwrap_or("").to_string@r(),
+            full_name: row.get_text("full_name").map(|s| s.to_string@r()),
+            is_active: row.get_int("is_active").unwrap_or(0) != 0,
+        }
+
+    type UserUpdate = {
+        username: Option<String>,
+        email: Option<String>,
+        full_name: Option<String>,
+        is_active: Option<Bool>,
+    }
+
+    type UserStats = {
+        post_count: Int,
+        comment_count: Int,
+        total_views: Int,
+    }
+
+-- POST REPOSITORY
+module PostRepository:
+    type Post = {
+        id: Int,
+        user_id: Int,
+        title: String,
+        content: Option<String>,
+        status: String,
+        view_count: Int,
+        username: Option<String>,
+    }
+
+    fn create(conn: &mut Connection, user_id: Int, title: String,
+              content: String, status: String) -> Result<Int, String>:
+        conn.execute(format!("
+            INSERT INTO posts (user_id, title, content, status)
+            VALUES ({}, '{}', '{}', '{}')
+        ", user_id, &title, &content, &status))?
+
+        region r:
+            let rows = conn.query@r("SELECT last_insert_rowid() as id")?
+            match rows.first().and_then(|r| r.get_int("id")):
+                | Some(id): Ok(id)
+                | None: Err("Failed to get last insert ID".to_string())
+
+    fn find_by_id@r(conn: &mut Connection, post_id: Int) -> Result<Option<Post>, String>:
+        let rows = conn.query@r(format!("
+            SELECT p.*, u.username
+            FROM posts p
+            JOIN users u ON p.user_id = u.id
+            WHERE p.id = {}
+        ", post_id))?
+
+        match rows.into_iter().next():
+            | Some(row): Ok(Some(row_to_post@r(row)))
+            | None: Ok(None)
+
+    fn find_all@r(conn: &mut Connection, status: Option<&str>,
+                  limit: Int, offset: Int) -> Result<Vec<Post>, String>:
+        let sql = match status:
+            | Some(s): format!("
+                SELECT p.*, u.username FROM posts p
+                JOIN users u ON p.user_id = u.id
+                WHERE p.status = '{}'
+                ORDER BY p.created_at DESC
+                LIMIT {} OFFSET {}
+            ", s, limit, offset)
+            | None: format!("
+                SELECT p.*, u.username FROM posts p
+                JOIN users u ON p.user_id = u.id
+                ORDER BY p.created_at DESC
+                LIMIT {} OFFSET {}
+            ", limit, offset)
+
+        let rows = conn.query@r(sql)?
+        Ok(rows.into_iter().map(|r| row_to_post@r(r)).collect@r())
+
+    fn increment_views(conn: &mut Connection, post_id: Int) -> Result<(), String>:
+        conn.execute(format!(
+            "UPDATE posts SET view_count = view_count + 1 WHERE id = {}",
+            post_id
+        ))
+
+    fn add_tags(conn: &mut Connection, post_id: Int, tag_ids: &[Int]) -> Result<(), String>:
+        for tag_id in tag_ids:
+            conn.execute(format!(
+                "INSERT OR IGNORE INTO post_tags (post_id, tag_id) VALUES ({}, {})",
+                post_id, tag_id
+            ))?
+        Ok(())
+
+    fn get_tags@r(conn: &mut Connection, post_id: Int) -> Result<Vec<Tag>, String>:
+        let rows = conn.query@r(format!("
+            SELECT t.* FROM tags t
+            JOIN post_tags pt ON t.id = pt.tag_id
+            WHERE pt.post_id = {}
+        ", post_id))?
+
+        Ok(rows.into_iter().map(|r| Tag {
+            id: r.get_int("id").unwrap_or(0),
+            name: r.get_text("name").unwrap_or("").to_string@r(),
+            slug: r.get_text("slug").unwrap_or("").to_string@r(),
+        }).collect@r())
+
+    fn row_to_post@r(row: Row) -> Post:
+        Post {
+            id: row.get_int("id").unwrap_or(0),
+            user_id: row.get_int("user_id").unwrap_or(0),
+            title: row.get_text("title").unwrap_or("").to_string@r(),
+            content: row.get_text("content").map(|s| s.to_string@r()),
+            status: row.get_text("status").unwrap_or("draft").to_string@r(),
+            view_count: row.get_int("view_count").unwrap_or(0),
+            username: row.get_text("username").map(|s| s.to_string@r()),
+        }
+
+-- TAG REPOSITORY
+module TagRepository:
+    type Tag = {
+        id: Int,
+        name: String,
+        slug: String,
+    }
+
+    fn create(conn: &mut Connection, name: String, slug: String) -> Result<Int, String>:
+        conn.execute(format!(
+            "INSERT INTO tags (name, slug) VALUES ('{}', '{}')",
+            &name, &slug
+        ))?
+
+        region r:
+            let rows = conn.query@r("SELECT last_insert_rowid() as id")?
+            match rows.first().and_then(|r| r.get_int("id")):
+                | Some(id): Ok(id)
+                | None: Err("Failed to get last insert ID".to_string())
+
+    fn find_all@r(conn: &mut Connection) -> Result<Vec<Tag>, String>:
+        let rows = conn.query@r("SELECT * FROM tags ORDER BY name")?
+        Ok(rows.into_iter().map(|r| Tag {
+            id: r.get_int("id").unwrap_or(0),
+            name: r.get_text("name").unwrap_or("").to_string@r(),
+            slug: r.get_text("slug").unwrap_or("").to_string@r(),
+        }).collect@r())
+
+    fn get_popular@r(conn: &mut Connection, limit: Int) -> Result<Vec<TagWithCount>, String>:
+        let rows = conn.query@r(format!("
+            SELECT t.*, COUNT(pt.post_id) as post_count
+            FROM tags t
+            LEFT JOIN post_tags pt ON t.id = pt.tag_id
+            GROUP BY t.id
+            ORDER BY post_count DESC
+            LIMIT {}
+        ", limit))?
+
+        Ok(rows.into_iter().map(|r| TagWithCount {
+            tag: Tag {
+                id: r.get_int("id").unwrap_or(0),
+                name: r.get_text("name").unwrap_or("").to_string@r(),
+                slug: r.get_text("slug").unwrap_or("").to_string@r(),
+            },
+            post_count: r.get_int("post_count").unwrap_or(0),
+        }).collect@r())
+
+    type TagWithCount = {
+        tag: Tag,
+        post_count: Int,
+    }
+
+-- DEMO
+fn demo() -> Result<(), String>:
+    print("="*60)
+    print("SQLite Database Demo - Ephapax")
+    print("="*60)
+
+    region r:
+        -- Open database (linear connection)
+        let mut conn = Connection.open@r("demo.db".to_string@r())?
+
+        -- Run migrations
+        print("\n--- Running Migrations ---")
+        Migrations.run_all(&mut conn)?
+        print("Migrations completed")
+
+        -- Create users
+        print("\n--- Creating Users ---")
+        let alice_id = UserRepository.create@r(&mut conn,
+            "alice".to_string@r(),
+            "alice@example.com".to_string@r(),
+            "hashed_password_1".to_string@r(),
+            Some("Alice Johnson".to_string@r())
+        )?
+        let bob_id = UserRepository.create@r(&mut conn,
+            "bob".to_string@r(),
+            "bob@example.com".to_string@r(),
+            "hashed_password_2".to_string@r(),
+            Some("Bob Smith".to_string@r())
+        )?
+        print(format!("Created users: Alice (ID: {}), Bob (ID: {})", alice_id, bob_id))
+
+        -- Create posts
+        print("\n--- Creating Posts ---")
+        let post1_id = PostRepository.create(&mut conn,
+            alice_id,
+            "First Post".to_string@r(),
+            "This is my first post!".to_string@r(),
+            "published".to_string@r()
+        )?
+        let post2_id = PostRepository.create(&mut conn,
+            alice_id,
+            "Second Post".to_string@r(),
+            "Another great post".to_string@r(),
+            "published".to_string@r()
+        )?
+        let _post3_id = PostRepository.create(&mut conn,
+            bob_id,
+            "Bob's Post".to_string@r(),
+            "Hello from Bob".to_string@r(),
+            "draft".to_string@r()
+        )?
+        print("Created 3 posts")
+
+        -- Create tags
+        print("\n--- Creating Tags ---")
+        let rust_tag = TagRepository.create(&mut conn,
+            "Rust".to_string@r(), "rust".to_string@r()
+        )?
+        let wasm_tag = TagRepository.create(&mut conn,
+            "WebAssembly".to_string@r(), "wasm".to_string@r()
+        )?
+        let linear_tag = TagRepository.create(&mut conn,
+            "Linear Types".to_string@r(), "linear-types".to_string@r()
+        )?
+        print("Created 3 tags")
+
+        -- Add tags to posts
+        PostRepository.add_tags(&mut conn, post1_id, &[rust_tag, linear_tag])?
+        PostRepository.add_tags(&mut conn, post2_id, &[wasm_tag, linear_tag])?
+
+        -- Query operations
+        print("\n--- Querying Data ---")
+
+        -- Find user by email
+        match UserRepository.find_by_email@r(&mut conn, "alice@example.com")?:
+            | Some(user):
+                print(format!("Found user: {} - {}", &user.username, &user.email))
+            | None:
+                print("User not found")
+
+        -- Get published posts
+        let published = PostRepository.find_all@r(&mut conn, Some("published"), 10, 0)?
+        print(format!("\nPublished posts: {}", published.len()))
+        for post in published.iter():
+            print(format!("  - {} by {}", &post.title, post.username.as_deref().unwrap_or("?")))
+
+        -- Get post with tags
+        match PostRepository.find_by_id@r(&mut conn, post1_id)?:
+            | Some(post):
+                let tags = PostRepository.get_tags@r(&mut conn, post1_id)?
+                print(format!("\nPost: {}", &post.title))
+                let tag_names: Vec<&str> = tags.iter().map(|t| t.name.as_str()).collect@r()
+                print(format!("Tags: {}", tag_names.join(", ")))
+            | None: ()
+
+        -- Get user stats
+        let stats = UserRepository.get_stats@r(&mut conn, alice_id)?
+        print("\nAlice's stats:")
+        print(format!("  Posts: {}", stats.post_count))
+        print(format!("  Comments: {}", stats.comment_count))
+        print(format!("  Total views: {}", stats.total_views))
+
+        -- Get popular tags
+        let popular = TagRepository.get_popular@r(&mut conn, 5)?
+        print("\nPopular tags:")
+        for tc in popular.iter():
+            print(format!("  - {}: {} posts", &tc.tag.name, tc.post_count))
+
+        print("\n" + "="*60)
+        print("Demo completed!")
+        print("="*60)
+
+        -- Connection is automatically closed when region exits
+        -- Linear type ensures exactly one close
+        conn.close()?
+
+    Ok(())
+
+fn main() -> ():
+    match demo():
+        | Ok(_): ()
+        | Err(e): print(format!("Error: {}", e))

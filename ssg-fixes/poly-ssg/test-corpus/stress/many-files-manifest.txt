@@ -1,0 +1,12 @@
+# Manifest for generating many small files
+# Test script should generate 100+ small files and process them all
+file001.md
+file002.md
+file003.md
+file004.md
+file005.md
+file006.md
+file007.md
+file008.md
+file009.md
+file010.md

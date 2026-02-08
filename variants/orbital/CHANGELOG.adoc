@@ -1,0 +1,75 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+== [Unreleased]
+
+=== Added
+- Full infrastructure with 44/44 components
+- Justfile with comprehensive task automation
+- Mustfile with mandatory quality checks
+- cookbook.adoc with CLI recipes and combinatorics
+- PLAYBOOK.scm with development workflows
+- AGENTIC.scm with agent capabilities
+- NEUROSYM.scm with symbolic structure
+- CI/CD pipeline with Deno tests
+- Container support with Podman/Docker
+- .editorconfig for consistent formatting
+- .tool-versions for asdf version management
+
+== [0.2.0] - 2025-12-22
+
+=== Added
+- Input sanitization for Julia string interpolation
+- Input sanitization for Lisp string interpolation
+- Identifier validation for Julia module names
+- Comprehensive roadmap in STATE.scm
+
+=== Security
+- Fixed code injection vulnerability in staticwebpages.js
+- Fixed code injection vulnerability in documenter.js
+- Fixed code injection vulnerability in franklin.js
+- Fixed code injection vulnerability in coleslaw.js
+
+=== Changed
+- Updated META.scm with new ADRs
+- Updated ECOSYSTEM.scm with expanded relationships
+- Updated STATE.scm with 44/44 component tracking
+- Replaced template placeholders in SECURITY.md
+
+== [0.1.0] - 2025-12-17
+
+=== Added
+- Initial release with 28 SSG adapters
+- Support for 17 programming languages
+- MCP-compatible tool exports
+- RSR compliance configuration
+- CodeQL security scanning
+- Dependabot dependency updates
+
+=== Adapters
+- Rust: Cobalt, mdBook, Zola
+- Haskell: Ema, Hakyll
+- Julia: Documenter.jl, Franklin.jl, StaticWebPages.jl
+- Clojure: Babashka, Cryogen, Perun
+- Elixir: NimblePublisher, Serum, Tableau
+- Scala: Laika, ScalaTex
+- Racket: Frog, Pollen
+- Common Lisp: Coleslaw
+- F#: Fornax
+- Crystal: Marmot
+- Nim: Nimrod
+- Kotlin: Orchid
+- D: Reggae
+- Swift: Publish
+- Tcl: Wub
+- OCaml: YOCaml
+- Erlang: Zotonic
+
+[Unreleased]: https://github.com/hyperpolymath/orbital-ssg/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/hyperpolymath/orbital-ssg/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/hyperpolymath/orbital-ssg/releases/tag/v0.1.0

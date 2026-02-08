@@ -1,0 +1,38 @@
+{
+  "$schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
+  "name": "@hyperpolymath/baremetal-ssg",
+  "version": "1.0.0",
+  "exports": "./src/Main.res.js",
+  "tasks": {
+    "build": "deno run -A npm:rescript build",
+    "watch": "deno run -A npm:rescript build -w",
+    "start": "deno run --allow-all src/Main.res.js",
+    "dev": "deno run --watch --allow-all src/Main.res.js",
+    "test": "deno test --allow-all tests/"
+  },
+  "nodeModulesDir": "none",
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 100,
+    "indentWidth": 2,
+    "singleQuote": false,
+    "proseWrap": "preserve",
+    "include": ["adapters/", "tests/", "*.js"]
+  },
+  "lint": {
+    "include": ["adapters/", "tests/", "*.js"],
+    "rules": {
+      "tags": ["recommended"],
+      "include": ["no-unused-vars", "no-explicit-any"],
+      "exclude": ["no-explicit-any"]
+    }
+  },
+  "test": {
+    "include": ["tests/"]
+  },
+  "compilerOptions": {
+    "strict": true,
+    "allowJs": true,
+    "checkJs": true
+  }
+}

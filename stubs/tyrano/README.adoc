@@ -1,0 +1,156 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= tyrano-ssg
+
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+:toc:
+:toc-placement!:
+:icons: font
+
+**A static site generator written in REXX.**
+
+_Say it clear. Parse with precision. Let pages render._
+
+image:https://img.shields.io/badge/Language-REXX-orange[REXX]
+image:https://img.shields.io/badge/Status-Experimental-yellow[Status]
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/poly--ssg--mcp-integrated-purple[poly-ssg-mcp]
+
+toc::[]
+
+== Why REXX?
+
+REXX (Restructured Extended Executor) is a scripting language designed with one principle above all: **human readability**. Programs read like structured English prose. Where other languages optimize for machines, REXX optimizes for humans.
+
+[cols="1,3"]
+|===
+|Advantage |What It Means for SSG
+
+|*Readable syntax*
+|Template logic and build scripts that anyone can understand—no cryptic sigils or operator soup
+
+|*Parsing power*
+|The `PARSE` instruction handles content frontmatter and templates with surgical precision
+
+|*String supremacy*
+|Everything is a string. Markdown, HTML, JSON, YAML—all first-class citizens
+
+|*Cross-platform*
+|Regina REXX and ooRexx run everywhere: Linux, macOS, Windows, z/OS mainframes
+|===
+
+== Target Audience
+
+tyrano-ssg is for:
+
+* **REXX enthusiasts** exploring modern web tooling
+* **Mainframe developers** building documentation sites with familiar syntax
+* **Simplicity advocates** who believe build tools should be readable
+* **Legacy system integrators** bridging mainframe content to the web
+
+== Architecture
+
+Content flows through a pipeline of REXX procedures:
+
+[source]
+----
+  ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐
+  │  Watch   │───▶│  Parse   │───▶│  Render  │───▶│   Emit   │
+  │  Source  │    │ Content  │    │ Template │    │   HTML   │
+  └──────────┘    └──────────┘    └──────────┘    └──────────┘
+----
+
+Each stage is a self-contained REXX program. The pipeline coordinates via stems (REXX's associative arrays) and compound variables.
+
+=== The PARSE Advantage
+
+REXX's `PARSE` instruction is uniquely suited for content processing:
+
+[source,rexx]
+----
+/* Extract frontmatter from markdown */
+parse var content '---' . frontmatter '---' . body
+
+/* Parse key-value pairs */
+parse var line key ':' value
+key = strip(key)
+value = strip(value)
+
+/* Template variable substitution */
+parse var template '{{' varname '}}' rest
+----
+
+No regex libraries needed. No external parsers. Just REXX doing what REXX does best.
+
+== Features
+
+* **Markdown to HTML** — CommonMark-compliant rendering
+* **Template inheritance** — Layouts, partials, blocks
+* **Frontmatter parsing** — YAML-style metadata via `PARSE`
+* **Incremental builds** — Only rebuild what changed
+* **Live reload** — Development server with file watching
+* **Asset pipeline** — Copy, minify, fingerprint static files
+
+== Quick Start
+
+Requires https://regina-rexx.sourceforge.io/[Regina REXX] 3.9+ or https://www.oorexx.org/[ooRexx] 5.0+.
+
+[source,bash]
+----
+# Clone the project
+git clone https://github.com/hyperpolymath/tyrano-ssg
+cd tyrano-ssg
+
+# Initialize a new site
+rexx tyrano init my-site
+cd my-site
+
+# Build the site
+rexx tyrano build
+
+# Start development server
+rexx tyrano serve
+----
+
+== Project Structure
+
+[source]
+----
+my-site/
+├── content/           # Markdown content
+│   ├── index.md
+│   └── posts/
+├── layouts/           # Template files
+│   ├── base.html
+│   └── post.html
+├── static/            # Static assets
+│   ├── css/
+│   └── images/
+├── output/            # Generated site
+└── site.rexx          # Configuration
+----
+
+== Ecosystem Integration
+
+tyrano-ssg is part of the https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp] ecosystem—a unified MCP server for 28+ static site generators across 19 programming languages.
+
+Related poly-mcp projects:
+
+* https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp] — Unified SSG management
+* https://github.com/hyperpolymath/poly-container-mcp[poly-container-mcp] — Container orchestration
+* https://github.com/hyperpolymath/poly-iac-mcp[poly-iac-mcp] — Infrastructure as Code
+
+A ReScript adapter provides integration with the poly-ssg-mcp protocol.
+
+== Why "Tyrano"?
+
+Named for the dinosaur, not the despot. REXX has mainframe heritage dating to 1979—a survivor from an era when programs were meant to be read. Like its namesake, tyrano-ssg is robust, enduring, and more capable than its age might suggest.
+
+== License
+
+SPDX-License-Identifier: PMPL-1.0-or-later-or-later
+
+== Links
+
+* https://regina-rexx.sourceforge.io/[Regina REXX] — Open source REXX interpreter
+* https://www.oorexx.org/[ooRexx] — Object-oriented REXX
+* https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp] — Polyglot SSG MCP server

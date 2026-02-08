@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/hyperpolymath/rescribe-ssg/a11y/makaton-schema.json",
+  "title": "Makaton Metadata Schema",
+  "description": "Schema for Makaton symbol and sign integration in rescribe-ssg",
+  "type": "object",
+  "required": ["version", "system"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "system": {
+      "type": "string",
+      "const": "makaton",
+      "description": "Makaton language programme identifier"
+    },
+    "symbolSet": {
+      "type": "string",
+      "enum": ["core", "extended", "topic-specific"],
+      "default": "core",
+      "description": "Which Makaton symbol vocabulary to use"
+    },
+    "content": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/makatonContent"
+      }
+    },
+    "vocabulary": {
+      "type": "object",
+      "description": "Makaton vocabulary mappings",
+      "additionalProperties": {
+        "$ref": "#/$defs/vocabularyEntry"
+      }
+    },
+    "displaySettings": {
+      "type": "object",
+      "properties": {
+        "symbolSize": {
+          "type": "string",
+          "enum": ["small", "medium", "large"],
+          "default": "medium"
+        },
+        "showSigns": {
+          "type": "boolean",
+          "default": true
+        },
+        "showSymbols": {
+          "type": "boolean",
+          "default": true
+        },
+        "showText": {
+          "type": "boolean",
+          "default": true
+        },
+        "textPosition": {
+          "type": "string",
+          "enum": ["above", "below", "beside"],
+          "default": "below"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "makatonContent": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {
+        "id": { "type": "string" },
+        "text": {
+          "type": "string",
+          "description": "Original text content"
+        },
+        "symbols": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Array of Makaton symbol IDs"
+        },
+        "signVideo": {
+          "type": "string",
+          "format": "uri",
+          "description": "Video of Makaton signs"
+        }
+      }
+    },
+    "vocabularyEntry": {
+      "type": "object",
+      "properties": {
+        "word": { "type": "string" },
+        "symbolId": { "type": "string" },
+        "symbolPath": {
+          "type": "string",
+          "format": "uri"
+        },
+        "signVideo": {
+          "type": "string",
+          "format": "uri"
+        },
+        "stage": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8,
+          "description": "Makaton vocabulary stage (1-8)"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "people", "actions", "descriptors", "objects",
+            "places", "time", "questions", "social"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,41 @@
+# ReScript WASM-GC Backend
+
+default:
+    @just --list
+
+# Build the project
+build:
+    dune build
+
+# Run tests
+test:
+    dune test
+
+# Run the compiler on an example
+run *args:
+    dune exec rescript_wasm -- {{args}}
+
+# Clean build artifacts
+clean:
+    dune clean
+
+# Format OCaml code
+fmt:
+    dune fmt
+
+# Validate generated WAT file
+validate file:
+    wasm-tools validate {{file}}
+
+# Parse and print WAT (for debugging)
+print file:
+    wasm-tools print {{file}}
+
+# Run WAT in wasmtime with GC support
+run-wasm file:
+    wasmtime --wasm-features gc {{file}}
+
+# Build and run a quick test
+quick-test:
+    dune build
+    dune exec rescript_wasm -- --test

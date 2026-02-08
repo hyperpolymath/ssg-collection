@@ -1,0 +1,96 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+== [Unreleased]
+
+=== Added
+- Unit test infrastructure
+- E2E test framework
+- Schema validation tests
+
+== [0.3.0] - 2025-12-22
+
+=== Added
+- Complete SCM file suite (META, ECOSYSTEM, STATE, PLAYBOOK, AGENTIC, NEUROSYM)
+- Build system with justfile (25+ recipes)
+- Mustfile for mandatory pre-merge checks
+- CI workflow with SHA-pinned actions
+- Comprehensive cookbook.adoc documentation
+- README.adoc with full documentation
+- deno.json configuration
+- .tool-versions for asdf version management
+- .env.example environment template
+- scripts/sync-adapters.sh for hub synchronisation
+- Git hooks support (pre-commit, pre-push)
+
+=== Changed
+- Updated .gitignore to allow .env.example
+
+=== Security
+- Fixed all SECURITY.md placeholder values
+- Added security checks to CI (eval, secrets scanning)
+- Implemented command injection prevention (array args only)
+
+== [0.2.0] - 2025-12-17
+
+=== Added
+- Security review and hardening
+- SECURITY.md with proper contact information
+
+=== Changed
+- Updated SCM files from template-repo to gungir-ssg
+- Added ADR-002 for poly-ssg-mcp integration
+
+=== Fixed
+- Removed all {{PLACEHOLDER}} values from SECURITY.md
+
+== [0.1.0] - 2025-12-15
+
+=== Added
+- Initial project setup
+- 28 SSG adapters synchronised from poly-ssg-mcp hub
+- RSR compliance files (SPDX headers, CODE_OF_CONDUCT, CONTRIBUTING)
+- Basic SCM files (META, ECOSYSTEM, STATE)
+- CodeQL security scanning
+- Dependabot configuration
+- GitHub issue templates
+
+=== Adapters
+- babashka (Clojure)
+- cobalt (Rust)
+- coleslaw (Common Lisp)
+- cryogen (Clojure)
+- documenter (Julia)
+- ema (Haskell)
+- fornax (F#)
+- franklin (Julia)
+- frog (Racket)
+- hakyll (Haskell)
+- laika (Scala)
+- marmot (Crystal)
+- mdbook (Rust)
+- nimble-publisher (Elixir)
+- nimrod (Nim)
+- orchid (Kotlin)
+- perun (Clojure)
+- pollen (Racket)
+- publish (Swift)
+- reggae (D)
+- scalatex (Scala)
+- serum (Elixir)
+- staticwebpages (Julia)
+- tableau (Elixir)
+- wub (Tcl)
+- yocaml (OCaml)
+- zola (Rust)
+- zotonic (Erlang)
+
+[Unreleased]: https://github.com/hyperpolymath/gungir-ssg/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/hyperpolymath/gungir-ssg/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/hyperpolymath/gungir-ssg/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/hyperpolymath/gungir-ssg/releases/tag/v0.1.0

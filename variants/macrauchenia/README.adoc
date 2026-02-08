@@ -1,0 +1,111 @@
+= macrauchenia-ssg
+
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/Philosophy-Palimpsest-indigo.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+
+:toc: auto
+:toclevels: 2
+
+image:https://img.shields.io/badge/RSR-compliant-gold[RSR Compliant,link=https://github.com/hyperpolymath/rhodium-standard-repositories]
+image:https://img.shields.io/badge/poly--ssg--mcp-satellite-blue[poly-ssg-mcp,link=https://github.com/hyperpolymath/poly-ssg-mcp]
+image:https://img.shields.io/badge/status-experimental-orange[Experimental]
+
+**Pure OCaml static site generator.**
+
+Type-safe content transformation through ML-family rigor.
+
+== Who Is This For?
+
+* **Functional programmers** who appreciate algebraic data types
+* **Type system enthusiasts** seeking compile-time guarantees
+* **ML-family devotees** comfortable with pattern matching
+* **Correctness-focused developers** who want the compiler as their ally
+
+== Why macrauchenia-ssg?
+
+=== Type-Safe by Design
+
+OCaml's Hindley-Milner type inference catches errors at compile time. Your templates, routes, and content transformations are verified before they run.
+
+=== Pattern Matching Elegance
+
+Markdown parsing becomes declarative. No chains of if-else, just exhaustive pattern matching that the compiler guarantees is complete.
+
+[source,ocaml]
+----
+let rec transform_block = function
+  | Heading (level, text) -> Html.h level (render_inline text)
+  | Paragraph spans -> Html.p (List.map render_inline spans)
+  | CodeBlock (lang, code) -> Html.pre ~lang (Html.code code)
+  | List items -> Html.ul (List.map render_item items)
+----
+
+=== Algebraic Data Types
+
+Content structures are precisely modeled. Variants capture all possibilities; records ensure nothing is forgotten.
+
+[source,ocaml]
+----
+type frontmatter = {
+  title: string;
+  date: Date.t;
+  tags: string list;
+  draft: bool;
+}
+
+type page =
+  | Post of frontmatter * content
+  | Static of string * bytes
+  | Generated of (unit -> Html.t)
+----
+
+=== Native Performance
+
+OCaml compiles to efficient native code. No runtime interpretation, no GC pauses during builds. Your site generates fast.
+
+== Quick Start
+
+[source,bash]
+----
+# Install via opam
+opam install macrauchenia-ssg
+
+# Initialize a new site
+macrauchenia init my-site
+
+# Build the site
+cd my-site && macrauchenia build
+
+# Or use dune directly
+dune exec macrauchenia -- build
+----
+
+== Architecture
+
+----
+src/
+├── parser.ml       (Markdown → AST via pattern matching)
+├── template.ml     (Type-safe templating with combinators)
+├── router.ml       (Route generation from content structure)
+└── generator.ml    (AST → HTML emission)
+       │
+       ▼
+   _site/           (Static output)
+----
+
+All transformations are pure functions. Side effects are isolated to file I/O at the boundaries.
+
+== Requirements
+
+* OCaml 4.14+ or 5.x
+* opam package manager
+* dune build system
+
+== Part of poly-ssg-mcp
+
+macrauchenia-ssg is a satellite of https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp], the unified MCP server providing access to static site generators across 19 programming languages. The MCP integration enables seamless tooling through `macrauchenia_init`, `macrauchenia_build`, and `macrauchenia_serve` commands.
+
+== License
+
+MIT OR PMPL-1.0-or-later

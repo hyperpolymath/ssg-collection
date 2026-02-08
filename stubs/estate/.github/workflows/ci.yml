@@ -1,0 +1,42 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+name: Forth CI
+
+permissions: read-all
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+
+      - name: Install Gforth
+        run: sudo apt-get update && sudo apt-get install -y gforth
+
+      - name: Syntax Check
+        run: |
+          if [ -f src/estate-ssg.fs ]; then
+            gforth src/estate-ssg.fs -e 'bye'
+          fi
+
+  language-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+
+      - name: Verify Forth-only in src/
+        run: |
+          echo "Checking for forbidden languages in src/..."
+          forbidden=$(find src/ -type f \( -name "*.py" -o -name "*.js" -o -name "*.ts" -o -name "*.c" \) 2>/dev/null || true)
+          if [ -n "$forbidden" ]; then
+            echo "ERROR: Found forbidden language files in src/:"
+            echo "$forbidden"
+            exit 1
+          fi
+          echo "OK: Only Forth files in src/"

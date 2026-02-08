@@ -1,0 +1,351 @@
+-- DevTools CLI - Ephapax Implementation
+-- SPDX-License-Identifier: AGPL-3.0-or-later
+--
+-- This is a specification for when Ephapax compiler is ready.
+-- Demonstrates linear/affine types, regions, and WASM compilation.
+
+module DevTools
+
+--------------------------------------------------------------------------------
+-- TYPE SYSTEM MODE TOGGLE
+--------------------------------------------------------------------------------
+-- Ephapax supports two ownership modes:
+--
+-- LINEAR MODE (default): Resources must be used EXACTLY once
+--   - Compile: ephapax build --mode=linear devtools.epx
+--   - Unused resources cause compile error
+--   - Must explicitly consume or drop resources
+--
+-- AFFINE MODE: Resources can be used AT MOST once
+--   - Compile: ephapax build --mode=affine devtools.epx
+--   - Unused resources are auto-dropped (warning, not error)
+--   - More lenient, closer to Rust's ownership model
+--
+-- Toggle via pragma (overrides CLI flag):
+#![type_mode = "linear"]  -- Options: "linear" | "affine"
+
+-- Mode-specific behavior examples:
+--
+-- In LINEAR mode, this would ERROR (unused resource):
+--   fn example():
+--       let x = create_resource()  -- ERROR: x never used
+--
+-- In AFFINE mode, this would WARN but compile:
+--   fn example():
+--       let x = create_resource()  -- WARNING: x dropped without use
+--
+-- To explicitly drop in LINEAR mode:
+--   fn example():
+--       let x = create_resource()
+--       drop(x)  -- Explicitly consumed
+--
+-- The `drop` function is available in both modes but required in linear mode.
+--------------------------------------------------------------------------------
+
+-- Import WASM runtime bindings
+import Runtime.IO (print, read_file, write_file)
+import Runtime.Drop (drop)  -- Explicit drop for linear mode
+import Runtime.Args (get_args)
+import Runtime.Hash (md5, sha1, sha256, sha512)
+import Runtime.Base64 (encode, decode)
+import Runtime.Json (parse, stringify, format)
+
+-- Type definitions with explicit ownership
+type Command =
+    | JsonFormat { file: String, indent: Int, output: Option<String> }
+    | JsonValidate { file: String }
+    | JsonMinify { file: String, output: Option<String> }
+    | FileCount { pattern: String, recursive: Bool }
+    | FileSize { path: String, human: Bool }
+    | FileLines { pattern: String, recursive: Bool }
+    | TextEncode { text: String }
+    | TextDecode { text: String }
+    | TextUpper { text: String }
+    | TextLower { text: String }
+    | HashMd5 { input: String, is_file: Bool }
+    | HashSha1 { input: String, is_file: Bool }
+    | HashSha256 { input: String, is_file: Bool }
+    | HashSha512 { input: String, is_file: Bool }
+    | Search { pattern: String, path: String, ignore_case: Bool, recursive: Bool }
+
+type Result<T, E> =
+    | Ok(T)
+    | Err(E)
+
+-- Parse command line arguments
+-- Args are consumed linearly
+fn parse_args(args: [String]) -> Result<Command, String>:
+    region r:
+        match args:
+            | ["json", "format", file, ..rest]:
+                let indent = find_flag_int@r(&rest, "-i", 2)
+                let output = find_flag_string@r(&rest, "-o")
+                Ok(JsonFormat { file, indent, output })
+
+            | ["json", "validate", file]:
+                Ok(JsonValidate { file })
+
+            | ["json", "minify", file, ..rest]:
+                let output = find_flag_string@r(&rest, "-o")
+                Ok(JsonMinify { file, output })
+
+            | ["file", "count", pattern, ..rest]:
+                let recursive = has_flag(&rest, "-r")
+                Ok(FileCount { pattern, recursive })
+
+            | ["file", "size", path, ..rest]:
+                let human = has_flag(&rest, "-h")
+                Ok(FileSize { path, human })
+
+            | ["file", "lines", pattern, ..rest]:
+                let recursive = has_flag(&rest, "-r")
+                Ok(FileLines { pattern, recursive })
+
+            | ["text", "encode", text]:
+                Ok(TextEncode { text })
+
+            | ["text", "decode", text]:
+                Ok(TextDecode { text })
+
+            | ["text", "upper", text]:
+                Ok(TextUpper { text })
+
+            | ["text", "lower", text]:
+                Ok(TextLower { text })
+
+            | ["hash", algo, input, ..rest]:
+                let is_file = has_flag(&rest, "-f")
+                match algo:
+                    | "md5": Ok(HashMd5 { input, is_file })
+                    | "sha1": Ok(HashSha1 { input, is_file })
+                    | "sha256": Ok(HashSha256 { input, is_file })
+                    | "sha512": Ok(HashSha512 { input, is_file })
+                    | _: Err("Unknown hash algorithm")
+
+            | ["search", pattern, path, ..rest]:
+                let ignore_case = has_flag(&rest, "-i")
+                let recursive = has_flag(&rest, "-r")
+                Ok(Search { pattern, path, ignore_case, recursive })
+
+            | _:
+                Err("Unknown command. Use --help for usage.")
+
+-- Helper: Check if flag exists (borrows list)
+fn has_flag(args: &[String], flag: String) -> Bool:
+    args.iter().any(|arg| arg == flag)
+
+-- Helper: Find flag with string value
+fn find_flag_string@r(args: &[String], flag: String) -> Option<String>:
+    let idx = args.iter().position(|arg| arg == flag)?
+    args.get(idx + 1).map(|s| String.copy@r(s))
+
+-- Helper: Find flag with int value
+fn find_flag_int@r(args: &[String], flag: String, default: Int) -> Int:
+    match find_flag_string@r(args, flag):
+        | Some(s): s.parse_int().unwrap_or(default)
+        | None: default
+
+-- JSON operations with linear ownership
+fn json_format(file: String, indent: Int, output: Option<String>) -> Result<(), String>:
+    region r:
+        let content = read_file@r(&file)?
+        let parsed = Json.parse@r(content)?
+        let formatted = Json.format@r(parsed, indent)
+
+        match output:
+            | Some(out_path):
+                write_file(&out_path, formatted)?
+                print("Formatted JSON written to ", &out_path)
+            | None:
+                print(formatted)
+        Ok(())
+
+fn json_validate(file: String) -> Result<(), String>:
+    region r:
+        let content = read_file@r(&file)?
+        match Json.parse@r(content):
+            | Ok(_):
+                print("✓ ", &file, " is valid JSON")
+                Ok(())
+            | Err(e):
+                print("✗ Invalid JSON: ", e)
+                Err(e)
+
+fn json_minify(file: String, output: Option<String>) -> Result<(), String>:
+    region r:
+        let content = read_file@r(&file)?
+        let parsed = Json.parse@r(content)?
+        let minified = Json.stringify@r(parsed)
+
+        match output:
+            | Some(out_path):
+                write_file(&out_path, minified)?
+                print("Minified JSON written to ", &out_path)
+            | None:
+                print(minified)
+        Ok(())
+
+-- File operations
+fn file_count(pattern: String, recursive: Bool) -> Result<(), String>:
+    region r:
+        let files = glob@r(&pattern, recursive)?
+        let count = files.len()
+        print("Found ", count, " files matching '", &pattern, "'")
+        for file in files.iter():
+            print("  ", file)
+        Ok(())
+
+fn file_size(path: String, human: Bool) -> Result<(), String>:
+    region r:
+        let size = get_size@r(&path)?
+        let size_str = if human:
+            human_readable_size(size)
+        else:
+            size.to_string()
+        print(&path, ": ", size_str)
+        Ok(())
+
+fn human_readable_size(bytes: Int) -> String:
+    let units = ["B", "KB", "MB", "GB", "TB"]
+    let mut size = bytes.to_float()
+    let mut unit_idx = 0
+
+    while size >= 1024.0 && unit_idx < units.len() - 1:
+        size = size / 1024.0
+        unit_idx = unit_idx + 1
+
+    format!("{:.2} {}", size, units[unit_idx])
+
+fn file_lines(pattern: String, recursive: Bool) -> Result<(), String>:
+    region r:
+        let files = glob@r(&pattern, recursive)?
+        let mut total = 0
+
+        for file in files.iter():
+            match count_lines@r(&file):
+                | Ok(lines):
+                    print(&file, ": ", lines, " lines")
+                    total = total + lines
+                | Err(e):
+                    print("Error reading ", &file, ": ", e)
+
+        print("\nTotal: ", total, " lines across ", files.len(), " files")
+        Ok(())
+
+-- Text operations
+fn text_encode(text: String) -> Result<(), String>:
+    let encoded = Base64.encode(&text)
+    print(encoded)
+    Ok(())
+
+fn text_decode(text: String) -> Result<(), String>:
+    match Base64.decode(&text):
+        | Ok(decoded):
+            print(decoded)
+            Ok(())
+        | Err(e):
+            Err("Invalid base64: " + e)
+
+fn text_upper(text: String) -> Result<(), String>:
+    print(text.to_uppercase())
+    Ok(())
+
+fn text_lower(text: String) -> Result<(), String>:
+    print(text.to_lowercase())
+    Ok(())
+
+-- Hash operations with linear data handling
+fn hash_compute(algo: String, input: String, is_file: Bool) -> Result<(), String>:
+    region r:
+        let data = if is_file:
+            read_file_bytes@r(&input)?
+        else:
+            input.as_bytes@r()
+
+        let hash = match algo:
+            | "md5": Hash.md5@r(data)
+            | "sha1": Hash.sha1@r(data)
+            | "sha256": Hash.sha256@r(data)
+            | "sha512": Hash.sha512@r(data)
+            | _: return Err("Unknown algorithm")
+
+        print(algo.to_uppercase(), ": ", hash)
+        Ok(())
+
+-- Search operations
+fn search(pattern: String, path: String, ignore_case: Bool, recursive: Bool) -> Result<(), String>:
+    region r:
+        let regex = Regex.compile@r(&pattern, ignore_case)?
+
+        if is_file(&path):
+            search_file@r(&regex, &path)
+        else if recursive:
+            let files = glob@r("**/*", true)?
+            for file in files.iter():
+                if is_file(file):
+                    search_file@r(&regex, file)
+        else:
+            Err("Not a file or use -r for directories")
+
+fn search_file@r(regex: &Regex, file: &String) -> ():
+    match read_file_lines@r(file):
+        | Ok(lines):
+            for (i, line) in lines.iter().enumerate():
+                if regex.is_match(&line):
+                    print(file, ":", i + 1, ": ", line)
+        | Err(_):
+            ()  -- Skip files that can't be read
+
+-- Main entry point
+fn main() -> Result<(), String>:
+    let args = get_args()
+
+    if args.len() < 2:
+        print_help()
+        return Ok(())
+
+    -- Skip program name, consume remaining args
+    let command_args = args.skip(1)
+
+    match parse_args(command_args):
+        | Ok(cmd): execute(cmd)
+        | Err(e):
+            print("Error: ", e)
+            Err(e)
+
+fn execute(cmd: Command) -> Result<(), String>:
+    match cmd:
+        | JsonFormat { file, indent, output }: json_format(file, indent, output)
+        | JsonValidate { file }: json_validate(file)
+        | JsonMinify { file, output }: json_minify(file, output)
+        | FileCount { pattern, recursive }: file_count(pattern, recursive)
+        | FileSize { path, human }: file_size(path, human)
+        | FileLines { pattern, recursive }: file_lines(pattern, recursive)
+        | TextEncode { text }: text_encode(text)
+        | TextDecode { text }: text_decode(text)
+        | TextUpper { text }: text_upper(text)
+        | TextLower { text }: text_lower(text)
+        | HashMd5 { input, is_file }: hash_compute("md5", input, is_file)
+        | HashSha1 { input, is_file }: hash_compute("sha1", input, is_file)
+        | HashSha256 { input, is_file }: hash_compute("sha256", input, is_file)
+        | HashSha512 { input, is_file }: hash_compute("sha512", input, is_file)
+        | Search { pattern, path, ignore_case, recursive }: search(pattern, path, ignore_case, recursive)
+
+fn print_help() -> ():
+    print("DevTools - Developer Utilities CLI (Ephapax Edition)")
+    print("")
+    print("Usage: devtools <command> <subcommand> [options]")
+    print("")
+    print("Commands:")
+    print("  json format <file> [-i indent] [-o output]  Format JSON")
+    print("  json validate <file>                         Validate JSON")
+    print("  json minify <file> [-o output]              Minify JSON")
+    print("  file count <pattern> [-r]                    Count files")
+    print("  file size <path> [-h]                        Show file size")
+    print("  file lines <pattern> [-r]                    Count lines")
+    print("  text encode <text>                           Base64 encode")
+    print("  text decode <text>                           Base64 decode")
+    print("  text upper <text>                            Uppercase")
+    print("  text lower <text>                            Lowercase")
+    print("  hash <md5|sha1|sha256|sha512> <input> [-f]  Hash text/file")
+    print("  search <pattern> <path> [-i] [-r]           Search with regex")

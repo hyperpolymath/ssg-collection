@@ -1,0 +1,674 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+= rescribe-ssg Cookbook
+:toc: left
+:toclevels: 3
+:sectnums:
+:icons: font
+:source-highlighter: rouge
+
+== Overview
+
+This cookbook provides comprehensive recipes for building, testing, and deploying rescribe-ssg.
+All recipes use ReScript as the implementation language - *no exceptions*.
+
+[TIP]
+====
+Quick start: `just build && just test`
+====
+
+'''
+
+[[cli]]
+== CLI Recipes
+
+Command-line recipes for common operations.
+
+[[cli-build]]
+=== Build Operations
+
+==== Compile ReScript
+
+[source,bash]
+----
+# Full build
+just build
+
+# Watch mode for development
+just dev
+
+# Clean and rebuild
+just clean && just build
+----
+
+==== Generate Site
+
+[source,bash]
+----
+# Generate with defaults
+just generate
+
+# Custom content and output directories
+just generate content/ public/
+
+# Preview locally
+just preview
+----
+
+[[cli-test]]
+=== Testing
+
+[source,bash]
+----
+# Run unit tests
+just test
+
+# Run end-to-end tests
+just test-e2e
+
+# Run all tests
+just test-all
+
+# With coverage
+just test-coverage
+----
+
+[[cli-lint]]
+=== Linting & Formatting
+
+[source,bash]
+----
+# Check formatting
+just lint
+
+# Auto-format code
+just format
+
+# Verify CI requirements
+just ci
+----
+
+[[cli-container]]
+=== Container Operations
+
+[source,bash]
+----
+# Build container
+just container-build
+
+# Run in container
+just container-run
+
+# Push to registry
+just container-push
+----
+
+[[cli-deps]]
+=== Dependency Management
+
+[source,bash]
+----
+# Install dependencies
+just install
+
+# Update dependencies
+just update
+
+# Security audit
+just audit
+----
+
+[[cli-combinatorics]]
+=== CLI Combinatorics
+
+Common command combinations and permutations:
+
+[source,bash]
+----
+# Full CI pipeline
+just lint && just build && just test && just test-e2e
+
+# Development cycle
+just dev  # (runs in watch mode)
+
+# Release preparation
+just clean && just build && just test-all && just version-bump minor
+
+# Fresh start
+just reset
+
+# Pre-commit check
+just lint && just build && just test
+
+# Container workflow
+just container-build && just container-run
+
+# Full verification
+must all
+----
+
+'''
+
+[[just]]
+== Justfile Recipes
+
+Complete reference for all Justfile recipes.
+
+[[just-core]]
+=== Core Recipes
+
+|===
+| Recipe | Description | Usage
+
+| `build`
+| Compile ReScript to JavaScript
+| `just build`
+
+| `clean`
+| Remove build artifacts
+| `just clean`
+
+| `dev`
+| Watch mode development
+| `just dev`
+
+| `compile`
+| Alias for build
+| `just compile`
+|===
+
+[[just-test]]
+=== Testing Recipes
+
+|===
+| Recipe | Description | Usage
+
+| `test`
+| Run unit tests
+| `just test`
+
+| `test-e2e`
+| Run end-to-end tests
+| `just test-e2e`
+
+| `test-all`
+| Run all tests
+| `just test-all`
+
+| `test-coverage`
+| Tests with coverage
+| `just test-coverage`
+|===
+
+[[just-site]]
+=== Site Generation Recipes
+
+|===
+| Recipe | Description | Usage
+
+| `generate`
+| Generate static site
+| `just generate [CONTENT_DIR] [OUTPUT_DIR]`
+
+| `serve`
+| Local development server
+| `just serve [PORT]`
+
+| `preview`
+| Generate and serve
+| `just preview`
+|===
+
+[[just-container]]
+=== Container Recipes
+
+|===
+| Recipe | Description | Usage
+
+| `container-build`
+| Build container image
+| `just container-build`
+
+| `container-run`
+| Run in container
+| `just container-run`
+
+| `container-push`
+| Push to registry
+| `just container-push`
+|===
+
+[[just-utility]]
+=== Utility Recipes
+
+|===
+| Recipe | Description | Usage
+
+| `info`
+| Show project info
+| `just info`
+
+| `verify`
+| Verify requirements
+| `just verify`
+
+| `reset`
+| Reset to clean state
+| `just reset`
+
+| `mcp-test`
+| Test MCP adapter
+| `just mcp-test`
+|===
+
+'''
+
+[[must]]
+== Mustfile Checks
+
+Mandatory requirements that MUST pass.
+
+[[must-language]]
+=== Language Enforcement
+
+[IMPORTANT]
+====
+These checks enforce ReScript-only implementation.
+*Violations will fail the build.*
+====
+
+|===
+| Check | Description | Command
+
+| `no-python`
+| No Python files in src/
+| `must no-python`
+
+| `no-typescript`
+| No TypeScript files in src/
+| `must no-typescript`
+
+| `no-javascript-source`
+| No JavaScript source in src/
+| `must no-javascript-source`
+
+| `rescript-only`
+| Verify ReScript-only
+| `must rescript-only`
+
+| `language`
+| All language checks
+| `must language`
+|===
+
+[[must-security]]
+=== Security Checks
+
+|===
+| Check | Description | Command
+
+| `no-secrets`
+| No hardcoded secrets
+| `must no-secrets`
+
+| `no-vulnerabilities`
+| No npm vulnerabilities
+| `must no-vulnerabilities`
+
+| `security`
+| All security checks
+| `must security`
+|===
+
+[[must-docs]]
+=== Documentation Checks
+
+|===
+| Check | Description | Command
+
+| `readme`
+| README exists
+| `must readme`
+
+| `license`
+| LICENSE exists
+| `must license`
+
+| `spdx-headers`
+| SPDX headers present
+| `must spdx-headers`
+
+| `docs`
+| All doc checks
+| `must docs`
+|===
+
+[[must-scm]]
+=== SCM Metadata Checks
+
+|===
+| Check | Description | Command
+
+| `meta-scm`
+| META.scm exists
+| `must meta-scm`
+
+| `state-scm`
+| STATE.scm exists
+| `must state-scm`
+
+| `ecosystem-scm`
+| ECOSYSTEM.scm exists
+| `must ecosystem-scm`
+
+| `scm`
+| All SCM checks
+| `must scm`
+|===
+
+[[must-all]]
+=== Complete Verification
+
+[source,bash]
+----
+# Run ALL must checks
+must all
+
+# This runs: language + build + test + security + docs + scm
+----
+
+'''
+
+[[nickel]]
+== Nickel Formulae
+
+Configuration expressions for reproducible builds.
+
+[[nickel-site]]
+=== Site Configuration
+
+[source,nickel]
+----
+# rescribe.ncl - Site configuration
+{
+  site = {
+    title = "My ReScript Site",
+    url = "https://example.com",
+    author = "Developer Name",
+    language = "en",
+  },
+
+  build = {
+    contentDir = "_content",
+    outputDir = "_site",
+    templateDir = "templates",
+    cleanUrls = true,
+  },
+
+  accessibility = {
+    wcag.level = "AA",
+    signLanguages = {
+      bsl.enabled = false,
+      asl.enabled = false,
+    },
+  },
+}
+----
+
+[[nickel-build]]
+=== Build Configuration
+
+[source,nickel]
+----
+# build.ncl - Build system configuration
+let Config = {
+  rescript = {
+    version = "11.1.0",
+    module = "esmodule",
+    suffix = ".mjs",
+  },
+
+  container = {
+    base = "node:20-alpine",
+    registry = "ghcr.io/hyperpolymath",
+    name = "rescribe-ssg",
+  },
+
+  ci = {
+    nodeVersion = "20",
+    cacheKey = "rescript-v1",
+  },
+}
+in Config
+----
+
+[[nickel-a11y]]
+=== Accessibility Configuration
+
+[source,nickel]
+----
+# a11y.ncl - Accessibility settings
+{
+  signLanguages = {
+    bsl = {
+      enabled = true,
+      videoFormat = "mp4",
+      embedMethod = "modal",
+    },
+    asl = {
+      enabled = true,
+      videoFormat = "webm",
+      embedMethod = "inline",
+    },
+    gsl = { enabled = false },
+    makaton = {
+      enabled = true,
+      symbolSet = "core",
+      displayMode = "tooltip",
+    },
+  },
+
+  wcag = {
+    level = "AA",
+    version = "2.1",
+  },
+
+  aria = {
+    landmarks = true,
+    liveRegions = true,
+    roles = true,
+  },
+}
+----
+
+'''
+
+[[concatenations]]
+== Command Concatenations
+
+Common command chains for workflows.
+
+[[concat-dev]]
+=== Development Workflow
+
+[source,bash]
+----
+# Start fresh development session
+just clean && just install && just build && just dev
+
+# Quick iteration
+just build && just test
+
+# Full validation before commit
+just lint && just build && just test && must all
+----
+
+[[concat-ci]]
+=== CI/CD Pipeline
+
+[source,bash]
+----
+# CI gate check
+must language && just build && just test && must security
+
+# Pre-release validation
+just clean && just build && just test-all && must all
+
+# Container release
+just container-build && just container-push
+----
+
+[[concat-release]]
+=== Release Process
+
+[source,bash]
+----
+# Prepare release
+just clean && just build && just test-all && must all
+
+# Bump version and tag
+just version-bump minor && git add -A && git commit -m "chore: release v1.x.x"
+
+# Create and push release
+just release 1.x.x
+----
+
+'''
+
+[[hooks]]
+== Git Hooks
+
+Pre-commit and pre-push hooks for quality gates.
+
+[[hooks-precommit]]
+=== Pre-commit Hook
+
+[source,bash]
+----
+#!/bin/sh
+# .git/hooks/pre-commit
+
+# Format check
+just lint || exit 1
+
+# Build check
+just build || exit 1
+
+# Quick test
+just test || exit 1
+
+echo "✅ Pre-commit checks passed"
+----
+
+[[hooks-prepush]]
+=== Pre-push Hook
+
+[source,bash]
+----
+#!/bin/sh
+# .git/hooks/pre-push
+
+# Full verification
+must all || exit 1
+
+echo "✅ Pre-push checks passed"
+----
+
+'''
+
+[[troubleshooting]]
+== Troubleshooting
+
+Common issues and solutions.
+
+[[trouble-build]]
+=== Build Failures
+
+[source,bash]
+----
+# Clean rebuild
+just clean && just install && just build
+
+# Check ReScript version
+npx rescript --version
+
+# Verify dependencies
+just verify
+----
+
+[[trouble-test]]
+=== Test Failures
+
+[source,bash]
+----
+# Run specific test
+node adapters/src/RescribeAdapter.mjs test-markdown
+
+# Debug mode
+DEBUG=* just test
+----
+
+[[trouble-container]]
+=== Container Issues
+
+[source,bash]
+----
+# Rebuild without cache
+podman build --no-cache -t rescribe-ssg:latest .
+
+# Debug container
+podman run --rm -it rescribe-ssg:latest /bin/sh
+----
+
+'''
+
+[[appendix]]
+== Appendix
+
+[[appendix-files]]
+=== File Reference
+
+|===
+| File | Purpose
+
+| `Justfile`
+| Build automation recipes
+
+| `Mustfile`
+| Mandatory requirement checks
+
+| `Containerfile`
+| Container image definition
+
+| `.tool-versions`
+| asdf runtime versions
+
+| `rescribe.config.json`
+| Site configuration
+
+| `a11y/schema.json`
+| Accessibility schema
+|===
+
+[[appendix-env]]
+=== Environment Variables
+
+|===
+| Variable | Description | Default
+
+| `RESCRIBE_CONTENT_DIR`
+| Content directory
+| `_content`
+
+| `RESCRIBE_OUTPUT_DIR`
+| Output directory
+| `_site`
+
+| `RESCRIBE_PORT`
+| Development server port
+| `3000`
+
+| `DEBUG`
+| Enable debug output
+| (unset)
+|===

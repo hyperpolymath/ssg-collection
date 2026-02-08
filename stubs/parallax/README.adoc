@@ -1,0 +1,72 @@
+= parallax-ssg
+:toc: auto
+:toclevels: 2
+
+image:https://img.shields.io/badge/RSR-compliant-gold[RSR Compliant,link=https://github.com/hyperpolymath/rhodium-standard-repositories]
+image:https://img.shields.io/badge/poly--ssg-satellite-blue[poly-ssg,link=https://github.com/hyperpolymath/poly-ssg]
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+**Parallel-first static site generator in Chapel.**
+
+Build sites at the speed of your CPU cores.
+
+== Who Is This For?
+
+* **Chapel developers** who appreciate data parallelism
+* **HPC users** building documentation for supercomputers
+* **Teams with massive site collections** - thousands of pages
+* **Anyone whose builds take too long** on traditional SSGs
+
+== Why parallax-ssg?
+
+=== Parallel by Default
+
+Every page builds in parallel automatically. Chapel's data parallelism means you write sequential-looking code that runs across all cores.
+
+=== Scale to Any Size
+
+10 pages or 100,000 pages - same code, linear scaling. Your build time is wall-clock time divided by cores.
+
+=== Domain Map Support
+
+Distribute builds across machines with Chapel's distributed arrays. Cluster-scale site generation.
+
+=== First-Class Locales
+
+Build different language versions in parallel on different locales. True polyglot site support.
+
+== Quick Start
+
+[source,chapel]
+----
+use Parallax;
+
+config const srcDir = "content/",
+             outDir = "public/";
+
+proc main() {
+  const pages = findPages(srcDir);
+  forall page in pages do
+    buildPage(page, outDir);
+}
+----
+
+== Features
+
+* **Automatic parallelization** - no manual threading
+* **Distributed builds** - scale across machines
+* **Locale-aware i18n** - parallel language builds
+* **Zero copy transforms** - efficient memory usage
+* **GPU offloading** - for image processing pipelines
+
+== Requirements
+
+* Chapel 1.30 or later
+
+== Part of poly-ssg
+
+parallax-ssg is part of the https://github.com/hyperpolymath/poly-ssg[poly-ssg] family, unified through https://github.com/hyperpolymath/poly-ssg-mcp[MCP integration].
+
+== License
+
+PMPL-1.0-or-later

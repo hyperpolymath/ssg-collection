@@ -1,0 +1,83 @@
+= wagasm-ssg
+:toc: auto
+:toclevels: 2
+
+image:https://img.shields.io/badge/RSR-compliant-gold[RSR Compliant,link=https://github.com/hyperpolymath/rhodium-standard-repositories]
+image:https://img.shields.io/badge/poly--ssg-satellite-blue[poly-ssg,link=https://github.com/hyperpolymath/poly-ssg]
+image:https://img.shields.io/badge/License-MPL_2.0-blue.svg[MPL-2.0-or-later,link="https://opensource.org/licenses/MPL-2.0"]
+image:https://img.shields.io/badge/status-experimental-orange[Experimental]
+
+**Pure WebAssembly Text (WAT) static site generator.**
+
+Proving WAT is viable as a source language, not just a compilation target.
+
+== Who Is This For?
+
+* **WebAssembly enthusiasts** exploring WAT's potential
+* **Low-level web developers** who think in stack machines
+* **WASM toolchain builders** seeking reference implementations
+* **Adventurous programmers** who enjoy extreme challenges
+
+== Why wagasm-ssg?
+
+=== WAT as Source
+
+This isn't Rust-compiled-to-WASM or AssemblyScript. The SSG is hand-written in WebAssembly Text format. Every instruction is intentional.
+
+=== S-Expression Clarity
+
+WAT uses Lisp-like S-expressions. If you can read Scheme, you can read WAT.
+
+[source,wat]
+----
+(func $build_page (param $content i32) (result i32)
+  (call $parse_markdown (local.get $content))
+  (call $apply_template)
+  (call $write_html))
+----
+
+=== Educational Depth
+
+Understanding WAT means understanding WebAssembly at its core. No abstractions hiding the machine.
+
+=== Portable by Design
+
+WASM runs everywhere. Your SSG works identically in browsers, Deno, Node, and standalone runtimes.
+
+== Quick Start
+
+[source,bash]
+----
+# Compile WAT to WASM
+wat2wasm src/wagasm-ssg.wat -o wagasm-ssg.wasm
+
+# Run with Deno host
+deno run --allow-read --allow-write runtime/host.ts
+
+# Or with wasm-interp
+wasm-interp --host-print wagasm-ssg.wasm
+----
+
+== Architecture
+
+----
+wagasm-ssg.wat    (ALL SSG logic - markdown, templates, routing)
+       │
+       ▼
+   host.ts        (I/O only - read/write files, console)
+----
+
+The host provides only file I/O. All content processing happens in WAT.
+
+== Requirements
+
+* WABT (WebAssembly Binary Toolkit) for `wat2wasm`
+* Deno, Node, or another WASM runtime
+
+== Part of poly-ssg
+
+wagasm-ssg is part of the https://github.com/hyperpolymath/poly-ssg[poly-ssg] family, unified through https://github.com/hyperpolymath/poly-ssg-mcp[MCP integration].
+
+== License
+
+AGPL-3.0-or-later

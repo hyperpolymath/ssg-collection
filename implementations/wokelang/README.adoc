@@ -1,0 +1,192 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= WokeLang SSG - General-Purpose Static Site Generator
+:toc:
+:toclevels: 3
+
+== Overview
+
+WokeLang SSG is a general-purpose static site generator written *in WokeLang itself*.
+
+Part of the **poly-ssg** family (alongside casket-ssg, hackenbush-ssg, etc.), it provides:
+
+1. **SSG Tool** - Generate static sites from markdown + frontmatter
+2. **WokeLang Showcase** - Demonstrates consent-driven computing, gratitude system, and emotive programming
+3. **MCP Integration** - Works with poly-ssg-mcp for SSG operations
+
+== Architecture
+
+=== Technology Stack
+
+[source]
+----
+┌─────────────────────────────────┐
+│   Frontend (ReScript)           │
+│  ┌─────────────────────────┐    │
+│  │ cadre-tea-router        │    │  Routing
+│  └─────────────────────────┘    │
+│  ┌─────────────────────────┐    │
+│  │ rescript-tea            │    │  TEA Architecture
+│  └─────────────────────────┘    │
+│  ┌─────────────────────────┐    │
+│  │ a2ml                    │    │  Positioning/Layout
+│  └─────────────────────────┘    │
+└─────────────────────────────────┘
+
+┌─────────────────────────────────┐
+│   SSG Engine (WokeLang)         │
+│  ┌─────────────────────────┐    │
+│  │ ssg/main.woke           │    │  Main SSG logic
+│  │ ssg/markdown.woke       │    │  Markdown parser
+│  │ ssg/templates.woke      │    │  Template engine
+│  └─────────────────────────┘    │
+└─────────────────────────────────┘
+
+┌─────────────────────────────────┐
+│   Runtime (Rust)                │
+│  WokeLang interpreter           │
+└─────────────────────────────────┘
+
+┌─────────────────────────────────┐
+│   FFI/ABI Layer                 │
+│  ┌──────────┐  ┌──────────┐     │
+│  │Idris ABI │  │ Zig FFI  │     │
+│  └──────────┘  └──────────┘     │
+└─────────────────────────────────┘
+----
+
+=== Components
+
+**SSG (WokeLang)** - `ssg/*.woke`
+
+- Written in WokeLang
+- Demonstrates consent-driven file I/O
+- Shows gratitude system for dependencies
+- Uses emotive programming for build feedback
+
+**Frontend (ReScript + TEA)**
+
+- ReScript for type-safe UI
+- rescript-tea for TEA architecture
+- cadre-tea-router for proven-safe routing
+- a2ml for positioning/layout
+
+**FFI/ABI (Zig + Idris2)**
+
+- Idris2 ABI: Formally verified interface definitions
+- Zig FFI: C-compatible implementation
+- Follows hyperpolymath ABI/FFI universal standard
+
+== Usage
+
+=== Build the Site
+
+[source,bash]
+----
+# Run the WokeLang SSG
+wokelang ssg/main.woke
+
+# Or use the CLI wrapper
+./build.sh
+----
+
+=== Development Server
+
+[source,bash]
+----
+# Serve with live reload
+./serve.sh
+----
+
+== Directory Structure
+
+[source]
+----
+wokelang-ssg/
+├── ssg/                    # WokeLang SSG source
+│   ├── main.woke          # Main entry point
+│   ├── markdown.woke      # Markdown parsing
+│   ├── templates.woke     # Template rendering
+│   └── feeds.woke         # RSS/Atom generation
+│
+├── frontend/              # ReScript frontend
+│   ├── src/
+│   │   ├── App.res       # Main app
+│   │   ├── Router.res    # Routing (cadre-tea-router)
+│   │   └── Layout.res    # Layout (a2ml)
+│   ├── rescript.json
+│   └── deno.json
+│
+├── content/               # Site content (markdown)
+│   ├── index.md
+│   ├── docs/
+│   └── examples/
+│
+├── templates/             # HTML templates
+│   ├── base.html
+│   ├── page.html
+│   └── index.html
+│
+├── static/                # Static assets
+│   ├── css/
+│   ├── js/
+│   └── images/
+│
+├── public/                # Generated output
+│
+├── src/abi/               # Idris2 ABI
+│   ├── Types.idr
+│   ├── Layout.idr
+│   └── Foreign.idr
+│
+└── ffi/zig/               # Zig FFI
+    └── src/main.zig
+----
+
+== WokeLang Features Demonstrated
+
+=== Consent-Driven Computing
+
+[source,woke]
+----
+consent for file.read:content {
+    consent for file.write:public {
+        buildSite(config);
+    } or {
+        print("❌ Cannot build without write permission");
+    }
+}
+----
+
+=== Gratitude System
+
+[source,woke]
+----
+thanks to "pulldown-cmark" for markdown parsing;
+thanks to "tera" for templating;
+thanks to "walkdir" for file traversal;
+----
+
+=== Emotive Programming
+
+[source,woke]
+----
+@cheerful
+to buildSite(config: SiteConfig) {
+    print("🚀 Building your beautiful site!");
+}
+
+@concerned
+when buildFailed {
+    print("⚠️  Build encountered issues");
+}
+----
+
+== License
+
+PMPL-1.0-or-later (Palimpsest License)
+
+Copyright (c) 2026 Jonathan D.A. Jewell
+
+== Contributing
+
+See link:CONTRIBUTING.md[CONTRIBUTING.md]

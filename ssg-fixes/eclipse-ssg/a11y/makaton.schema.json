@@ -1,0 +1,86 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://eclipse-ssg.hyperpolymath.org/schemas/makaton.json",
+  "title": "Makaton Metadata Schema",
+  "description": "Schema for Makaton accessibility content in eclipse-ssg",
+  "type": "object",
+  "properties": {
+    "makatonVideo": {
+      "type": "object",
+      "description": "Makaton video translation",
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to Makaton video"
+        },
+        "duration": {
+          "type": "string",
+          "pattern": "^PT\\d+M\\d+S$",
+          "description": "Video duration in ISO 8601 format"
+        },
+        "presenter": {
+          "type": "string",
+          "description": "Name of Makaton presenter"
+        },
+        "makatonLevel": {
+          "type": "string",
+          "enum": ["core", "resource", "additional"],
+          "description": "Makaton vocabulary level used"
+        },
+        "format": {
+          "type": "string",
+          "enum": ["mp4", "webm", "mov"]
+        }
+      },
+      "required": ["url"]
+    },
+    "makatonSymbols": {
+      "type": "array",
+      "description": "Makaton symbols used in content",
+      "items": {
+        "type": "object",
+        "properties": {
+          "concept": {
+            "type": "string",
+            "description": "Concept being represented"
+          },
+          "symbolUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to Makaton symbol image"
+          },
+          "signVideo": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to accompanying sign video"
+          },
+          "speechPrompt": {
+            "type": "string",
+            "description": "Spoken word to accompany sign"
+          }
+        },
+        "required": ["concept"]
+      }
+    },
+    "contentAdaptation": {
+      "type": "object",
+      "description": "How content has been adapted for Makaton",
+      "properties": {
+        "simplifiedText": {
+          "type": "boolean",
+          "description": "Whether text has been simplified"
+        },
+        "keyVocabulary": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Key vocabulary highlighted with Makaton"
+        },
+        "visualSupports": {
+          "type": "boolean",
+          "description": "Whether visual supports are included"
+        }
+      }
+    }
+  }
+}

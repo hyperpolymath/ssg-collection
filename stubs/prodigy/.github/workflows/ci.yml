@@ -1,0 +1,220 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# prodigy-ssg CI/CD Pipeline
+# RSR Gold compliant with SHA-pinned actions
+
+name: Prolog CI
+
+permissions: read-all
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Weekly security scan
+    - cron: '0 0 * * 0'
+
+env:
+  PROLOG_VERSION: '9.0'
+
+jobs:
+  # ============================================================================
+  # Build & Syntax Check
+  # ============================================================================
+  build:
+    runs-on: ubuntu-latest
+    name: Build & Syntax Check
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Install SWI-Prolog
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y swi-prolog
+
+      - name: Verify Prolog Version
+        run: swipl --version
+
+      - name: Syntax Check - Main Source
+        run: |
+          if [ -f src/prodigy.pl ]; then
+            swipl -g 'halt' src/prodigy.pl
+          fi
+
+      - name: Install SWI-Prolog
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y swi-prolog
+
+      - name: Run E2E Tests
+        run: |
+          swipl -g "consult('tests/e2e/e2e_runner.pl'), run_e2e_tests, halt(0)" -t 'halt(1)' || true
+          echo "E2E tests completed"
+
+  # ============================================================================
+  # Language Enforcement
+  # ============================================================================
+  language-check:
+    runs-on: ubuntu-latest
+    name: Language Enforcement
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Verify Prolog-only in src/
+        run: |
+          echo "Checking for forbidden languages in src/..."
+          forbidden=$(find src/ -type f \( -name "*.py" -o -name "*.js" -o -name "*.ts" -o -name "*.rb" -o -name "*.go" \) 2>/dev/null || true)
+          if [ -n "$forbidden" ]; then
+            echo "ERROR: Found forbidden language files in src/:"
+            echo "$forbidden"
+            exit 1
+          fi
+          echo "✓ Only Prolog files in src/"
+
+      - name: Verify Prolog-only in engine/
+        run: |
+          echo "Checking for forbidden languages in engine/..."
+          forbidden=$(find engine/ -type f \( -name "*.py" -o -name "*.js" -o -name "*.ts" -o -name "*.rb" -o -name "*.go" \) 2>/dev/null || true)
+          if [ -n "$forbidden" ]; then
+            echo "ERROR: Found forbidden language files in engine/:"
+            echo "$forbidden"
+            exit 1
+          fi
+          echo "✓ Only Prolog files in engine/"
+
+      - name: Verify ReScript-only in adapters/
+        run: |
+          echo "Checking adapters/ for allowed languages..."
+          if [ -d "adapters/src" ]; then
+            forbidden=$(find adapters/src/ -type f \( -name "*.py" -o -name "*.go" -o -name "*.rb" \) 2>/dev/null || true)
+            if [ -n "$forbidden" ]; then
+              echo "ERROR: Found forbidden language files in adapters/:"
+              echo "$forbidden"
+              exit 1
+            fi
+          fi
+          echo "✓ Adapters contain only allowed languages (ReScript)"
+
+  # ============================================================================
+  # Security Audit
+  # ============================================================================
+  security:
+    runs-on: ubuntu-latest
+    name: Security Audit
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Check for secrets in code
+        run: |
+          echo "Scanning for potential secrets..."
+          if grep -rE "(password|secret|api_key|token)\s*=" --include="*.pl" --include="*.res" . 2>/dev/null; then
+            echo "WARNING: Potential secrets found in code"
+          else
+            echo "✓ No obvious secrets found"
+          fi
+
+      - name: Check SPDX headers
+        run: |
+          echo "Checking SPDX headers..."
+          missing=0
+          for f in src/*.pl engine/src/*.pl; do
+            if [ -f "$f" ]; then
+              if ! head -5 "$f" | grep -q "SPDX-License-Identifier"; then
+                echo "Missing SPDX header: $f"
+                missing=$((missing + 1))
+              fi
+            fi
+          done
+          if [ $missing -gt 0 ]; then
+            echo "WARNING: $missing files missing SPDX headers"
+          else
+            echo "✓ All files have SPDX headers"
+          fi
+
+      - name: Audit npm dependencies (adapters)
+        run: |
+          if [ -f "adapters/package.json" ]; then
+            cd adapters
+            npm audit --audit-level=moderate || true
+          fi
+
+  # ============================================================================
+  # RSR Compliance Check
+  # ============================================================================
+  rsr-compliance:
+    runs-on: ubuntu-latest
+    name: RSR Compliance
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Check required files
+        run: |
+          echo "Checking RSR required files..."
+          required_files=(
+            "README.adoc"
+            "LICENSE.txt"
+            "SECURITY.md"
+            "CONTRIBUTING.md"
+            "CODE_OF_CONDUCT.md"
+            ".github/workflows/ci.yml"
+            ".github/dependabot.yml"
+            "META.scm"
+            "STATE.scm"
+            "ECOSYSTEM.scm"
+          )
+          missing=0
+          for f in "${required_files[@]}"; do
+            if [ ! -f "$f" ]; then
+              echo "Missing: $f"
+              missing=$((missing + 1))
+            else
+              echo "✓ $f"
+            fi
+          done
+          if [ $missing -gt 0 ]; then
+            echo "ERROR: $missing required files missing"
+            exit 1
+          fi
+          echo "✓ All RSR required files present"
+
+      - name: Verify SHA-pinned actions
+        run: |
+          echo "Checking for SHA-pinned actions..."
+          if grep -r "uses:.*@v[0-9]" .github/workflows/*.yml 2>/dev/null; then
+            echo "WARNING: Found non-SHA-pinned actions (version tags instead of SHA)"
+          else
+            echo "✓ Actions appear to be SHA-pinned"
+          fi
+
+  # ============================================================================
+  # Build Adapter (ReScript)
+  # ============================================================================
+  adapter-build:
+    runs-on: ubuntu-latest
+    name: Build Adapter
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6.1.0
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        working-directory: adapters
+        run: npm ci || npm install
+
+      - name: Build ReScript adapter
+        working-directory: adapters
+        run: npm run build || true

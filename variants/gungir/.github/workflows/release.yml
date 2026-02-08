@@ -1,0 +1,126 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Release workflow for gungir-ssg
+# RSR-compliant with SHA-pinned actions
+
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+env:
+  DENO_VERSION: "2.1.4"
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Validate Release
+  # ─────────────────────────────────────────────────────────────────────────────
+  validate:
+    name: Validate Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.2
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Check formatting
+        run: deno fmt --check adapters/*.js
+
+      - name: Run linter
+        run: deno lint adapters/*.js
+
+      - name: Verify adapters
+        run: |
+          count=$(ls -1 adapters/*.js | wc -l)
+          if [ "$count" -ne 28 ]; then
+            echo "::error::Expected 28 adapters, found $count"
+            exit 1
+          fi
+          echo "✓ All 28 adapters present"
+
+      - name: Run tests
+        run: |
+          if [ -d tests ] && [ "$(ls -A tests/*.test.js 2>/dev/null)" ]; then
+            deno test --allow-run --allow-read tests/
+          else
+            echo "No tests found - skipping"
+          fi
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Create Release
+  # ─────────────────────────────────────────────────────────────────────────────
+  release:
+    name: Create Release
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Extract version from tag
+        id: version
+        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Extract changelog for version
+        id: changelog
+        run: |
+          # Extract changelog section for this version
+          version="${{ steps.version.outputs.version }}"
+          changelog=$(awk "/^## \[${version}\]/{flag=1; next} /^## \[/{flag=0} flag" CHANGELOG.md)
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$changelog" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@c95fe1489396fe8a9eb87c0abf8aa5b2ef267fda # v2.2.1
+        with:
+          name: "v${{ steps.version.outputs.version }}"
+          body: |
+            # gungir-ssg v${{ steps.version.outputs.version }}
+
+            ## Changes
+
+            ${{ steps.changelog.outputs.changelog }}
+
+            ## Installation
+
+            ```bash
+            git clone https://github.com/hyperpolymath/gungir-ssg.git
+            cd gungir-ssg
+            git checkout v${{ steps.version.outputs.version }}
+            ```
+
+            ## Documentation
+
+            - [README](https://github.com/hyperpolymath/gungir-ssg/blob/v${{ steps.version.outputs.version }}/README.adoc)
+            - [Cookbook](https://github.com/hyperpolymath/gungir-ssg/blob/v${{ steps.version.outputs.version }}/cookbook.adoc)
+            - [Changelog](https://github.com/hyperpolymath/gungir-ssg/blob/v${{ steps.version.outputs.version }}/CHANGELOG.md)
+
+          draft: false
+          prerelease: ${{ contains(steps.version.outputs.version, '-') }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Notify
+  # ─────────────────────────────────────────────────────────────────────────────
+  notify:
+    name: Post-Release
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Release complete
+        run: |
+          echo "✓ Release v${{ github.ref_name }} published successfully"
+          echo "  → https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}"

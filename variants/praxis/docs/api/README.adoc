@@ -1,0 +1,291 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+= doit-ssg API Reference
+:toc: left
+:toclevels: 3
+:sectnums:
+
+API documentation for doit-ssg adapters.
+
+== Adapter Interface
+
+All adapters must implement the following interface:
+
+=== Exports
+
+[cols="1,1,2"]
+|===
+|Export |Type |Description
+
+|`name`
+|`string`
+|Human-readable name of the SSG
+
+|`language`
+|`string`
+|Programming language of the SSG
+
+|`description`
+|`string`
+|Brief description of the SSG
+
+|`connect`
+|`async function`
+|Initialize connection to SSG binary
+
+|`disconnect`
+|`async function`
+|Clean up resources
+
+|`isConnected`
+|`function`
+|Check if SSG is available
+
+|`tools`
+|`Tool[]`
+|Array of available tools
+|===
+
+=== Tool Interface
+
+Each tool in the `tools` array must have:
+
+[source,typescript]
+----
+interface Tool {
+  name: string;           // Tool identifier (e.g., "zola_build")
+  description: string;    // What the tool does
+  inputSchema: JSONSchema; // JSON Schema for input validation
+  execute: (params: object) => Promise<Result>;
+}
+
+interface Result {
+  success: boolean;
+  stdout: string;
+  stderr: string;
+  code: number;
+}
+----
+
+== Common Tools
+
+Most adapters provide these standard tools:
+
+=== Init Tool
+
+Initialize a new site.
+
+[source,json]
+----
+{
+  "name": "{ssg}_init",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "path": { "type": "string", "description": "Path for new site" },
+      "force": { "type": "boolean", "description": "Overwrite existing" }
+    },
+    "required": ["path"]
+  }
+}
+----
+
+=== Build Tool
+
+Build the site to static files.
+
+[source,json]
+----
+{
+  "name": "{ssg}_build",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "path": { "type": "string", "description": "Site root path" },
+      "outputDir": { "type": "string", "description": "Output directory" },
+      "drafts": { "type": "boolean", "description": "Include drafts" }
+    }
+  }
+}
+----
+
+=== Serve Tool
+
+Start development server.
+
+[source,json]
+----
+{
+  "name": "{ssg}_serve",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "path": { "type": "string", "description": "Site root path" },
+      "port": { "type": "number", "description": "Port number" },
+      "drafts": { "type": "boolean", "description": "Include drafts" }
+    }
+  }
+}
+----
+
+=== Version Tool
+
+Get SSG version information.
+
+[source,json]
+----
+{
+  "name": "{ssg}_version",
+  "inputSchema": {
+    "type": "object",
+    "properties": {}
+  }
+}
+----
+
+== Adapter Examples
+
+=== Zola Adapter
+
+[source,javascript]
+----
+import * as zola from "./adapters/zola.js";
+
+// Check if Zola is available
+const connected = await zola.connect();
+console.log(`Zola connected: ${connected}`);
+
+// Build a site
+const result = await zola.tools
+  .find(t => t.name === "zola_build")
+  .execute({ path: "./my-site" });
+
+console.log(result.success ? "Build succeeded" : "Build failed");
+
+// Cleanup
+await zola.disconnect();
+----
+
+=== Hakyll Adapter
+
+[source,javascript]
+----
+import * as hakyll from "./adapters/hakyll.js";
+
+// Check if Hakyll is available
+const connected = await hakyll.connect();
+console.log(`Hakyll connected: ${connected}`);
+
+// Build a site
+const result = await hakyll.tools
+  .find(t => t.name === "hakyll_build")
+  .execute({ path: "./my-site", clean: true });
+
+console.log(result.success ? "Build succeeded" : "Build failed");
+----
+
+== Error Handling
+
+All tool executions return a `Result` object:
+
+[source,javascript]
+----
+const result = await tool.execute(params);
+
+if (!result.success) {
+  console.error(`Error (code ${result.code}): ${result.stderr}`);
+} else {
+  console.log(result.stdout);
+}
+----
+
+Common error codes:
+
+[cols="1,2"]
+|===
+|Code |Meaning
+
+|0
+|Success
+
+|1
+|General error
+
+|127
+|Command not found (SSG not installed)
+
+|126
+|Permission denied
+|===
+
+== Testing Adapters
+
+Run adapter tests:
+
+[source,bash]
+----
+# Test all adapters
+deno test tests/adapters/
+
+# Test specific adapter
+deno test tests/adapters/ --filter "zola"
+----
+
+== Adding New Adapters
+
+See link:../../CONTRIBUTING.md[CONTRIBUTING.md] for guidelines on adding new adapters.
+
+Template:
+
+[source,javascript]
+----
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+
+export const name = "NewSSG";
+export const language = "Language";
+export const description = "Description of the SSG";
+
+let connected = false;
+let binaryPath = "newssg";
+
+async function runCommand(args, cwd = null) {
+  const cmd = new Deno.Command(binaryPath, {
+    args,
+    cwd: cwd || Deno.cwd(),
+    stdout: "piped",
+    stderr: "piped",
+  });
+  const output = await cmd.output();
+  const decoder = new TextDecoder();
+  return {
+    success: output.success,
+    stdout: decoder.decode(output.stdout),
+    stderr: decoder.decode(output.stderr),
+    code: output.code,
+  };
+}
+
+export async function connect() {
+  try {
+    const result = await runCommand(["--version"]);
+    connected = result.success;
+    return connected;
+  } catch {
+    connected = false;
+    return false;
+  }
+}
+
+export async function disconnect() {
+  connected = false;
+}
+
+export function isConnected() {
+  return connected;
+}
+
+export const tools = [
+  // Add tools here
+];
+----

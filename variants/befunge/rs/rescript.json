@@ -1,0 +1,12 @@
+{
+  "name": "befunge-ssg-rs-adapter",
+  "sources": [
+    { "dir": "src", "subdirs": true }
+  ],
+  "package-specs": {
+    "module": "esmodule",
+    "in-source": false
+  },
+  "suffix": ".js",
+  "bs-dependencies": []
+}

@@ -1,0 +1,14 @@
+{
+  "name": "hackenbush-ssg",
+  "version": "1.0.0",
+  "exports": "./runtime/Host.res.js",
+  "tasks": {
+    "build": "cd runtime && npx rescript && cd ../tests && npx rescript",
+    "run": "deno run --allow-read --allow-write runtime/Host.res.js",
+    "evolve": "deno run --allow-read --allow-write runtime/Host.res.js evolve",
+    "test": "deno test --allow-read --allow-write tests/*.res.js",
+    "lint": "deno lint",
+    "fmt": "deno fmt",
+    "check-policy": "deno run --allow-read scripts/check-language-policy.js"
+  }
+}

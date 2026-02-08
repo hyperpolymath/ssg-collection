@@ -1,0 +1,13 @@
+# wagasm-ssg tool versions (asdf)
+# https://asdf-vm.com/
+
+# Deno runtime for host.ts
+deno 2.1.4
+
+# Just command runner
+just 1.38.0
+
+# Note: WABT (wat2wasm) should be installed via system package manager
+# Ubuntu: apt install wabt
+# macOS: brew install wabt
+# Or download from: https://github.com/WebAssembly/wabt/releases

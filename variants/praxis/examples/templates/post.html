@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<article class="post">
+    <header>
+        <h1>{{ title }}</h1>
+        <time datetime="{{ date | date: '%Y-%m-%d' }}">
+            {{ date | date: '%B %d, %Y' }}
+        </time>
+        {% if tags %}
+        <ul class="tags">
+            {% for tag in tags %}
+            <li><a href="/tags/{{ tag }}">{{ tag }}</a></li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </header>
+
+    <div class="post-content">
+        {{ content }}
+    </div>
+
+    {% if author %}
+    <footer class="post-author">
+        <p>Written by {{ author }}</p>
+    </footer>
+    {% endif %}
+</article>
+{% endblock %}

@@ -1,0 +1,16 @@
+{
+  "name": "@hyperpolymath/eclipse-ssg",
+  "version": "0.2.0",
+  "description": "Actor-model static site generator in Pony with poly-ssg-mcp satellite integration",
+  "license": "AGPL-3.0-or-later",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "rescript": "^11.0.0"
+  },
+  "scripts": {
+    "res:build": "rescript build -with-deps",
+    "res:clean": "rescript clean",
+    "res:watch": "rescript build -w"
+  }
+}

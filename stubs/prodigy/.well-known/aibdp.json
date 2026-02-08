@@ -1,0 +1,70 @@
+{
+  "aibdp_version": "0.2",
+  "canonical_uri": "https://github.com/hyperpolymath/prodigy-ssg/.well-known/aibdp.json",
+  "contact": "mailto:ai-consent@hyperpolymath.org",
+  "expires": "2026-12-16T23:59:59Z",
+  "policy_uri": "https://github.com/hyperpolymath/prodigy-ssg/blob/main/.well-known/ai.txt",
+
+  "policies": {
+    "training": {
+      "status": "conditional",
+      "conditions": [
+        "Attribution required to 'hyperpolymath/prodigy-ssg'",
+        "Respect AGPL-3.0-or-later license terms",
+        "Preserve copyleft requirements in derivatives"
+      ],
+      "scope": ["/src/**", "/lib/**"]
+    },
+    "indexing": {
+      "status": "allowed",
+      "scope": "all"
+    },
+    "summarization": {
+      "status": "allowed",
+      "scope": "all"
+    },
+    "question_answering": {
+      "status": "allowed",
+      "conditions": ["Cite source with repository URL"]
+    },
+    "generation": {
+      "status": "conditional",
+      "conditions": ["Attribution required", "AGPL-3.0 license applies to derivatives"]
+    },
+    "fine_tuning": {
+      "status": "encouraged",
+      "scope": "all",
+      "purpose": ["Static site generator tools", "Language-specific development assistants"]
+    },
+    "embedding": {
+      "status": "allowed"
+    },
+    "commercial_training": {
+      "status": "conditional",
+      "conditions": ["Attribution required", "Acknowledge AGPL-3.0 copyleft"]
+    }
+  },
+
+  "scope": {
+    "applies_to": ["LLM training", "Search indexing", "RAG systems", "Code completion"]
+  },
+
+  "special_provisions": {
+    "academic_research": {"status": "unrestricted"},
+    "educational_use": {"status": "encouraged"}
+  },
+
+  "enforcement": {
+    "mechanism": "http_430",
+    "preferred_resolution": "dialogue"
+  },
+
+  "metadata": {
+    "created": "2025-12-16",
+    "last_modified": "2025-12-16",
+    "author": "hyperpolymath",
+    "project": "prodigy-ssg",
+    "repository": "https://github.com/hyperpolymath/prodigy-ssg",
+    "license": "AGPL-3.0-or-later"
+  }
+}

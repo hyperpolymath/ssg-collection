@@ -1,0 +1,356 @@
+; SPDX-License-Identifier: AGPL-3.0-or-later
+; milk-ssg - A static site generator written in COW
+; Run with a COW interpreter: https://bigzaphod.github.io/COW/
+;
+; COW Commands:
+;   moo  - skip next if register = 0
+;   mOo  - memory pointer back
+;   moO  - memory pointer forward
+;   mOO  - execute memory as instruction
+;   Moo  - if reg=0 read char, else print ASCII
+;   MOo  - decrement memory
+;   MoO  - increment memory
+;   MOO  - start/end loop
+;   OOO  - set memory to 0
+;   MMM  - copy between register and memory
+;   OOM  - print memory as integer
+;   oom  - read integer to memory
+;
+; This program outputs: <!DOCTYPE html><html><head><title>Milk SSG</title></head><body><h1>Moo!</h1></body></html>
+
+; Initialize - set memory[0] to 60 ('<')
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+
+; Print '<' (60)
+MMM Moo
+
+; Adjust to '!' (33) - subtract 27
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo
+MMM Moo
+
+; Adjust to 'D' (68) - add 35
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO
+MMM Moo
+
+; 'O' (79) - add 11
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MMM Moo
+
+; 'C' (67) - subtract 12
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MMM Moo
+
+; 'T' (84) - add 17
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO
+MMM Moo
+
+; 'Y' (89) - add 5
+MoO MoO MoO MoO MoO
+MMM Moo
+
+; 'P' (80) - subtract 9
+MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MMM Moo
+
+; 'E' (69) - subtract 11
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MMM Moo
+
+; ' ' (32) - subtract 37
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo
+MMM Moo
+
+; 'h' (104) - add 72
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO
+MMM Moo
+
+; 't' (116) - add 12
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MMM Moo
+
+; 'm' (109) - subtract 7
+MOo MOo MOo MOo MOo MOo MOo
+MMM Moo
+
+; 'l' (108) - subtract 1
+MOo
+MMM Moo
+
+; '>' (62) - subtract 46
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo
+MMM Moo
+
+; Newline (10) - subtract 52
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo
+MMM Moo
+
+; '<' (60) - add 50
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MMM Moo
+
+; 'h' (104) - add 44
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO
+MMM Moo
+
+; 't' (116) - add 12
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MMM Moo
+
+; 'm' (109) - subtract 7
+MOo MOo MOo MOo MOo MOo MOo
+MMM Moo
+
+; 'l' (108) - subtract 1
+MOo
+MMM Moo
+
+; '>' (62) - subtract 46
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo
+MMM Moo
+
+; '<' (60) - subtract 2
+MOo MOo
+MMM Moo
+
+; 'b' (98) - add 38
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO
+MMM Moo
+
+; 'o' (111) - add 13
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MMM Moo
+
+; 'd' (100) - subtract 11
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MMM Moo
+
+; 'y' (121) - add 21
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO
+MMM Moo
+
+; '>' (62) - subtract 59
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MMM Moo
+
+; '<' (60) - subtract 2
+MOo MOo
+MMM Moo
+
+; 'h' (104) - add 44
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO
+MMM Moo
+
+; '1' (49) - subtract 55
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo
+MMM Moo
+
+; '>' (62) - add 13
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MMM Moo
+
+; 'M' (77) - add 15
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO
+MMM Moo
+
+; 'o' (111) - add 34
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO
+MMM Moo
+
+; 'o' (111) - same
+MMM Moo
+
+; '!' (33) - subtract 78
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo
+MMM Moo
+
+; '<' (60) - add 27
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO
+MMM Moo
+
+; '/' (47) - subtract 13
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MMM Moo
+
+; 'h' (104) - add 57
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO
+MMM Moo
+
+; '1' (49) - subtract 55
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo
+MMM Moo
+
+; '>' (62) - add 13
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MMM Moo
+
+; '<' (60) - subtract 2
+MOo MOo
+MMM Moo
+
+; '/' (47) - subtract 13
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MMM Moo
+
+; 'b' (98) - add 51
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO
+MMM Moo
+
+; 'o' (111) - add 13
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MMM Moo
+
+; 'd' (100) - subtract 11
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MMM Moo
+
+; 'y' (121) - add 21
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO
+MMM Moo
+
+; '>' (62) - subtract 59
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MMM Moo
+
+; '<' (60) - subtract 2
+MOo MOo
+MMM Moo
+
+; '/' (47) - subtract 13
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MMM Moo
+
+; 'h' (104) - add 57
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MoO MoO MoO MoO MoO MoO MoO
+MMM Moo
+
+; 't' (116) - add 12
+MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO
+MMM Moo
+
+; 'm' (109) - subtract 7
+MOo MOo MOo MOo MOo MOo MOo
+MMM Moo
+
+; 'l' (108) - subtract 1
+MOo
+MMM Moo
+
+; '>' (62) - subtract 46
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo
+MMM Moo
+
+; Newline
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo MOo MOo MOo MOo MOo MOo MOo MOo
+MOo MOo
+MMM Moo
+
+; End - output: <!DOCTYPE html><html><body><h1>Moo!</h1></body></html>

@@ -1,0 +1,59 @@
+= sparkle-ssg
+
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+:toc:
+:toc-title: Table of Contents
+:icons: font
+
+**Type-safe, concurrent static site generation in Gleam.**
+"Sparkle" — The brilliant clarity of a type-safe BEAM. A generator that brings functional elegance and fault tolerance to your content pipeline.
+
+== Who Is This For?
+* **Erlang/Elixir developers** who want the static typing of ML on the BEAM.
+* **Systems Architects** requiring high-concurrency builds with zero runtime exceptions.
+* **Teams** seeking a modern, user-friendly functional engine that compiles to Erlang, JavaScript, or WASM.
+* **Accessibility Advocates** requiring a concurrent engine that treats BSL/ASL metadata as first-class types.
+
+== Why sparkle-ssg?
+
+=== Type-Safe Concurrency
+Gleam’s type system ensures that data flowing through your concurrent build processes is always valid. `sparkle-ssg` catches template logic errors at compile time, ensuring that the "actor" processes never crash due to unexpected data shapes.
+
+=== Fault-Tolerant Pipelines
+Built on the Erlang VM (BEAM), `sparkle-ssg` handles massive sites by distributing rendering tasks across light-weight processes. If a single page render fails, the supervisor restarts the task without interrupting the rest of the build.
+
+=== Immutable Content Flows
+Content transformations are pure functional pipelines. By leveraging Gleam's immutable data structures, `sparkle-ssg` guarantees that your site state is never corrupted by side effects during the synthesis process.
+
+=== Multi-Target Emission
+`sparkle-ssg` can compile to Erlang for high-performance server-side builds or to JavaScript/WASM for client-side or **Edge tech** execution, offering unparalleled deployment flexibility.
+
+== Quick Start
+[source,oil]
+----
+# Install Gleam and Erlang via asdf
+just setup
+
+# Build the site with BEAM-level concurrency
+just build
+
+# Generate a WASM target for Edge deployment
+just build-wasm
+----
+
+== Features
+* **Parallel Synthesis** - Native BEAM process management for multi-core scaling.
+* **Strict Type Inference** - No more runtime errors in your template logic.
+* **Podman-First** - Standard containerised toolchain for BEAM-based logic.
+* **Accessibility** - Integrated support for **BSL**, **GSL**, **ASL**, and **Makaton**.
+
+== Requirements
+* **Gleam (1.4.0 or later)**
+* **Erlang/OTP 26+**
+* **Just** (Orchestrator)
+
+== Part of poly-ssg
+`sparkle-ssg` is the type-safe concurrent member of the **poly-ssg** family.
+
+== License
+PMPL-1.0-or-later

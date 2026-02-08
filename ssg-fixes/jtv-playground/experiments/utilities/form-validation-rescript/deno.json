@@ -1,0 +1,14 @@
+{
+  "name": "form-validation-rescript",
+  "version": "1.0.0",
+  "tasks": {
+    "build": "rescript build",
+    "clean": "rescript clean",
+    "test": "deno test tests/",
+    "demo": "deno run src/Demo.res.js"
+  },
+  "imports": {
+    "@rescript/core": "npm:@rescript/core@^1.0.0",
+    "rescript": "npm:rescript@^11.0.0"
+  }
+}

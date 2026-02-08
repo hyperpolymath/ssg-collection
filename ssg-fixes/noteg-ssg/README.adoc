@@ -1,0 +1,153 @@
+= noteg-ssg
+:toc: macro
+:toc-title: Contents
+:toclevels: 2
+:icons: font
+:source-highlighter: highlight.js
+
+image:https://img.shields.io/badge/License-MPL_2.0-blue.svg[MPL-2.0-or-later,link="https://opensource.org/licenses/MPL-2.0"]
+
+Static site generator in Ada.
+
+____
+Let contracts bind. Let ranges guard. Let pages render.
+____
+
+toc::[]
+
+== Who Is This For?
+
+* **Safety-conscious engineers** who value compiler-proven correctness
+* **Ada enthusiasts** seeking modern web tooling in their language of choice
+* **Systems programmers** who want strong typing for their content pipelines
+* **Documentation teams** requiring mission-critical reliability
+
+== Why noteg-ssg?
+
+Ada brings unique strengths to static site generation:
+
+[cols="1,2"]
+|===
+|Feature |Benefit
+
+|**Strong Static Typing**
+|Content schemas enforced at compile time
+
+|**Contract-Based Design**
+|Pre/post conditions guard your build pipeline
+
+|**Range Types**
+|Invalid states become unrepresentable
+
+|**Tasking Model**
+|Parallel rendering with formal concurrency guarantees
+
+|**SPARK Subset**
+|Provably correct transformations where needed
+|===
+
+No null. No buffer overflows. No silent failures. The compiler proves it.
+
+== Quick Start
+
+[source,ada]
+----
+with Noteg.Site;
+with Noteg.Markdown;
+
+procedure Build is
+   Site : Noteg.Site.Instance := Noteg.Site.Create
+     (Source => "content/",
+      Output => "_site/");
+begin
+   Site.Add_Processor (Noteg.Markdown.Processor);
+   Site.Build;
+end Build;
+----
+
+== Architecture
+
+[source]
+----
+                    ┌─────────────┐
+                    │   Watcher   │  (filesystem events)
+                    └──────┬──────┘
+                           │
+                    ┌──────▼──────┐
+                    │   Parser    │  (content → AST)
+                    └──────┬──────┘
+                           │
+              ┌────────────┼────────────┐
+              │            │            │
+       ┌──────▼──────┐ ┌───▼───┐ ┌──────▼──────┐
+       │  Markdown   │ │ AsciiDoc │ │  Template  │
+       └──────┬──────┘ └───┬───┘ └──────┬──────┘
+              │            │            │
+              └────────────┼────────────┘
+                           │
+                    ┌──────▼──────┐
+                    │  Renderer   │  (AST → HTML)
+                    └──────┬──────┘
+                           │
+                    ┌──────▼──────┐
+                    │ FileEmitter │  (write output)
+                    └─────────────┘
+----
+
+Each stage operates under Ada's contract model—preconditions validate input, postconditions guarantee output.
+
+== Features
+
+* **Markdown & AsciiDoc** - First-class support for technical documentation
+* **Template Engine** - Type-safe templating with compile-time validation
+* **Incremental Builds** - Only rebuild what changed
+* **Live Reload** - Development server with instant feedback
+* **Asset Pipeline** - CSS/JS processing with integrity verification
+
+== Ada Primer
+
+For those new to Ada's safety model:
+
+[cols="1,2"]
+|===
+|Concept |Purpose
+
+|`subtype Positive is Integer range 1 .. Integer'Last`
+|Range types eliminate invalid values
+
+|`Pre => Source /= null`
+|Preconditions enforce caller obligations
+
+|`Post => Result.Is_Valid`
+|Postconditions guarantee results
+
+|`pragma SPARK_Mode`
+|Enable formal verification subset
+|===
+
+== Ecosystem
+
+noteg-ssg integrates with the https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp] hub via MCP adapters written in ReScript.
+
+Related projects:
+
+* https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp] - Unified MCP server for static site generators
+* https://github.com/hyperpolymath/poly-container-mcp[poly-container-mcp] - Container orchestration adapters
+* https://github.com/hyperpolymath/poly-iac-mcp[poly-iac-mcp] - Infrastructure as code adapters
+
+== Requirements
+
+* GNAT (GNU Ada compiler) or other Ada 2012+ compiler
+* Deno (for MCP adapter integration)
+
+== License
+
+Dual-licensed under MIT and AGPL-3.0-or-later. See link:LICENSE.txt[LICENSE.txt].
+
+== Contributing
+
+See link:CONTRIBUTING.md[CONTRIBUTING.md] for guidelines.
+
+---
+
+_Part of the https://github.com/hyperpolymath[hyperpolymath] ecosystem_

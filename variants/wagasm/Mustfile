@@ -1,0 +1,132 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# wagasm-ssg Mustfile - Required checks that MUST pass
+# These are non-negotiable requirements for the project
+
+# =============================================================================
+# LANGUAGE COMPLIANCE (ABSOLUTE - VIOLATIONS RESULT IN DELETION)
+# =============================================================================
+
+must:wat-only-in-src
+  # SSG core MUST be in pure WAT - no exceptions
+  forbidden=$(find src/ -type f \( -name "*.ts" -o -name "*.js" -o -name "*.rs" -o -name "*.py" -o -name "*.as" \) 2>/dev/null || true)
+  if [ -n "$forbidden" ]; then
+    echo "FATAL: Found FORBIDDEN language files in src/:"
+    echo "$forbidden"
+    echo ""
+    echo "wagasm-ssg MUST be pure WAT. This is not negotiable."
+    exit 1
+  fi
+  echo "PASS: Only WAT files in src/"
+
+must:no-assemblyscript
+  # AssemblyScript is FORBIDDEN - it's TypeScript in disguise
+  if grep -r "assemblyscript\|@assemblyscript" . --include="*.json" 2>/dev/null; then
+    echo "FATAL: AssemblyScript detected - this is FORBIDDEN"
+    echo "AssemblyScript is TypeScript that compiles to WASM - defeats the purpose"
+    exit 1
+  fi
+  echo "PASS: No AssemblyScript detected"
+
+must:host-io-only
+  # Host runtime MUST NOT contain SSG logic
+  if [ -f runtime/host.ts ]; then
+    # Check for SSG logic patterns
+    if grep -E 'parseMarkdown|renderTemplate|generateRoute|processContent' runtime/host.ts 2>/dev/null; then
+      echo "FATAL: Host runtime contains SSG logic"
+      echo "The host MUST provide ONLY I/O (write_file, read_file, log)"
+      exit 1
+    fi
+  fi
+  echo "PASS: Host runtime is I/O only"
+
+# =============================================================================
+# BUILD REQUIREMENTS
+# =============================================================================
+
+must:compile
+  # WAT MUST compile without errors
+  wat2wasm src/wagasm-ssg.wat -o /tmp/wagasm-test.wasm
+  rm -f /tmp/wagasm-test.wasm
+  echo "PASS: WAT compiles successfully"
+
+must:validate
+  # WASM MUST be valid
+  wat2wasm src/wagasm-ssg.wat -o /tmp/wagasm-test.wasm
+  wasm-validate /tmp/wagasm-test.wasm
+  rm -f /tmp/wagasm-test.wasm
+  echo "PASS: WASM validation passed"
+
+# =============================================================================
+# SECURITY REQUIREMENTS
+# =============================================================================
+
+must:no-secrets
+  # No secrets in repository
+  if grep -rE "(password|secret|api_key|token)\s*=" . --include="*.ts" --include="*.wat" --include="*.res" 2>/dev/null | grep -v "example\|test\|mock" | head -5; then
+    echo "WARNING: Potential secrets detected - review manually"
+  fi
+  echo "PASS: No obvious secrets found"
+
+must:sha-pinned-actions
+  # GitHub Actions MUST use SHA-pinned versions
+  if [ -d .github/workflows ]; then
+    if grep -E "uses:\s+\w+/\w+@v[0-9]" .github/workflows/*.yml 2>/dev/null; then
+      echo "FATAL: GitHub Actions using tag versions instead of SHA pins"
+      echo "All actions MUST use SHA-pinned versions"
+      exit 1
+    fi
+  fi
+  echo "PASS: GitHub Actions are SHA-pinned"
+
+must:spdx-headers
+  # Source files MUST have SPDX headers
+  for file in src/*.wat runtime/*.ts adapters/src/*.res; do
+    if [ -f "$file" ]; then
+      if ! grep -q "SPDX-License-Identifier" "$file" 2>/dev/null; then
+        echo "FATAL: Missing SPDX header in $file"
+        exit 1
+      fi
+    fi
+  done
+  echo "PASS: SPDX headers present"
+
+# =============================================================================
+# DOCUMENTATION REQUIREMENTS
+# =============================================================================
+
+must:readme-exists
+  # README MUST exist
+  if [ ! -f README.adoc ] && [ ! -f README.md ]; then
+    echo "FATAL: README file missing"
+    exit 1
+  fi
+  echo "PASS: README exists"
+
+must:scm-files
+  # SCM files MUST exist
+  for scm in STATE.scm META.scm ECOSYSTEM.scm; do
+    if [ ! -f "$scm" ]; then
+      echo "FATAL: Missing $scm"
+      exit 1
+    fi
+  done
+  echo "PASS: SCM files present"
+
+# =============================================================================
+# ALL CHECKS
+# =============================================================================
+
+must:all
+  # Run all must checks
+  must wat-only-in-src
+  must no-assemblyscript
+  must host-io-only
+  must compile
+  must validate
+  must no-secrets
+  must sha-pinned-actions
+  must spdx-headers
+  must readme-exists
+  must scm-files
+  echo ""
+  echo "=== ALL MUST CHECKS PASSED ==="

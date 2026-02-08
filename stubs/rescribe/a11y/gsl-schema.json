@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/hyperpolymath/rescribe-ssg/a11y/gsl-schema.json",
+  "title": "German Sign Language (DGS) Metadata Schema",
+  "description": "Schema for Deutsche Gebärdensprache content in rescribe-ssg",
+  "type": "object",
+  "required": ["version", "language"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "language": {
+      "type": "string",
+      "const": "gsl",
+      "description": "German Sign Language identifier (DGS)"
+    },
+    "iso639_3": {
+      "type": "string",
+      "const": "gsg",
+      "description": "ISO 639-3 code for DGS"
+    },
+    "content": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/gslContent"
+      }
+    },
+    "glossary": {
+      "type": "object",
+      "description": "Gebärden glossary mappings",
+      "additionalProperties": {
+        "$ref": "#/$defs/glossaryEntry"
+      }
+    },
+    "notation": {
+      "type": "string",
+      "enum": ["HamNoSys", "SignWriting", "none"],
+      "default": "none",
+      "description": "Sign notation system used"
+    }
+  },
+  "$defs": {
+    "gslContent": {
+      "type": "object",
+      "required": ["id", "type"],
+      "properties": {
+        "id": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": ["video", "gif", "avatar", "hamnosys"]
+        },
+        "src": { "type": "string", "format": "uri" },
+        "transcript": { "type": "string" },
+        "duration": { "type": "number" },
+        "untertitel": {
+          "type": "boolean",
+          "default": true,
+          "description": "German subtitles"
+        }
+      }
+    },
+    "glossaryEntry": {
+      "type": "object",
+      "properties": {
+        "term": { "type": "string" },
+        "gebärde": { "type": "string" },
+        "signVideo": { "type": "string", "format": "uri" },
+        "hamnosys": { "type": "string" },
+        "beschreibung": { "type": "string" }
+      }
+    }
+  }
+}

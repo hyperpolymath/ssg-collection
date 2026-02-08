@@ -1,0 +1,77 @@
+= hackenbush-ssg Pattern Library
+:toc:
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+
+This directory contains the Game of Life pattern components used by hackenbush-ssg.
+
+== Pattern Files
+
+[cols="1,2,1"]
+|===
+|File |Description |Status
+
+|`glider-gun.rle`
+|Gosper Glider Gun - generates glider stream every 30 generations
+|Complete
+
+|`logic-gates.rle`
+|AND, OR, NOT, XOR gates using glider collisions
+|Placeholder
+
+|`memory-cell.rle`
+|Block-based memory storage using still life patterns
+|Placeholder
+
+|`signal-wire.rle`
+|Glider stream propagation for data transmission
+|Complete
+
+|`eater.rle`
+|Glider consumption without debris
+|Complete
+|===
+
+== How Patterns Work
+
+=== Gliders as Signals
+
+Gliders are the fundamental data carriers in Life patterns:
+
+* Travel at c/4 (1 cell per 4 generations)
+* Move diagonally
+* Period 4 oscillation
+* Can be created, destroyed, and detected
+
+=== Logic Gates
+
+Logic operations are implemented through glider collisions:
+
+* **AND Gate**: Two glider streams collide; output only when both present
+* **OR Gate**: Parallel paths merge; output when either stream present
+* **NOT Gate**: Continuous gun + eater; input glider interrupts output
+* **XOR Gate**: Complex collision pattern for exclusive or
+
+=== Memory
+
+Memory cells use still life patterns (blocks):
+
+* Block present = 1
+* Block absent = 0
+* SET: Specific glider creates block
+* CLEAR: Specific glider destroys block
+* READ: Detection glider stream
+
+== Contributing New Patterns
+
+1. Design pattern in Golly or similar tool
+2. Export as RLE format
+3. Add to this directory
+4. Document in this README
+5. Add tests if applicable
+
+== Resources
+
+* https://conwaylife.com/[ConwayLife.com] - Pattern database
+* https://golly.sourceforge.io/[Golly] - Life simulator
+* https://copy.sh/life/[Copy.sh Life] - Web-based simulator

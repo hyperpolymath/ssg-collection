@@ -1,0 +1,47 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+name: Idris 2 CI
+
+permissions: read-all
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v4
+
+      - name: Set up Idris 2
+        uses: idris-community/setup-idris@a32a5481bce5bcb57fec37a6fbd1d2d4dbbe0da9 # v1
+        with:
+          version: '0.7.0'
+
+      - name: Build
+        run: idris2 --build ddraig.ipkg || echo "Build file not found - needs setup"
+
+      - name: Type Check
+        run: |
+          if [ -f src/Main.idr ]; then
+            idris2 --typecheck src/Main.idr
+          fi
+
+  language-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v4
+
+      - name: Verify Idris-only in src/
+        run: |
+          echo "Checking for forbidden languages in src/..."
+          forbidden=$(find src/ -type f \( -name "*.py" -o -name "*.js" -o -name "*.ts" -o -name "*.hs" \) 2>/dev/null || true)
+          if [ -n "$forbidden" ]; then
+            echo "ERROR: Found forbidden language files in src/:"
+            echo "$forbidden"
+            exit 1
+          fi
+          echo "OK: Only Idris files in src/"

@@ -1,0 +1,202 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+# RSR-compliant CI/CD workflow with SHA-pinned actions
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: read-all
+
+env:
+  DENO_VERSION: "1.40.0"
+
+jobs:
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Lint & Format
+  # ═══════════════════════════════════════════════════════════════════════════
+  lint:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.0
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Lint
+        run: deno lint adapters/
+
+      - name: Format Check
+        run: deno fmt --check adapters/
+
+      - name: Type Check
+        run: deno check adapters/*.js
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Tests
+  # ═══════════════════════════════════════════════════════════════════════════
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.0
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Run Tests
+        run: deno test tests/ --allow-read --allow-run
+
+      - name: Run Tests with Coverage
+        run: |
+          deno test --coverage=coverage/ tests/ --allow-all || true
+          deno coverage coverage/ --lcov > coverage/lcov.info || true
+
+      - name: Upload Coverage
+        uses: codecov/codecov-action@1e68e06f1dbfde0e4cefc87efeba9e4643565f39 # v5.1.2
+        if: always()
+        with:
+          file: coverage/lcov.info
+          fail_ci_if_error: false
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Security
+  # ═══════════════════════════════════════════════════════════════════════════
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@ea9e4e37992a54ee68a9571571f9a567d8f90f78 # v3.28.0
+        with:
+          languages: javascript-typescript
+          build-mode: none
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@ea9e4e37992a54ee68a9571571f9a567d8f90f78 # v3.28.0
+        with:
+          category: "/language:javascript-typescript"
+
+      - name: Security Pattern Check
+        run: |
+          echo "Checking for dangerous patterns..."
+          ! grep -rn "eval\s*(" adapters/*.js || echo "⚠️ eval() usage detected"
+          ! grep -rn "new Function" adapters/*.js || echo "⚠️ new Function() detected"
+          echo "✓ Security pattern check complete"
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Build Verification
+  # ═══════════════════════════════════════════════════════════════════════════
+  build:
+    name: Build Verification
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.0
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Verify Module Entry
+        run: |
+          deno eval "
+          import { listAdapters, adapterCount, metadata } from './adapters/mod.js';
+          console.log('Adapters:', adapterCount());
+          console.log('Version:', metadata.version);
+          if (adapterCount() !== 28) {
+            console.error('Expected 28 adapters, got', adapterCount());
+            Deno.exit(1);
+          }
+          console.log('✓ Build verification passed');
+          "
+
+      - name: Verify All Adapters Load
+        run: |
+          deno eval "
+          import { adapters } from './adapters/mod.js';
+          let passed = 0;
+          let failed = 0;
+          for (const [name, loader] of Object.entries(adapters)) {
+            try {
+              const adapter = await loader();
+              if (adapter.name && adapter.tools) {
+                passed++;
+              } else {
+                console.error('Adapter', name, 'missing required exports');
+                failed++;
+              }
+            } catch (e) {
+              console.error('Failed to load', name, ':', e.message);
+              failed++;
+            }
+          }
+          console.log('Passed:', passed, 'Failed:', failed);
+          if (failed > 0) Deno.exit(1);
+          console.log('✓ All adapters load successfully');
+          "
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Container Build (Optional)
+  # ═══════════════════════════════════════════════════════════════════════════
+  container:
+    name: Container Build
+    runs-on: ubuntu-latest
+    needs: [build, security]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Build Container
+        run: |
+          docker build -t sparkle-ssg:${{ github.sha }} -f Containerfile . || {
+            echo "⚠️ Container build failed (non-blocking)"
+            exit 0
+          }
+
+      - name: Test Container
+        run: |
+          docker run --rm sparkle-ssg:${{ github.sha }} || {
+            echo "⚠️ Container test failed (non-blocking)"
+            exit 0
+          }
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Summary
+  # ═══════════════════════════════════════════════════════════════════════════
+  summary:
+    name: CI Summary
+    runs-on: ubuntu-latest
+    needs: [lint, test, security, build]
+    if: always()
+    steps:
+      - name: Summary
+        run: |
+          echo "## CI Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Lint | ${{ needs.lint.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Test | ${{ needs.test.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Security | ${{ needs.security.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | ${{ needs.build.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY

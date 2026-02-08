@@ -1,0 +1,60 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell
+
+[package]
+name = "wokelang-ssg"
+version = "0.1.0"
+edition = "2021"
+authors = ["Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>"]
+license = "PMPL-1.0-or-later"
+description = "Static site generator for wokelang.org - showcasing the WokeLang programming language"
+repository = "https://github.com/hyperpolymath/wokelang-ssg"
+homepage = "https://wokelang.org"
+keywords = ["static-site-generator", "wokelang", "rust", "ssg"]
+categories = ["command-line-utilities", "web-programming"]
+
+[dependencies]
+# Frontmatter & Markdown
+serde = { version = "1.0", features = ["derive"] }
+serde_yaml = "0.9"
+pulldown-cmark = "0.12"
+gray_matter = "0.2"
+
+# Templating
+tera = "1.20"
+
+# File handling & watching
+notify = "6.1"
+walkdir = "2.5"
+glob = "0.3"
+
+# Asset pipeline
+sha2 = "0.10"
+hex = "0.4"
+
+# CLI
+clap = { version = "4.5", features = ["derive"] }
+anyhow = "1.0"
+thiserror = "1.0"
+
+# HTTP server for live reload
+axum = "0.7"
+tokio = { version = "1.41", features = ["full"] }
+tower-http = { version = "0.6", features = ["fs", "trace"] }
+tower-livereload = "0.9"
+
+# Feed generation
+atom_syndication = "0.12"
+rss = "2.0"
+
+# XML for sitemap
+quick-xml = { version = "0.36", features = ["serialize"] }
+
+# Date/time
+chrono = { version = "0.4", features = ["serde"] }
+
+# Syntax highlighting
+syntect = "5.2"
+
+[dev-dependencies]
+tempfile = "3.13"

@@ -1,0 +1,54 @@
+# Dependabot configuration for poly-ssg
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates
+
+version: 2
+updates:
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    commit-message:
+      prefix: "chore(deps)"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    open-pull-requests-limit: 5
+
+  # OCaml/opam dependencies (rescript-wasm)
+  - package-ecosystem: "npm"
+    directory: "/engines/rescript-wasm"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    commit-message:
+      prefix: "chore(deps)"
+    labels:
+      - "dependencies"
+      - "ocaml"
+    open-pull-requests-limit: 5
+    # Note: Dependabot doesn't natively support opam
+    # Consider using opam-ci or renovate for OCaml deps
+
+  # Forth Estate (if any npm deps added)
+  - package-ecosystem: "npm"
+    directory: "/engines/forth-estate"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore(deps)"
+    labels:
+      - "dependencies"
+    open-pull-requests-limit: 3
+
+  # Root project dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore(deps)"
+    labels:
+      - "dependencies"
+    open-pull-requests-limit: 5

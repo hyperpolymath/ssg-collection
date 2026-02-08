@@ -1,0 +1,8 @@
+{
+  "tasks": {
+    "build": "deno run --allow-read --allow-write ./cli.mjs build",
+    "serve": "deno run --allow-read --allow-net ./cli.mjs serve",
+    "dev": "deno run --allow-read --allow-write --allow-net ./cli.mjs dev",
+    "clean": "rm -rf dist"
+  }
+}

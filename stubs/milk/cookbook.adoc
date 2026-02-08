@@ -1,0 +1,657 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+= milk-ssg Cookbook
+:toc: left
+:toclevels: 3
+:sectnums:
+:source-highlighter: rouge
+:icons: font
+
+A comprehensive guide to commands, recipes, and patterns for milk-ssg development.
+
+== Quick Reference
+
+[cols="1,2,3"]
+|===
+|Tool |Command |Purpose
+
+|just
+|`just build`
+|Build site with COW interpreter
+
+|must
+|`must all`
+|Run all mandatory checks
+
+|cow
+|`cow src/milk-ssg.cow`
+|Execute COW source directly
+
+|npm
+|`cd adapters && npm run build`
+|Build ReScript adapter
+|===
+
+[[cli]]
+== CLI Commands
+
+Complete command-line interface reference for milk-ssg.
+
+=== Core Commands
+
+[source,bash]
+----
+# Build the static site
+just build
+
+# Clean all build artifacts
+just clean
+
+# Rebuild from scratch
+just rebuild
+
+# Start development server
+just dev
+----
+
+=== Testing Commands
+
+[source,bash]
+----
+# Run all tests
+just test
+
+# Run syntax validation only
+just test-syntax
+
+# Run language enforcement check
+just test-language
+
+# Run end-to-end tests
+just test-e2e
+
+# Run complete test suite
+just test-all
+----
+
+=== Adapter Commands
+
+[source,bash]
+----
+# Build ReScript adapter
+just adapter-build
+
+# Watch for changes
+just adapter-watch
+
+# Clean adapter build
+just adapter-clean
+----
+
+=== Security Commands
+
+[source,bash]
+----
+# Run security checks
+just security
+
+# Check for secrets
+must no-secrets
+
+# Verify input sanitization
+must security
+----
+
+=== Information Commands
+
+[source,bash]
+----
+# Show project info
+just info
+
+# Show tool versions
+just versions
+
+# Show COW language reference
+just cow-ref
+
+# List all available commands
+just --list
+----
+
+[[just]]
+== Justfile Recipes
+
+Complete reference for all Justfile recipes.
+
+=== Build Recipes
+
+==== `build`
+Build the site using the COW interpreter.
+
+[source,bash]
+----
+just build
+----
+
+Creates `_site/index.html` from `src/milk-ssg.cow`.
+
+==== `clean`
+Remove all build artifacts.
+
+[source,bash]
+----
+just clean
+----
+
+Removes `_site/` directory and adapter build files.
+
+==== `rebuild`
+Clean then build.
+
+[source,bash]
+----
+just rebuild
+----
+
+=== Test Recipes
+
+==== `test`
+Run syntax, language, and adapter tests.
+
+[source,bash]
+----
+just test
+----
+
+==== `test-syntax`
+Validate COW file syntax.
+
+[source,bash]
+----
+just test-syntax
+----
+
+Checks that `src/milk-ssg.cow` exists and contains valid COW commands.
+
+==== `test-language`
+Enforce COW-only in src/ directory.
+
+[source,bash]
+----
+just test-language
+----
+
+Fails if any `.py`, `.js`, `.ts`, `.rb`, `.go`, `.rs` files exist in `src/`.
+
+==== `test-e2e`
+Run end-to-end integration tests.
+
+[source,bash]
+----
+just test-e2e
+----
+
+Builds the site and validates HTML output.
+
+==== `test-all`
+Run complete test suite including E2E.
+
+[source,bash]
+----
+just test-all
+----
+
+=== Adapter Recipes
+
+==== `adapter-build`
+Build the ReScript MCP adapter.
+
+[source,bash]
+----
+just adapter-build
+----
+
+Runs `npm install` and `npm run build` in `adapters/`.
+
+==== `adapter-watch`
+Watch adapter for changes during development.
+
+[source,bash]
+----
+just adapter-watch
+----
+
+==== `adapter-clean`
+Clean adapter build artifacts.
+
+[source,bash]
+----
+just adapter-clean
+----
+
+=== Development Recipes
+
+==== `dev`
+Start development server.
+
+[source,bash]
+----
+just dev
+----
+
+Builds site and serves on port 8080.
+
+==== `lint`
+Run linting checks.
+
+[source,bash]
+----
+just lint
+----
+
+=== CI/CD Recipes
+
+==== `ci`
+Run all CI checks locally.
+
+[source,bash]
+----
+just ci
+----
+
+Runs lint, test-all, and security checks.
+
+==== `pre-commit`
+Run pre-commit hook checks.
+
+[source,bash]
+----
+just pre-commit
+----
+
+==== `pre-push`
+Run pre-push hook checks.
+
+[source,bash]
+----
+just pre-push
+----
+
+[[must]]
+== Mustfile Recipes
+
+Mandatory checks that MUST pass. These are non-negotiable.
+
+=== `must all`
+Run all mandatory checks.
+
+[source,bash]
+----
+must all
+----
+
+Includes: language, spdx, security, no-secrets.
+
+=== `must language`
+Verify only COW files in src/.
+
+[source,bash]
+----
+must language
+----
+
+CRITICAL: milk-ssg MUST be written in COW.
+
+=== `must spdx`
+Verify SPDX license headers present.
+
+[source,bash]
+----
+must spdx
+----
+
+All source files must have SPDX-License-Identifier headers.
+
+=== `must security`
+Verify adapter security (input sanitization).
+
+[source,bash]
+----
+must security
+----
+
+Checks that `sanitizePath` is used in adapter.
+
+=== `must no-secrets`
+Verify no hardcoded secrets.
+
+[source,bash]
+----
+must no-secrets
+----
+
+Scans for password, api_key, secret_key patterns.
+
+=== Pre-operation Checks
+
+[source,bash]
+----
+# Before committing
+must before-commit
+
+# Before pushing
+must before-push
+
+# Before releasing
+must before-release
+----
+
+[[nickel]]
+== Nickel Formulae
+
+Configuration patterns using Nickel (`.ncl` files).
+
+=== Site Configuration Schema
+
+[source,nickel]
+----
+# milk-ssg.ncl - Site configuration schema
+{
+  site = {
+    title | String,
+    description | String | optional,
+    base_url | String | default = "/",
+    language | String | default = "en",
+  },
+
+  build = {
+    output_dir | String | default = "_site",
+    cow_file | String | default = "src/milk-ssg.cow",
+  },
+
+  meta = {
+    generator | String | default = "milk-ssg",
+    language_impl | String | force = "COW",  # Non-negotiable
+  },
+}
+----
+
+=== Adapter Configuration Schema
+
+[source,nickel]
+----
+# adapter.ncl - MCP adapter configuration
+{
+  adapter = {
+    name | String | default = "milk-ssg",
+    version | String,
+    language | String | force = "COW",
+  },
+
+  tools | Array {
+    name | String,
+    description | String,
+    input_schema | { .. },
+  },
+
+  security = {
+    sanitize_paths | Bool | default = true,
+    allowed_extensions | Array String | default = [".cow"],
+  },
+}
+----
+
+[[combos]]
+== Command Combinations
+
+Common command combinations and workflows.
+
+=== Development Workflow
+
+[source,bash]
+----
+# Start fresh development session
+just clean && just build && just dev
+
+# Quick iteration cycle
+just rebuild && just test-e2e
+
+# Full validation before commit
+must all && just ci
+----
+
+=== CI/CD Workflow
+
+[source,bash]
+----
+# Local CI simulation
+just lint && just test-all && just security
+
+# Pre-push validation
+must before-push && just pre-push
+
+# Release preparation
+must before-release && just test-all
+----
+
+=== Adapter Development
+
+[source,bash]
+----
+# Full adapter rebuild
+just adapter-clean && just adapter-build
+
+# Development with watch
+just adapter-watch &
+just dev
+
+# Validate adapter security
+must security && just security
+----
+
+=== Debugging Workflows
+
+[source,bash]
+----
+# Check what COW produces
+cow src/milk-ssg.cow
+
+# Validate output HTML
+just build && cat _site/index.html
+
+# Full diagnostic
+just versions && just info && just test-all
+----
+
+[[hooks]]
+== Git Hooks
+
+Recommended git hooks for milk-ssg development.
+
+=== Pre-commit Hook
+
+[source,bash]
+----
+#!/bin/bash
+# .git/hooks/pre-commit
+set -e
+must all
+just lint
+echo "✓ Pre-commit checks passed"
+----
+
+=== Pre-push Hook
+
+[source,bash]
+----
+#!/bin/bash
+# .git/hooks/pre-push
+set -e
+must before-push
+just test-all
+echo "✓ Pre-push checks passed"
+----
+
+=== Commit Message Hook
+
+[source,bash]
+----
+#!/bin/bash
+# .git/hooks/commit-msg
+# Enforce conventional commits
+if ! grep -qE "^(feat|fix|docs|style|refactor|test|chore|security)(\(.+\))?: .+" "$1"; then
+    echo "Error: Commit message must follow conventional commits format"
+    echo "Example: feat(cow): add new character output"
+    exit 1
+fi
+----
+
+[[troubleshooting]]
+== Troubleshooting
+
+=== COW Interpreter Not Found
+
+[source,bash]
+----
+# Check if cow is installed
+which cow
+
+# If not found, install from:
+# https://bigzaphod.github.io/COW/
+
+# Alternative: use online interpreter
+# https://www.bedroomlan.org/tools/cow-compiler
+----
+
+=== Adapter Build Fails
+
+[source,bash]
+----
+# Ensure npm dependencies are installed
+cd adapters && npm install
+
+# Check ReScript version
+npx rescript -v
+
+# Clean and rebuild
+just adapter-clean && just adapter-build
+----
+
+=== Language Enforcement Failure
+
+[source,bash]
+----
+# Find forbidden files
+find src/ -type f ! -name "*.cow"
+
+# Check must rules
+must language-rules
+----
+
+=== Security Check Failure
+
+[source,bash]
+----
+# View security rules
+must security-rules
+
+# Check specific issues
+grep -r "execSync" adapters/src/
+grep -r "sanitizePath" adapters/src/
+----
+
+[[appendix]]
+== Appendix
+
+=== COW Language Reference
+
+[cols="1,3"]
+|===
+|Command |Description
+
+|`moo`
+|Skip next instruction if register = 0
+
+|`mOo`
+|Move memory pointer back one cell
+
+|`moO`
+|Move memory pointer forward one cell
+
+|`mOO`
+|Execute current memory cell value as instruction
+
+|`Moo`
+|If register = 0, read char; else print ASCII char
+
+|`MOo`
+|Decrement current memory cell
+
+|`MoO`
+|Increment current memory cell
+
+|`MOO`
+|Start/end loop (while memory ≠ 0)
+
+|`OOO`
+|Set current memory cell to 0
+
+|`MMM`
+|Copy between register and memory cell
+
+|`OOM`
+|Print memory cell as integer
+
+|`oom`
+|Read integer to memory cell
+|===
+
+=== ASCII Quick Reference
+
+[cols="1,1,1,1"]
+|===
+|Char |ASCII |Char |ASCII
+
+|`<`
+|60
+|`>`
+|62
+
+|`!`
+|33
+|`/`
+|47
+
+|`a`
+|97
+|`A`
+|65
+
+|space
+|32
+|newline
+|10
+|===
+
+=== File Structure
+
+----
+milk-ssg/
+├── src/
+│   └── milk-ssg.cow      # THE COW SSG (engine)
+├── adapters/
+│   ├── src/
+│   │   └── MilkAdapter.res   # ReScript MCP adapter
+│   ├── package.json
+│   └── rescript.json
+├── Justfile              # Command recipes
+├── Mustfile              # Mandatory checks
+├── STATE.scm             # Project state
+├── META.scm              # Architecture decisions
+├── ECOSYSTEM.scm         # Ecosystem relationships
+├── PLAYBOOK.scm          # Operational procedures
+├── AGENTIC.scm           # AI agent patterns
+├── NEUROSYM.scm          # Neurosymbolic patterns
+└── cookbook.adoc         # This file
+----

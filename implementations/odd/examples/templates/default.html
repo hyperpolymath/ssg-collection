@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }} - odd-ssg</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #1a1a1a;
+      --accent: #0066cc;
+      --muted: #666666;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1a1a1a;
+        --fg: #f0f0f0;
+        --accent: #66aaff;
+        --muted: #999999;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+      background: var(--bg);
+      color: var(--fg);
+    }
+    a { color: var(--accent); }
+    code {
+      background: rgba(128, 128, 128, 0.1);
+      padding: 0.2em 0.4em;
+      border-radius: 3px;
+      font-size: 0.9em;
+    }
+    pre {
+      background: rgba(128, 128, 128, 0.1);
+      padding: 1rem;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+    }
+    header {
+      border-bottom: 1px solid var(--muted);
+      padding-bottom: 1rem;
+      margin-bottom: 2rem;
+    }
+    footer {
+      border-top: 1px solid var(--muted);
+      padding-top: 1rem;
+      margin-top: 2rem;
+      color: var(--muted);
+      font-size: 0.875rem;
+    }
+    .meta {
+      color: var(--muted);
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="/">Home</a>
+    </nav>
+  </header>
+
+  <main>
+    <article>
+      <h1>{{ title }}</h1>
+      <p class="meta">
+        {{ date }} &middot; {{ author }}
+      </p>
+      {{ content }}
+    </article>
+  </main>
+
+  <footer>
+    <p>Built with <a href="https://github.com/hyperpolymath/odd-ssg">odd-ssg</a></p>
+  </footer>
+</body>
+</html>

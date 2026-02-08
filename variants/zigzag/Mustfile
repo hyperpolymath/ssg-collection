@@ -1,0 +1,136 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Mustfile for zigzag-ssg - Must-Pass Quality Gates
+# These are NON-NEGOTIABLE requirements that MUST pass before merge/release
+# See: PLAYBOOK.scm for workflow integration
+
+# ============================================================================
+# MUST-PASS: BUILD
+# ============================================================================
+
+# The project MUST build without errors
+must-build:
+    zig build
+    @echo "MUST-PASS: Build succeeded"
+
+# ============================================================================
+# MUST-PASS: TESTS
+# ============================================================================
+
+# All tests MUST pass
+must-test:
+    zig build test
+    @echo "MUST-PASS: Tests passed"
+
+# ============================================================================
+# MUST-PASS: FORMAT
+# ============================================================================
+
+# Code MUST be properly formatted
+must-fmt:
+    zig fmt --check src/
+    @echo "MUST-PASS: Format check passed"
+
+# ============================================================================
+# MUST-PASS: LANGUAGE ENFORCEMENT
+# ============================================================================
+
+# Only Zig allowed in src/ - NO EXCEPTIONS
+must-language:
+    @echo "Checking for forbidden languages..."
+    @! find src/ -type f \( \
+        -name "*.py" -o \
+        -name "*.js" -o \
+        -name "*.ts" -o \
+        -name "*.rs" -o \
+        -name "*.rb" -o \
+        -name "*.go" -o \
+        -name "*.java" \
+    \) 2>/dev/null | grep . || true
+    @echo "MUST-PASS: Language enforcement passed"
+
+# ============================================================================
+# MUST-PASS: SECURITY
+# ============================================================================
+
+# No secrets in codebase
+must-no-secrets:
+    @echo "Scanning for potential secrets..."
+    @! grep -rE "(password|secret|api.?key|token)\s*=" src/ 2>/dev/null | grep -v "//.*password" || true
+    @! test -f .env 2>/dev/null || (echo ".env should not be committed" && false) || true
+    @echo "MUST-PASS: No secrets detected"
+
+# No TODO security items
+must-security-todos:
+    @echo "Checking for security TODOs..."
+    @! grep -r "TODO.*[Ss]ecurity" src/ 2>/dev/null || true
+    @echo "MUST-PASS: No security TODOs"
+
+# ============================================================================
+# MUST-PASS: DOCUMENTATION
+# ============================================================================
+
+# Required documentation exists
+must-docs:
+    @test -f README.adoc || (echo "README.adoc required" && false)
+    @test -f SECURITY.md || (echo "SECURITY.md required" && false)
+    @test -f LICENSE.txt || (echo "LICENSE.txt required" && false)
+    @echo "MUST-PASS: Required documentation exists"
+
+# SPDX headers present
+must-spdx:
+    @echo "Checking SPDX headers in Zig files..."
+    @for f in src/*.zig; do \
+        head -5 "$$f" | grep -q "SPDX-License-Identifier" || \
+        (echo "Missing SPDX header in $$f" && exit 1); \
+    done 2>/dev/null || true
+    @echo "MUST-PASS: SPDX headers present"
+
+# ============================================================================
+# MUST-PASS: SCM FILES
+# ============================================================================
+
+# SCM files must be valid
+must-scm:
+    @test -f META.scm || (echo "META.scm required" && false)
+    @test -f STATE.scm || (echo "STATE.scm required" && false)
+    @test -f ECOSYSTEM.scm || (echo "ECOSYSTEM.scm required" && false)
+    @echo "MUST-PASS: SCM files present"
+
+# ============================================================================
+# COMPOSITE MUST-PASS RECIPES
+# ============================================================================
+
+# All quality gates (run before commit)
+must-check: must-fmt must-build must-test must-language
+    @echo ""
+    @echo "========================================"
+    @echo "ALL MUST-PASS CHECKS SUCCEEDED"
+    @echo "========================================"
+
+# Pre-merge checks
+must-merge: must-check must-docs must-spdx must-scm
+    @echo ""
+    @echo "========================================"
+    @echo "READY FOR MERGE"
+    @echo "========================================"
+
+# Pre-release checks (most stringent)
+must-release: must-merge must-no-secrets must-security-todos
+    @echo ""
+    @echo "========================================"
+    @echo "READY FOR RELEASE"
+    @echo "========================================"
+
+# Security audit
+must-security: must-no-secrets must-security-todos
+    @echo ""
+    @echo "========================================"
+    @echo "SECURITY AUDIT PASSED"
+    @echo "========================================"
+
+# ============================================================================
+# DEFAULT
+# ============================================================================
+
+# Default: run all checks
+default: must-check

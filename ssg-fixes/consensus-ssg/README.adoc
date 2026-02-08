@@ -1,0 +1,37 @@
+= consensus-ssg
+
+image:https://img.shields.io/badge/License-MPL_2.0-blue.svg[MPL-2.0-or-later,link="https://opensource.org/licenses/MPL-2.0"]
+:toc:
+:toc-title: Table of Contents
+:icons: font
+
+**Consensus-driven static site generation in Raft (Rust).**
+"consensus" — Site synthesis via distributed consensus. A generator where your content only builds when the cluster agrees on its state.
+
+== Who Is This For?
+* **Distributed Systems Engineers** who want their site to be a replicated state machine.
+* **Architects** requiring high availability and total consistency in build logs.
+* **Teams** deploying to **Edge tech** clusters where nodes must agree on the "Current Version" of truth.
+
+== Why consensus-ssg?
+=== Consensus-Based Synthesis
+`consensus-ssg` uses the **Raft consensus algorithm** to manage the build. Instead of a single process rendering files, a cluster of nodes replicates the "Content Log." A build is only committed once a majority of nodes verify the transformation.
+
+=== Fault-Tolerant Pipelines
+If a build node fails during rendering, the Raft leader re-assigns the "term" to a follower. This ensures that the site generation process is resilient to hardware failure across your **Minix** or **Linux** cluster.
+
+== Quick Start
+[source,oil]
+----
+# Initialise the Raft cluster
+just cluster-up
+
+# Propose a content change to the leader
+just propose "New Blog Post"
+
+# Build once consensus is reached
+just build
+----
+
+== License
+AGPL-3.0-or-later

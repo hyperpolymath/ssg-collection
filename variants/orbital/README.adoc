@@ -1,0 +1,41 @@
+= orbital-ssg
+
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/Philosophy-Palimpsest-indigo.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+
+:toc:
+:toc-title: Table of Contents
+:icons: font
+
+**Multi-paradigm, circular site generation in Ring.**
+"Orbital" — A generator that loops through paradigms. Combining the simplicity of scripting with the power of C for high-speed synthesis.
+
+== Who Is This For?
+* **Multi-paradigm developers** who want to mix Object-Oriented, Functional, and Declarative logic in a single template.
+* **Mobile Developers** targeting **Android** or **iOS** with a lightweight, embedded SSG core.
+* **Architects** needing an engine that can easily be embedded into larger C/C++ applications without complex runtimes.
+
+== Why orbital-ssg?
+
+=== Paradigm-Fluid Logic
+In `orbital-ssg`, you are not locked into one way of thinking. You can switch between imperative loops and functional maps within the same template block. The Ring core provides the "Orbital" speed required for quick iteration on **PC**, **Android**, and **Minix**.
+
+=== Lightweight Embedding
+Ring is designed to be small and fast. `orbital-ssg` can be embedded into existing toolchains as a library, allowing other projects in the **poly-ssg** family to call its circular logic for specific rendering tasks.
+
+== Quick Start
+[source,oil]
+----
+# Bootstrap the Ring environment
+just setup
+
+# Build the site using the multi-paradigm engine
+just build
+
+# Embed the generator logic into a C-wrapper
+just compile-embedded
+----
+
+== License
+PMPL-1.0-or-later

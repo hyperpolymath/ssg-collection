@@ -1,0 +1,143 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+#
+# Mustfile — rescribe-ssg
+# Required checks and validations
+#
+# Usage: must <check>
+# These are MANDATORY requirements that MUST pass
+
+# ============================================================================
+# Language Enforcement (CRITICAL)
+# ============================================================================
+
+# MUST: No Python files in src/
+no-python:
+    @echo "🔍 Checking for forbidden Python files..."
+    @! find src/ -name "*.py" 2>/dev/null | grep -q . && echo "✅ No Python files" || (echo "❌ FORBIDDEN: Python files found in src/" && exit 1)
+
+# MUST: No TypeScript files in src/
+no-typescript:
+    @echo "🔍 Checking for forbidden TypeScript files..."
+    @! find src/ -name "*.ts" -o -name "*.tsx" 2>/dev/null | grep -q . && echo "✅ No TypeScript files" || (echo "❌ FORBIDDEN: TypeScript files found in src/" && exit 1)
+
+# MUST: No JavaScript source files in src/ (compiled .mjs is allowed)
+no-javascript-source:
+    @echo "🔍 Checking for forbidden JavaScript source files..."
+    @! find src/ -name "*.js" 2>/dev/null | grep -q . && echo "✅ No JavaScript source files" || (echo "❌ FORBIDDEN: JavaScript source files found in src/" && exit 1)
+
+# MUST: Only ReScript files in src/
+rescript-only:
+    @echo "🔍 Verifying ReScript-only implementation..."
+    @find src/ -type f \( -name "*.py" -o -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.rb" -o -name "*.go" \) 2>/dev/null | grep -q . && (echo "❌ FORBIDDEN: Non-ReScript files found" && exit 1) || echo "✅ ReScript-only verified"
+
+# ============================================================================
+# Build Requirements
+# ============================================================================
+
+# MUST: ReScript compiles without errors
+build:
+    @echo "🔨 Verifying build..."
+    @cd adapters && npm run build && echo "✅ Build successful" || (echo "❌ Build failed" && exit 1)
+
+# MUST: No compiler warnings treated as errors
+build-strict:
+    @echo "🔨 Verifying strict build..."
+    @cd adapters && npm run build 2>&1 | grep -i "error" && (echo "❌ Build has errors" && exit 1) || echo "✅ No build errors"
+
+# ============================================================================
+# Test Requirements
+# ============================================================================
+
+# MUST: All tests pass
+test:
+    @echo "🧪 Verifying tests pass..."
+    @just test && echo "✅ All tests pass" || (echo "❌ Tests failed" && exit 1)
+
+# MUST: E2E tests pass
+test-e2e:
+    @echo "🔬 Verifying E2E tests pass..."
+    @just test-e2e && echo "✅ E2E tests pass" || (echo "❌ E2E tests failed" && exit 1)
+
+# ============================================================================
+# Security Requirements
+# ============================================================================
+
+# MUST: No secrets in code
+no-secrets:
+    @echo "🔒 Checking for secrets..."
+    @! grep -r "password\s*=" src/ adapters/src/ 2>/dev/null | grep -v ".scm" | grep -q . && echo "✅ No hardcoded passwords" || (echo "⚠️  Potential secrets found" && exit 1)
+    @! grep -r "api_key\s*=" src/ adapters/src/ 2>/dev/null | grep -v ".scm" | grep -q . && echo "✅ No hardcoded API keys" || (echo "⚠️  Potential secrets found" && exit 1)
+
+# MUST: No vulnerabilities in dependencies
+no-vulnerabilities:
+    @echo "🔒 Checking for vulnerabilities..."
+    @cd adapters && npm audit --audit-level=high && echo "✅ No high/critical vulnerabilities" || (echo "❌ Vulnerabilities found" && exit 1)
+
+# ============================================================================
+# Documentation Requirements
+# ============================================================================
+
+# MUST: README exists
+readme:
+    @echo "📄 Checking README..."
+    @test -f README.adoc && echo "✅ README.adoc exists" || (echo "❌ README.adoc missing" && exit 1)
+
+# MUST: LICENSE exists
+license:
+    @echo "📄 Checking LICENSE..."
+    @test -f LICENSE.txt && echo "✅ LICENSE.txt exists" || (echo "❌ LICENSE.txt missing" && exit 1)
+
+# MUST: SPDX headers in source files
+spdx-headers:
+    @echo "📄 Checking SPDX headers..."
+    @grep -l "SPDX-License-Identifier" src/*.res adapters/src/*.res >/dev/null 2>&1 && echo "✅ SPDX headers present" || (echo "⚠️  Some files missing SPDX headers" && exit 1)
+
+# ============================================================================
+# SCM Metadata Requirements
+# ============================================================================
+
+# MUST: META.scm exists and is valid
+meta-scm:
+    @echo "📋 Checking META.scm..."
+    @test -f META.scm && echo "✅ META.scm exists" || (echo "❌ META.scm missing" && exit 1)
+
+# MUST: STATE.scm exists and is valid
+state-scm:
+    @echo "📋 Checking STATE.scm..."
+    @test -f STATE.scm && echo "✅ STATE.scm exists" || (echo "❌ STATE.scm missing" && exit 1)
+
+# MUST: ECOSYSTEM.scm exists and is valid
+ecosystem-scm:
+    @echo "📋 Checking ECOSYSTEM.scm..."
+    @test -f ECOSYSTEM.scm && echo "✅ ECOSYSTEM.scm exists" || (echo "❌ ECOSYSTEM.scm missing" && exit 1)
+
+# ============================================================================
+# Composite Checks
+# ============================================================================
+
+# MUST: All language checks pass
+language: no-python no-typescript no-javascript-source rescript-only
+    @echo "✅ All language checks passed"
+
+# MUST: All security checks pass
+security: no-secrets no-vulnerabilities
+    @echo "✅ All security checks passed"
+
+# MUST: All documentation checks pass
+docs: readme license spdx-headers
+    @echo "✅ All documentation checks passed"
+
+# MUST: All SCM checks pass
+scm: meta-scm state-scm ecosystem-scm
+    @echo "✅ All SCM checks passed"
+
+# MUST: All checks pass (CI gate)
+all: language build test security docs scm
+    @echo ""
+    @echo "╔══════════════════════════════════════════╗"
+    @echo "║     ✅ ALL MUST CHECKS PASSED            ║"
+    @echo "╚══════════════════════════════════════════╝"
+
+# Default: run all checks
+default: all

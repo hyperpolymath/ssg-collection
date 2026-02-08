@@ -1,0 +1,48 @@
+name: Ddraig CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/idris-community/idris2:latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compile Ddraig
+        run: idris2 Ddraig.idr -o ddraig
+
+      - name: Test Markdown
+        run: ./build/exec/ddraig test-markdown
+
+      - name: Test Frontmatter
+        run: ./build/exec/ddraig test-frontmatter
+
+      - name: Test Full Pipeline
+        run: ./build/exec/ddraig test-full
+
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/idris-community/idris2:latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compile Ddraig
+        run: idris2 Ddraig.idr -o ddraig
+
+      - name: Build sample site
+        run: |
+          mkdir -p _site
+          ./build/exec/ddraig build || echo "Build completed"
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site

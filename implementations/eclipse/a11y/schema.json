@@ -1,0 +1,104 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://eclipse-ssg.hyperpolymath.org/schemas/a11y.json",
+  "title": "Eclipse SSG Accessibility Schema",
+  "description": "Schema for accessibility metadata in eclipse-ssg content",
+  "type": "object",
+  "properties": {
+    "signLanguages": {
+      "type": "array",
+      "description": "Sign language translations available",
+      "items": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string",
+            "enum": ["BSL", "GSL", "ASL", "Makaton"],
+            "description": "Sign language code"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to sign language video"
+          },
+          "transcript": {
+            "type": "string",
+            "description": "Text transcript of the sign language content"
+          }
+        },
+        "required": ["language"]
+      }
+    },
+    "altText": {
+      "type": "object",
+      "description": "Alternative text for images and media",
+      "properties": {
+        "short": {
+          "type": "string",
+          "maxLength": 125,
+          "description": "Short alt text (max 125 chars)"
+        },
+        "long": {
+          "type": "string",
+          "description": "Long description for complex images"
+        }
+      }
+    },
+    "audioDescription": {
+      "type": "object",
+      "description": "Audio description for video content",
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to audio description track"
+        },
+        "transcript": {
+          "type": "string",
+          "description": "Text transcript of audio description"
+        }
+      }
+    },
+    "captions": {
+      "type": "object",
+      "description": "Captions for video/audio content",
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to captions file (VTT, SRT)"
+        },
+        "language": {
+          "type": "string",
+          "description": "Language code for captions"
+        }
+      }
+    },
+    "readingLevel": {
+      "type": "string",
+      "enum": ["easy-read", "standard", "technical"],
+      "description": "Content reading level"
+    },
+    "cognitiveSupport": {
+      "type": "object",
+      "description": "Cognitive accessibility features",
+      "properties": {
+        "simplifiedVersion": {
+          "type": "string",
+          "description": "URL to simplified version"
+        },
+        "glossary": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "term": { "type": "string" },
+              "definition": { "type": "string" }
+            },
+            "required": ["term", "definition"]
+          }
+        }
+      }
+    }
+  }
+}

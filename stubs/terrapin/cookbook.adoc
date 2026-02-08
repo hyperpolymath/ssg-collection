@@ -1,0 +1,561 @@
+= terrapin-ssg Cookbook
+:toc: left
+:toclevels: 3
+:sectanchors:
+:sectlinks:
+:icons: font
+
+SPDX-License-Identifier: PMPL-1.0-or-later-or-later
+
+Comprehensive recipes for building, testing, and deploying terrapin-ssg.
+
+== Quick Reference
+
+[cols="1,2,1"]
+|===
+|Task |Command |Section
+
+|Build site
+|`just build`
+|<<cli-build>>
+
+|Run tests
+|`just test-all`
+|<<cli-test>>
+
+|Start REPL
+|`just repl`
+|<<cli-dev>>
+
+|Security check
+|`just security`
+|<<cli-security>>
+|===
+
+[[cli]]
+== CLI Commands
+
+Command-line recipes for daily development.
+
+[[cli-build]]
+=== Build Commands
+
+==== Build Site
+
+[source,bash]
+----
+# Standard build
+just build
+
+# Build with clean first
+just clean && just build
+
+# Build and serve
+just serve
+----
+
+==== Watch Mode
+
+[source,bash]
+----
+# Auto-rebuild on changes (requires entr)
+just watch
+
+# Manual watch with inotifywait
+while inotifywait -e modify src/*.logo; do just build; done
+----
+
+[[cli-test]]
+=== Test Commands
+
+==== Unit Tests
+
+[source,bash]
+----
+# Run all tests
+just test
+
+# Run specific test suite
+just test-e2e
+
+# Full test suite
+just test-all
+----
+
+==== Validation
+
+[source,bash]
+----
+# Validate Logo syntax
+just validate
+
+# Check language enforcement
+just check-languages
+
+# Full validation
+just lint && just validate && just check-languages
+----
+
+[[cli-dev]]
+=== Development Commands
+
+==== Logo REPL
+
+[source,bash]
+----
+# Start interactive REPL
+just repl
+
+# Load and test procedures
+# In REPL:
+# load "src/terrapin-ssg.logo
+# square 100
+----
+
+==== Generate Examples
+
+[source,bash]
+----
+# Create example content
+just example
+
+# Initialize new project
+just init
+----
+
+[[cli-security]]
+=== Security Commands
+
+==== Security Audit
+
+[source,bash]
+----
+# Full security check
+just security
+
+# Check for secrets
+grep -r "password\|secret\|token" src/
+
+# Validate SHA-pinned actions
+grep -E '@[a-f0-9]{40}' .github/workflows/*.yml
+----
+
+==== Pre-commit
+
+[source,bash]
+----
+# Run pre-commit checks
+just pre-commit
+
+# Full CI locally
+just ci
+----
+
+[[cli-container]]
+=== Container Commands
+
+==== Podman/Docker
+
+[source,bash]
+----
+# Build container
+just container-build
+
+# Run in container
+just container-run
+
+# Interactive container
+podman run -it --rm -v .:/app terrapin-ssg /bin/sh
+----
+
+[[nickel]]
+== Nickel Formulae
+
+Configuration and validation using Nickel.
+
+[[nickel-config]]
+=== Site Configuration
+
+[source,nickel]
+----
+# terrapin-config.ncl
+{
+  site = {
+    title = "My Terrapin Site",
+    output_dir = "_site",
+    content_dir = "content",
+  },
+
+  build = {
+    interpreter = "ucblogo",
+    source = "src/terrapin-ssg.logo",
+  },
+
+  patterns = {
+    allowed = ["spiral", "square", "star", "tree", "fractal"],
+    default = "spiral",
+  },
+}
+----
+
+[[nickel-validation]]
+=== Validation Schema
+
+[source,nickel]
+----
+# terrapin-schema.ncl
+let Logo = {
+  file | String,
+  procedures | Array String,
+  has_build | Bool,
+}
+
+let Adapter = {
+  language | String,
+  patterns | Array String,
+}
+
+let TerrapinConfig = {
+  logo | Logo,
+  adapter | Adapter,
+
+  | contract (logo.has_build == true)
+}
+----
+
+[[nickel-ci]]
+=== CI Configuration
+
+[source,nickel]
+----
+# ci-config.ncl
+{
+  workflows = {
+    ci = {
+      triggers = ["push", "pull_request"],
+      jobs = ["syntax-check", "language-check", "security"],
+    },
+    codeql = {
+      triggers = ["push", "pull_request", "schedule"],
+      languages = ["javascript-typescript"],
+    },
+  },
+
+  actions = {
+    checkout = "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+    codeql_init = "github/codeql-action/init@ea9e4e37992a54ee68a9571571f9a567d8f90f78",
+    codeql_analyze = "github/codeql-action/analyze@ea9e4e37992a54ee68a9571571f9a567d8f90f78",
+  },
+}
+----
+
+[[just]]
+== Just Recipes
+
+Extended Justfile patterns and combinations.
+
+[[just-workflows]]
+=== Workflow Combinations
+
+[source,just]
+----
+# Development workflow
+dev: clean build serve
+
+# Release workflow
+release: ci docs container-build
+
+# Quick check
+quick: lint validate
+
+# Full validation
+full: ci test-all security docs
+----
+
+[[just-patterns]]
+=== Pattern Generation
+
+[source,just]
+----
+# Generate specific pattern
+pattern NAME:
+    @echo "TO {{NAME}}" > content/{{NAME}}.logo
+    @echo "  ; Generated pattern" >> content/{{NAME}}.logo
+    @echo "END" >> content/{{NAME}}.logo
+
+# Batch generate patterns
+patterns-all:
+    @for p in spiral square star tree; do \
+        just pattern $$p; \
+    done
+----
+
+[[just-deploy]]
+=== Deployment Recipes
+
+[source,just]
+----
+# Deploy to GitHub Pages
+deploy-gh: ci build
+    @echo "Deploying to GitHub Pages..."
+    cd _site && git init && git add . && \
+    git commit -m "Deploy" && \
+    git push -f origin main:gh-pages
+
+# Deploy to Netlify
+deploy-netlify: build
+    netlify deploy --prod --dir=_site
+
+# Deploy to Vercel
+deploy-vercel: build
+    vercel --prod _site
+----
+
+[[combinatorics]]
+== CLI Combinatorics
+
+Command permutations and concatenations.
+
+[[combo-build]]
+=== Build Variations
+
+[source,bash]
+----
+# Build permutations
+just build                      # Standard build
+just clean build                # Clean build
+just clean build serve          # Full dev cycle
+just ci build deploy-gh         # CI + deploy
+
+# Parallel builds (background)
+just build & just adapter-build & wait
+----
+
+[[combo-test]]
+=== Test Variations
+
+[source,bash]
+----
+# Test permutations
+just test                       # Basic tests
+just test test-e2e              # Unit + E2E
+just test-all                   # Everything
+just lint test security         # Quality + tests + security
+
+# CI variations
+just ci                         # Full CI
+just pre-commit                 # Quick pre-commit
+just security ci                # Security-first CI
+----
+
+[[combo-dev]]
+=== Development Variations
+
+[source,bash]
+----
+# Dev workflows
+just repl                       # Interactive
+just watch                      # Auto-rebuild
+just serve                      # Build + serve
+just clean build serve          # Fresh serve
+
+# Documentation
+just docs                       # Generate docs
+just build docs                 # Build all
+just ci docs deploy-gh          # Full release
+----
+
+[[combo-container]]
+=== Container Variations
+
+[source,bash]
+----
+# Container workflows
+just container-build            # Build image
+just container-run              # Run build in container
+just container-build container-run  # Build + run
+
+# With registry
+podman tag terrapin-ssg ghcr.io/hyperpolymath/terrapin-ssg
+podman push ghcr.io/hyperpolymath/terrapin-ssg
+----
+
+[[hooks]]
+== Hooks Configuration
+
+Git hooks and CI hooks for terrapin-ssg.
+
+[[hooks-pre-commit]]
+=== Pre-commit Hook
+
+[source,bash]
+----
+#!/bin/bash
+# .git/hooks/pre-commit
+# SPDX-License-Identifier: PMPL-1.0-or-later
+
+set -e
+
+echo "🐢 Running pre-commit checks..."
+
+# Check for forbidden languages
+just check-languages
+
+# Lint Logo files
+just lint
+
+# Validate syntax
+just validate
+
+# Security check
+just security
+
+echo "✓ Pre-commit passed"
+----
+
+[[hooks-pre-push]]
+=== Pre-push Hook
+
+[source,bash]
+----
+#!/bin/bash
+# .git/hooks/pre-push
+# SPDX-License-Identifier: PMPL-1.0-or-later
+
+set -e
+
+echo "🐢 Running pre-push checks..."
+
+# Full CI
+just ci
+
+# E2E tests
+just test-e2e
+
+echo "✓ Pre-push passed"
+----
+
+[[hooks-ci]]
+=== CI Hooks
+
+[source,yaml]
+----
+# GitHub Actions hook points
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Hook: on-push
+# Triggers: syntax-check, language-check
+
+# Hook: on-pr
+# Triggers: full CI pipeline
+----
+
+[[hooks-claude]]
+=== Claude Code Hooks
+
+[source,json]
+----
+{
+  "hooks": {
+    "pre-build": ["just lint", "just validate"],
+    "post-build": ["just test-e2e"],
+    "pre-commit": ["just pre-commit"],
+    "on-file-change": {
+      "*.logo": ["just lint"],
+      "*.res": ["just adapter-build"]
+    }
+  }
+}
+----
+
+[[appendix]]
+== Appendix
+
+[[appendix-logo]]
+=== Logo Command Reference
+
+[cols="1,2"]
+|===
+|Command |Description
+
+|`FORWARD n` / `FD n`
+|Move forward n steps
+
+|`BACK n` / `BK n`
+|Move backward n steps
+
+|`RIGHT n` / `RT n`
+|Turn right n degrees
+
+|`LEFT n` / `LT n`
+|Turn left n degrees
+
+|`PENUP` / `PU`
+|Stop drawing
+
+|`PENDOWN` / `PD`
+|Start drawing
+
+|`REPEAT n [...]`
+|Repeat commands n times
+
+|`TO name ... END`
+|Define procedure
+|===
+
+[[appendix-patterns]]
+=== Turtle Patterns
+
+[source,logo]
+----
+; Square
+TO SQUARE :size
+  REPEAT 4 [FORWARD :size RIGHT 90]
+END
+
+; Star
+TO STAR :size
+  REPEAT 5 [FORWARD :size RIGHT 144]
+END
+
+; Spiral
+TO SPIRAL :size :angle :count
+  IF :count < 1 [STOP]
+  FORWARD :size
+  RIGHT :angle
+  SPIRAL (:size + 2) :angle (:count - 1)
+END
+
+; Fractal Tree
+TO TREE :size
+  IF :size < 5 [STOP]
+  FORWARD :size
+  LEFT 30 TREE :size * 0.7
+  RIGHT 60 TREE :size * 0.7
+  LEFT 30 BACK :size
+END
+----
+
+[[appendix-troubleshooting]]
+=== Troubleshooting
+
+[cols="1,2"]
+|===
+|Issue |Solution
+
+|"No Logo interpreter found"
+|`apt install ucblogo` or `brew install ucblogo`
+
+|"Permission denied" on hooks
+|`chmod +x .git/hooks/*`
+
+|Build fails silently
+|Check Logo file syntax, ensure `TO ... END` blocks are closed
+
+|Container build fails
+|Ensure Containerfile exists, check podman/docker installation
+|===

@@ -1,0 +1,49 @@
+# Dune build artifacts
+_build/
+*.install
+
+# OCaml compiled files
+*.cmo
+*.cmi
+*.cma
+*.cmx
+*.cmxa
+*.cmxs
+*.cmt
+*.cmti
+*.o
+*.a
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+# Generated WAT files (keep fixtures)
+*.wat
+!test/fixtures/*.wat
+
+# Merged/conflict files
+*.orig
+*.rej
+
+# opam
+_opam/
+
+# Environment and secrets (NEVER commit)
+.env
+.env.*
+*.pem
+*.key
+credentials.json
+secrets.json
+
+# Coverage reports
+_coverage/
+coverage/
+*.coverage

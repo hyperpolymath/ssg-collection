@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# asdf version management for my-ssg
+
+# Primary runtime (required)
+deno 2.1.4
+
+# Build tools
+just 1.36.0
+
+# Container runtime (optional)
+podman 5.3.0

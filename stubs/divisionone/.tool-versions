@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# asdf tool versions for Division One SSG
+# Install asdf: https://asdf-vm.com/
+
+deno 2.1.4

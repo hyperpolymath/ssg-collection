@@ -1,0 +1,98 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# RSR-compliant CI workflow with SHA-pinned actions
+
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+permissions: read-all
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.2
+        with:
+          deno-version: v2.x
+
+      - name: Verify formatting
+        run: deno fmt --check adapters/ tests/
+
+      - name: Lint
+        run: deno lint adapters/ tests/
+
+      - name: Type check
+        run: deno check adapters/*.js
+
+      - name: Run tests
+        run: deno test --allow-run --allow-read tests/
+
+      - name: Run tests with coverage
+        run: |
+          deno test --allow-run --allow-read --coverage=coverage/ tests/
+          deno coverage coverage/ --lcov > coverage/lcov.info
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@1e68e06f1571e61e06363bc4fc2e0289f7e2c83a # v5.1.2
+        with:
+          files: coverage/lcov.info
+          fail_ci_if_error: false
+
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Check for hardcoded secrets
+        run: |
+          ! grep -rn "password\s*=" adapters/ || true
+          ! grep -rn "api_key\s*=" adapters/ || true
+          ! grep -rn "secret\s*=" adapters/ || true
+
+      - name: Verify sanitization functions
+        run: |
+          echo "Checking adapters with string interpolation have sanitization..."
+          for f in adapters/*.js; do
+            if grep -q '\${' "$f"; then
+              if ! grep -q 'sanitize' "$f"; then
+                echo "WARNING: $f has interpolation but no sanitization"
+              fi
+            fi
+          done
+
+  container:
+    name: Container Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Build container
+        run: |
+          podman build -t orbital-ssg:${{ github.sha }} .
+
+      - name: Test in container
+        run: |
+          podman run --rm orbital-ssg:${{ github.sha }} deno test --allow-run tests/

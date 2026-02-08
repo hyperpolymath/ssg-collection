@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# asdf version management for parallax-ssg
+
+# Primary language - Chapel
+# Note: Chapel asdf plugin may require manual setup
+# chapel 1.33.0
+
+# Node.js for ReScript adapter
+nodejs 20.10.0
+
+# Python for local dev server (optional)
+python 3.12.0

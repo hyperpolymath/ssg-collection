@@ -1,0 +1,317 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+= praxis-ssg
+:toc: left
+:toclevels: 3
+:sectnums:
+:icons: font
+:source-highlighter: rouge
+:experimental:
+
+A satellite SSG (Static Site Generator) implementation in the hyperpolymath ecosystem, integrating with the poly-ssg-mcp hub to provide unified access to 28 static site generators across 14+ programming languages.
+
+image:https://img.shields.io/badge/RSR-Gold-gold[RSR Gold]
+image:https://img.shields.io/badge/adapters-28-blue[28 Adapters]
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+== Overview
+
+praxis-ssg is a satellite project that consumes SSG adapters from the https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp] hub, providing a unified interface to build static sites using any of 28 supported generators.
+
+=== Supported SSG Languages
+
+[cols="1,3"]
+|===
+|Tier |Languages & SSGs
+
+|**Tier 1**
+|Rust (Zola, Cobalt, mdBook), Haskell (Hakyll, Ema), Elixir (Serum, NimblePublisher, Tableau)
+
+|**Tier 2**
+|Julia (Franklin, Documenter, StaticWebPages), Clojure (Cryogen, Perun, Babashka), Racket (Frog, Pollen), Scala (Laika, ScalaTex)
+
+|**Tier 3**
+|Kotlin (Orchid), F# (Fornax), OCaml (YOCaml), Nim (Nimrod), Crystal (Marmot), Swift (Publish), D (Reggae), Tcl (Wub), Erlang (Zotonic), Common Lisp (Coleslaw)
+|===
+
+== Quick Start
+
+=== Prerequisites
+
+* https://deno.land/[Deno] runtime (v1.x+)
+* https://github.com/casey/just[just] task runner
+* Git
+
+=== Installation
+
+[source,bash]
+----
+# Clone the repository
+git clone https://github.com/hyperpolymath/praxis-ssg.git
+cd praxis-ssg
+
+# Verify setup
+just status
+
+# List available adapters
+just adapters
+----
+
+=== Basic Usage
+
+[source,bash]
+----
+# Run all tests
+just test
+
+# Check adapter syntax
+just check-syntax
+
+# Verify adapter interface
+just adapter-verify
+
+# Full CI pipeline
+just ci
+----
+
+== Project Structure
+
+[source]
+----
+praxis-ssg/
+├── adapters/           # 28 SSG adapters (synced from hub)
+│   ├── zola.js
+│   ├── hakyll.js
+│   ├── cobalt.js
+│   └── ... (28 total)
+├── tests/              # Test suite
+│   ├── adapters/       # Adapter tests
+│   └── e2e/            # End-to-end tests
+├── examples/           # Example configurations
+│   ├── config/         # Sample configs
+│   ├── templates/      # Sample templates
+│   └── content/        # Sample content
+├── docs/               # Documentation
+│   └── api/            # API reference
+├── .github/            # GitHub configuration
+│   └── workflows/      # CI/CD pipelines
+├── justfile            # Task automation
+├── Mustfile            # Mandatory gates
+├── cookbook.adoc       # CLI/Just/Nickel reference
+├── META.scm            # Architecture decisions
+├── ECOSYSTEM.scm       # Ecosystem position
+├── STATE.scm           # Project state & roadmap
+├── PLAYBOOK.scm        # Operational runbooks
+├── AGENTIC.scm         # AI agent configuration
+├── NEUROSYM.scm        # Neurosymbolic reasoning
+└── flake.nix           # Nix development environment
+----
+
+== Adapters
+
+Each adapter provides a consistent interface to interact with an SSG:
+
+[source,javascript]
+----
+// Adapter interface
+export const name = "SSGName";
+export const language = "Language";
+export const description = "Brief description";
+
+export async function connect() { /* ... */ }
+export async function disconnect() { /* ... */ }
+export function isConnected() { /* ... */ }
+
+export const tools = [
+  {
+    name: "tool_name",
+    description: "What the tool does",
+    inputSchema: { /* JSON Schema */ },
+    execute: async (params) => { /* ... */ }
+  }
+];
+----
+
+=== Adapter Commands
+
+[source,bash]
+----
+# List all adapters
+just adapters
+
+# Count adapters
+just adapter-count
+
+# Verify interface compliance
+just adapter-verify
+
+# Sync from hub
+just adapter-sync
+----
+
+== Development
+
+=== Task Runner
+
+This project uses https://github.com/casey/just[just] for task automation. See link:cookbook.adoc[cookbook.adoc] for complete reference.
+
+[source,bash]
+----
+# Show all commands
+just --list
+
+# Common workflows
+just build          # Build all
+just test           # Run tests
+just lint           # Run linters
+just ci             # Full CI pipeline
+----
+
+=== Testing
+
+[source,bash]
+----
+# Run all tests
+just test-all
+
+# Unit tests only
+just test-unit
+
+# E2E tests
+just test-e2e
+
+# Adapter tests
+just test-adapters
+----
+
+=== Security
+
+[source,bash]
+----
+# Check for secrets
+just check-secrets
+
+# Security audit
+just audit
+
+# Full security check
+just lint-security
+----
+
+== Configuration
+
+=== SCM Files
+
+The project uses Scheme-based configuration files for metadata:
+
+[cols="1,2"]
+|===
+|File |Purpose
+
+|`META.scm`
+|Architecture Decision Records (ADRs)
+
+|`ECOSYSTEM.scm`
+|Position in hyperpolymath ecosystem
+
+|`STATE.scm`
+|Current state and roadmap
+
+|`PLAYBOOK.scm`
+|Operational workflows and runbooks
+
+|`AGENTIC.scm`
+|AI agent behavior configuration
+
+|`NEUROSYM.scm`
+|Neurosymbolic reasoning patterns
+|===
+
+=== Environment Variables
+
+[cols="1,1,2"]
+|===
+|Variable |Default |Description
+
+|`DENO_DIR`
+|`~/.cache/deno`
+|Deno cache directory
+
+|`NO_COLOR`
+|unset
+|Disable colored output
+
+|`DEBUG`
+|unset
+|Enable debug logging
+|===
+
+== Documentation
+
+* link:CONTRIBUTING.md[Contributing Guide]
+* link:SECURITY.md[Security Policy]
+* link:CODE_OF_CONDUCT.md[Code of Conduct]
+* link:cookbook.adoc[Cookbook - CLI/Just/Nickel Reference]
+* link:docs/api/README.adoc[API Documentation]
+
+== Roadmap
+
+See link:STATE.scm[STATE.scm] for the complete roadmap. Current milestones:
+
+[cols="1,2,1,1"]
+|===
+|Version |Name |Status |Target
+
+|v0.1.0
+|Initial Setup
+|Complete
+|2025-12-15
+
+|v0.2.0
+|Build System & Automation
+|Complete
+|2025-12-24
+
+|v0.3.0
+|Testing & Quality
+|In Progress
+|2025-12-31
+
+|v0.4.0
+|MCP Integration
+|Planned
+|2026-01-15
+
+|v0.5.0
+|Nix & Reproducibility
+|Planned
+|2026-01-31
+
+|v1.0.0
+|Production Ready
+|Planned
+|2026-03-01
+|===
+
+== License
+
+Dual licensed under:
+
+* link:LICENSE.txt[PMPL-1.0-or-later]
+* MIT (with Palimpsest License philosophical overlay)
+
+== Acknowledgments
+
+* https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp] - Hub project providing adapters
+* https://github.com/hyperpolymath/rhodium-standard-repositories[RSR] - Repository standards
+* All SSG maintainers for their excellent tools
+
+== Contributing
+
+See link:CONTRIBUTING.md[CONTRIBUTING.md] for guidelines.
+
+== Support
+
+* https://github.com/hyperpolymath/praxis-ssg/issues[GitHub Issues] - Bug reports
+* https://github.com/hyperpolymath/praxis-ssg/discussions[GitHub Discussions] - Questions
+* See link:SECURITY.md[SECURITY.md] for security issues

@@ -1,0 +1,79 @@
+#!/bin/bash
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+#
+# Commit message hook for shift-ssg
+# Validates conventional commit format
+# Install: cp hooks/commit-msg .git/hooks/ && chmod +x .git/hooks/commit-msg
+
+commit_msg_file="$1"
+commit_msg=$(cat "$commit_msg_file")
+
+# Skip merge commits
+if echo "$commit_msg" | grep -qE "^Merge "; then
+    exit 0
+fi
+
+# Conventional Commits pattern
+# Format: <type>(<scope>): <description>
+# Types: feat, fix, docs, style, refactor, test, chore, security, perf, build, ci
+pattern="^(feat|fix|docs|style|refactor|test|chore|security|perf|build|ci)(\([a-zA-Z0-9_-]+\))?: .{1,100}$"
+
+# Get first line
+first_line=$(echo "$commit_msg" | head -1)
+
+if ! echo "$first_line" | grep -qE "$pattern"; then
+    echo ""
+    echo "═══════════════════════════════════════════════════════════════"
+    echo "  ❌ Invalid commit message format"
+    echo "═══════════════════════════════════════════════════════════════"
+    echo ""
+    echo "Your message:"
+    echo "  $first_line"
+    echo ""
+    echo "Expected format:"
+    echo "  <type>(<scope>): <description>"
+    echo ""
+    echo "Types:"
+    echo "  feat     - New feature"
+    echo "  fix      - Bug fix"
+    echo "  docs     - Documentation only"
+    echo "  style    - Code style (formatting, semicolons, etc)"
+    echo "  refactor - Code refactoring"
+    echo "  test     - Adding/updating tests"
+    echo "  chore    - Maintenance tasks"
+    echo "  security - Security fixes"
+    echo "  perf     - Performance improvements"
+    echo "  build    - Build system changes"
+    echo "  ci       - CI/CD changes"
+    echo ""
+    echo "Examples:"
+    echo "  feat(adapters): add new SSG adapter for Hugo"
+    echo "  fix(zola): resolve build timeout issue"
+    echo "  docs: update README with usage examples"
+    echo "  chore: update dependencies"
+    echo ""
+    exit 1
+fi
+
+# Check description length (max 100 chars for first line)
+if [ ${#first_line} -gt 100 ]; then
+    echo ""
+    echo "═══════════════════════════════════════════════════════════════"
+    echo "  ❌ Commit message first line too long"
+    echo "═══════════════════════════════════════════════════════════════"
+    echo ""
+    echo "First line should be max 100 characters."
+    echo "Current length: ${#first_line}"
+    echo ""
+    exit 1
+fi
+
+# Check description starts with lowercase (after type/scope prefix)
+description=$(echo "$first_line" | sed 's/^[a-z]*\([^)]*\)\?: //')
+if echo "$description" | grep -qE "^[A-Z]"; then
+    echo "⚠️ Hint: Description should start with lowercase"
+    # Warning only, don't block
+fi
+
+echo "✅ Commit message format valid"

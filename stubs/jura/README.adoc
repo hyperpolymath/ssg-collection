@@ -1,0 +1,133 @@
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/Philosophy-Palimpsest-indigo.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= Jura SSG
+
+:toc: auto
+
+Static site generator in J.
+
+== Why J for Static Sites?
+
+J is an array programming language where transformations apply to entire structures at once. Static site generation is fundamentally data transformation: content files become HTML pages. J treats this as a natural array operation.
+
+=== Who This Is For
+
+* **Array programming enthusiasts** who want site generation expressed as composition
+* **APL-family practitioners** seeking modern tooling integration
+* **Minimalists** who appreciate that a complete SSG fits in kilobytes
+* **Data transformation experts** who see content as vectors to reshape
+
+== Core Properties
+
+=== Tacit Composition
+
+Pipelines build from verbs without naming intermediate values:
+
+[source,j]
+----
+render =: emit @ template @ parse @ read
+----
+
+Content flows right-to-left through composed functions. No variables, no state—just transformation.
+
+=== Rank Polymorphism
+
+Operations automatically extend across array dimensions:
+
+[source,j]
+----
+NB. render works on one file or a thousand
+render 'post.md'
+render posts
+----
+
+The same verb handles a single page or an entire site. Rank determines how deeply the operation penetrates.
+
+=== Extreme Density
+
+J programs are measured in characters, not lines:
+
+[source,j]
+----
+toc =: ('#'&=@{. # ])&.>
+----
+
+A complete table-of-contents extractor in 23 characters. Every glyph carries meaning.
+
+=== Fork and Hook
+
+Function trains create branching pipelines:
+
+[source,j]
+----
+NB. Fork: apply three verbs, combine results
+slug =: tolower @ alphanum @ title
+
+NB. Hook: feed result back as right argument
+dated =: ,&'/'&date
+----
+
+Complex transformations emerge from simple verb combinations.
+
+== Technical Guarantees
+
+|===
+| Property | Mechanism
+
+| Deterministic output | Pure functional transforms
+| Parallel rendering | Implicit array operations
+| Memory efficiency | In-place mutation where safe
+| No runtime surprises | Total functions on boxed arrays
+|===
+
+== Architecture
+
+----
+┌─────────┐    ┌─────────┐    ┌──────────┐    ┌────────┐
+│ content │───▶│  parse  │───▶│ template │───▶│  emit  │
+│  files  │    │  (;:)   │    │   (@.)   │    │  (1!:) │
+└─────────┘    └─────────┘    └──────────┘    └────────┘
+     │              │              │              │
+     └──────────────┴──────────────┴──────────────┘
+                    rank polymorphic
+----
+
+Each stage is a verb. The pipeline is their composition. J's rank operator controls iteration depth automatically.
+
+== Features
+
+* **Incremental builds** via file modification time filtering
+* **Parallel page generation** through implicit array operations
+* **Hot reload** with filesystem watching
+* **Markdown and AsciiDoc** content parsing
+* **Template composition** using gerunds and agenda
+
+== Integration
+
+Jura SSG participates in the link:https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp] ecosystem, providing MCP tools for Claude integration:
+
+* `jura_init` — scaffold a new site
+* `jura_build` — generate static output
+* `jura_serve` — local development server
+* `jura_watch` — incremental rebuilds
+
+The ReScript adapter bridges J execution to the MCP protocol.
+
+== Installation
+
+Requires J 9.4+ from https://www.jsoftware.com[Jsoftware].
+
+[source,bash]
+----
+# Clone and install addons
+git clone https://github.com/hyperpolymath/jura-ssg
+cd jura-ssg
+jconsole -js "install'web/jura'"
+----
+
+== License
+
+PMPL-1.0-or-later

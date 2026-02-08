@@ -1,0 +1,43 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Containerfile for 60-ssg - ALGOL 60 Static Site Generator
+#
+# Build: podman build -t 60-ssg:latest .
+# Run:   podman run -it --rm -v $(pwd):/workspace:Z 60-ssg:latest
+# Build site: podman run -it --rm -v $(pwd):/workspace:Z 60-ssg:latest just build
+
+FROM docker.io/library/debian:bookworm-slim
+
+LABEL org.opencontainers.image.title="60-ssg"
+LABEL org.opencontainers.image.description="ALGOL 60 Static Site Generator"
+LABEL org.opencontainers.image.version="1.0.0"
+LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
+LABEL org.opencontainers.image.source="https://github.com/hyperpolymath/60-ssg"
+
+# Install marst (GNU ALGOL 60 to C translator) and build tools
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    marst \
+    gcc \
+    libc6-dev \
+    make \
+    ca-certificates \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install just (task runner)
+RUN curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to /usr/local/bin
+
+# Create non-root user
+RUN useradd -m -s /bin/bash algol
+USER algol
+WORKDIR /home/algol
+
+# Copy engine files
+COPY --chown=algol:algol engine/ ./engine/
+COPY --chown=algol:algol justfile ./
+COPY --chown=algol:algol scripts/ ./scripts/
+
+# Create output directory
+RUN mkdir -p _site
+
+# Default: show help
+CMD ["just", "--list"]

@@ -1,0 +1,322 @@
+; SPDX-License-Identifier: AGPL-3.0-or-later
+; SPDX-FileCopyrightText: 2025 hyperpolymath
+;
+; terrapin-ssg - Logo Static Site Generator
+; "Let turtles draw. Let procedures teach. Let sites navigate."
+;
+; Run with: logo src/terrapin.logo
+;           ucblogo src/terrapin.logo
+
+; ============================================================================
+; Configuration
+; ============================================================================
+
+make "content.dir "content
+make "output.dir "_site
+make "site.title "Terrapin\ Site
+make "site.author "Logo\ Developer
+
+; ============================================================================
+; String Utilities
+; ============================================================================
+
+to trim :s
+  ; Remove leading and trailing spaces
+  if empty? :s [output :s]
+  if equal? first :s "\ [output trim butfirst :s]
+  if equal? last :s "\ [output trim butlast :s]
+  output :s
+end
+
+to starts.with? :s :prefix
+  ; Check if string starts with prefix
+  if (count :s) < (count :prefix) [output "false]
+  output equal? (substring :s 1 (count :prefix)) :prefix
+end
+
+to substring :s :start :len
+  ; Extract substring
+  make "result "
+  repeat :len [
+    make "result word :result item (:start + repcount - 1) :s
+  ]
+  output :result
+end
+
+to escape.html :s
+  ; Escape HTML special characters
+  make "result :s
+  make "result replace.all :result "& "&amp;
+  make "result replace.all :result "< "&lt;
+  make "result replace.all :result "> "&gt;
+  output :result
+end
+
+to replace.all :s :old :new
+  ; Replace all occurrences
+  if empty? :s [output :s]
+  if starts.with? :s :old [
+    output word :new replace.all (substring :s ((count :old) + 1) ((count :s) - (count :old))) :old :new
+  ]
+  output word first :s replace.all butfirst :s :old :new
+end
+
+; ============================================================================
+; File I/O
+; ============================================================================
+
+to read.file :path
+  ; Read file contents as list of lines
+  openread :path
+  setread :path
+  make "lines []
+  while [not eof?] [
+    make "lines lput readword :lines
+  ]
+  close :path
+  output :lines
+end
+
+to write.file :path :content
+  ; Write content to file
+  openwrite :path
+  setwrite :path
+  type :content
+  close :path
+end
+
+; ============================================================================
+; Frontmatter Parser
+; ============================================================================
+
+make "page.title "Untitled
+make "page.date "
+make "page.draft "false
+make "body.start 1
+
+to parse.frontmatter :lines
+  ; Parse YAML-like frontmatter
+  make "page.title "Untitled
+  make "page.date "
+  make "page.draft "false
+  make "body.start 1
+
+  if empty? :lines [stop]
+  if not equal? trim first :lines "--- [stop]
+
+  make "i 2
+  while [:i <= count :lines] [
+    make "line trim item :i :lines
+    if equal? :line "--- [
+      make "body.start :i + 1
+      stop
+    ]
+    parse.fm.line :line
+    make "i :i + 1
+  ]
+end
+
+to parse.fm.line :line
+  ; Parse a single frontmatter line
+  make "colon.pos position ": :line
+  if :colon.pos = 0 [stop]
+
+  make "key trim substring :line 1 (:colon.pos - 1)
+  make "value trim substring :line (:colon.pos + 1) ((count :line) - :colon.pos)
+
+  if equal? :key "title [make "page.title :value]
+  if equal? :key "date [make "page.date :value]
+  if equal? :key "draft [make "page.draft :value]
+end
+
+to position :char :s
+  ; Find position of character in string
+  make "i 1
+  while [:i <= count :s] [
+    if equal? item :i :s :char [output :i]
+    make "i :i + 1
+  ]
+  output 0
+end
+
+; ============================================================================
+; Markdown Parser
+; ============================================================================
+
+to parse.markdown :lines :start
+  ; Convert markdown lines to HTML
+  make "html "
+  make "in.code "false
+  make "i :start
+
+  while [:i <= count :lines] [
+    make "line item :i :lines
+    make "trimmed trim :line
+
+    ; Code blocks
+    if starts.with? :trimmed "``` [
+      ifelse :in.code [
+        make "html word :html "</code></pre>\n
+        make "in.code "false
+      ] [
+        make "html word :html "<pre><code>
+        make "in.code "true
+      ]
+      make "i :i + 1
+      continue
+    ]
+
+    if :in.code [
+      make "html (word :html escape.html :line "\n)
+      make "i :i + 1
+      continue
+    ]
+
+    ; Headers
+    if starts.with? :trimmed "###\  [
+      make "text substring :trimmed 5 ((count :trimmed) - 4)
+      make "html (word :html "<h3> :text "</h3>\n)
+      make "i :i + 1
+      continue
+    ]
+    if starts.with? :trimmed "##\  [
+      make "text substring :trimmed 4 ((count :trimmed) - 3)
+      make "html (word :html "<h2> :text "</h2>\n)
+      make "i :i + 1
+      continue
+    ]
+    if starts.with? :trimmed "#\  [
+      make "text substring :trimmed 3 ((count :trimmed) - 2)
+      make "html (word :html "<h1> :text "</h1>\n)
+      make "i :i + 1
+      continue
+    ]
+
+    ; List items
+    if or starts.with? :trimmed "-\  starts.with? :trimmed "*\  [
+      make "text substring :trimmed 3 ((count :trimmed) - 2)
+      make "html (word :html "<li> :text "</li>\n)
+      make "i :i + 1
+      continue
+    ]
+
+    ; Empty lines
+    if empty? :trimmed [
+      make "i :i + 1
+      continue
+    ]
+
+    ; Paragraph
+    make "html (word :html "<p> :trimmed "</p>\n)
+    make "i :i + 1
+  ]
+
+  output :html
+end
+
+; ============================================================================
+; HTML Generation
+; ============================================================================
+
+to generate.page :content.html
+  ; Generate complete HTML page
+  make "html "
+  make "html word :html "<!DOCTYPE\ html>\n
+  make "html word :html "<html\ lang=\"en\">\n
+  make "html word :html "<head>\n
+  make "html word :html "<meta\ charset=\"UTF-8\">\n
+  make "html (word :html "<title> escape.html :page.title "\ |\ :site.title "</title>\n)
+  make "html word :html "<style>\n
+  make "html word :html "body{font-family:monospace;max-width:70ch;margin:0\ auto;padding:2rem;}\n
+  make "html word :html "pre{background:#f5f5f5;padding:1rem;}\n
+  make "html word :html "</style>\n
+  make "html word :html "</head>\n
+  make "html word :html "<body>\n
+  make "html word :html "<article>\n
+  make "html (word :html "<h1> escape.html :page.title "</h1>\n)
+  if not empty? :page.date [
+    make "html (word :html "<time> :page.date "</time>\n)
+  ]
+  make "html word :html :content.html
+  make "html word :html "</article>\n
+  make "html word :html "<footer><p>Generated\ by\ terrapin-ssg\ (Logo)</p></footer>\n
+  make "html word :html "</body>\n
+  make "html word :html "</html>\n
+  output :html
+end
+
+; ============================================================================
+; Commands
+; ============================================================================
+
+to build
+  print [terrapin-ssg: Building site...]
+  (print [  Output directory:] :output.dir)
+
+  ; Create output directory
+  shell (word "mkdir\ -p\  :output.dir)
+
+  ; Process index.md
+  make "src.path (word :content.dir "/index.md)
+  make "out.path (word :output.dir "/index.html)
+  process.file :src.path :out.path
+
+  print [terrapin-ssg: Build complete.]
+end
+
+to process.file :src :out
+  (print [  Processing:] :src)
+
+  make "lines read.file :src
+  parse.frontmatter :lines
+
+  if equal? :page.draft "true [
+    print [    Skipping draft]
+    stop
+  ]
+
+  make "content.html parse.markdown :lines :body.start
+  make "html generate.page :content.html
+  write.file :out :html
+
+  (print [  Written:] :out)
+end
+
+to init
+  print [terrapin-ssg: Initializing new site...]
+
+  ; Create directories
+  shell (word "mkdir\ -p\  :content.dir)
+  shell (word "mkdir\ -p\  :output.dir)
+
+  ; Create sample content
+  make "sample "---\ntitle:\ Welcome\ to\ Terrapin\ndate:\ 2025-01-18\n---\n\n#\ Welcome\n\nThis\ site\ was\ built\ with\ **terrapin-ssg**,\ a\ Logo-powered\ SSG.\n\n##\ Logo\ Features\n\n-\ Turtle\ graphics\ heritage\n-\ Educational\ programming\n-\ Procedure\ definitions\n-\ Interactive\ exploration\n
+  write.file (word :content.dir "/index.md) :sample
+
+  print [  Created sample content]
+  print [terrapin-ssg: Site initialized.]
+  print [Run 'logo src/terrapin.logo' then 'build' to build.]
+end
+
+to clean
+  (print [terrapin-ssg: Cleaning] :output.dir)
+  shell (word "rm\ -rf\  :output.dir)
+  print [terrapin-ssg: Clean complete.]
+end
+
+to help
+  print [terrapin-ssg - Logo Static Site Generator]
+  print []
+  print [USAGE:]
+  print [  logo src/terrapin.logo]
+  print [  Then type: build, init, clean, or help]
+  print []
+  print [COMMANDS:]
+  print [  build    Build the site]
+  print [  init     Initialize a new site]
+  print [  clean    Remove generated files]
+  print [  help     Show this help]
+end
+
+; Show help on load
+help

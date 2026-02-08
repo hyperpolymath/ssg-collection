@@ -1,0 +1,382 @@
+-- Comprehensive Sorting Algorithms - Ephapax Implementation
+-- SPDX-License-Identifier: AGPL-3.0-or-later
+--
+-- Demonstrates sorting algorithms with linear/affine types and explicit memory management.
+-- All sorts operate in-place where possible to minimize allocations.
+
+module Sorting
+
+--------------------------------------------------------------------------------
+-- TYPE SYSTEM MODE TOGGLE
+--------------------------------------------------------------------------------
+-- Ephapax supports two ownership modes:
+--
+-- LINEAR MODE (default): Resources must be used EXACTLY once
+--   - Compile: ephapax build --mode=linear sorting.epx
+--   - Input array is consumed, sorted array is returned
+--   - Cannot access original array after sorting
+--
+-- AFFINE MODE: Resources can be used AT MOST once
+--   - Compile: ephapax build --mode=affine sorting.epx
+--   - Same semantics but unused intermediate arrays auto-drop
+--   - Better for algorithm experimentation
+--
+-- Toggle via pragma (overrides CLI flag):
+#![type_mode = "linear"]  -- Options: "linear" | "affine"
+
+-- Sorting with linear types enforces:
+--
+-- 1. OWNERSHIP TRANSFER: Input consumed, output returned
+--    fn bubble_sort(arr: [Int]) -> [Int]  -- arr consumed, new array returned
+--
+-- 2. IN-PLACE MUTATION: Borrows for mutation, returns ownership
+--    let mut result = arr  -- Takes ownership
+--    result.swap(i, j)     -- Mutates owned data
+--    result                -- Returns ownership
+--
+-- 3. NO ALIASING: Split operations transfer partial ownership
+--    let (left, right) = arr.split_at(mid)  -- arr consumed, two new arrays
+--
+-- LINEAR vs AFFINE for sorting:
+--   LINEAR:  Guarantees original data cannot be accessed after sort
+--   AFFINE:  Allows discarding partially sorted data (useful for early termination)
+--------------------------------------------------------------------------------
+
+import Runtime.IO (print)
+import Runtime.Drop (drop)  -- Explicit drop for linear mode
+import Runtime.Time (measure_ns)
+import Runtime.Random (seed, random_int)
+
+-- Sorting algorithms that take ownership and return sorted array
+
+-- Bubble Sort - O(n²) time, O(1) space
+-- Repeatedly swaps adjacent elements if they're in wrong order
+fn bubble_sort(arr: [Int]) -> [Int]:
+    let n = arr.len()
+    let mut result = arr  -- Takes ownership
+
+    for i in 0..n:
+        let mut swapped = false
+        for j in 0..(n - i - 1):
+            if result[j] > result[j + 1]:
+                result.swap(j, j + 1)
+                swapped = true
+
+        -- Early exit if no swaps occurred
+        if !swapped:
+            break
+
+    result
+
+-- Selection Sort - O(n²) time, O(1) space
+-- Finds minimum element and places it at beginning
+fn selection_sort(arr: [Int]) -> [Int]:
+    let n = arr.len()
+    let mut result = arr
+
+    for i in 0..n:
+        let mut min_idx = i
+        for j in (i + 1)..n:
+            if result[j] < result[min_idx]:
+                min_idx = j
+
+        if min_idx != i:
+            result.swap(i, min_idx)
+
+    result
+
+-- Insertion Sort - O(n²) time, O(1) space
+-- Builds sorted array one element at a time
+fn insertion_sort(arr: [Int]) -> [Int]:
+    let n = arr.len()
+    let mut result = arr
+
+    for i in 1..n:
+        let key = result[i]
+        let mut j = i - 1
+
+        -- Shift elements greater than key
+        while j >= 0 && result[j] > key:
+            result[j + 1] = result[j]
+            j = j - 1
+
+        result[j + 1] = key
+
+    result
+
+-- Merge Sort - O(n log n) time, O(n) space
+-- Divide and conquer: split, sort halves, merge
+fn merge_sort(arr: [Int]) -> [Int]:
+    if arr.len() <= 1:
+        return arr
+
+    region r:
+        let mid = arr.len() / 2
+
+        -- Split array (consumes original)
+        let (left, right) = arr.split_at(mid)
+
+        -- Recursively sort both halves
+        let sorted_left = merge_sort(left)
+        let sorted_right = merge_sort(right)
+
+        -- Merge sorted halves
+        merge@r(sorted_left, sorted_right)
+
+-- Helper: Merge two sorted arrays
+fn merge@r(left: [Int], right: [Int]) -> [Int]:
+    let mut result = Vec.with_capacity@r(left.len() + right.len())
+    let mut i = 0
+    let mut j = 0
+
+    while i < left.len() && j < right.len():
+        if left[i] <= right[j]:
+            result.push(left[i])
+            i += 1
+        else:
+            result.push(right[j])
+            j += 1
+
+    -- Append remaining elements
+    while i < left.len():
+        result.push(left[i])
+        i += 1
+
+    while j < right.len():
+        result.push(right[j])
+        j += 1
+
+    result
+
+-- Quick Sort - O(n log n) average, O(n²) worst, O(log n) space
+-- Partition around pivot, recursively sort partitions
+fn quick_sort(arr: [Int]) -> [Int]:
+    if arr.len() <= 1:
+        return arr
+
+    region r:
+        -- Choose middle element as pivot
+        let pivot_idx = arr.len() / 2
+        let pivot = arr[pivot_idx]
+
+        -- Partition into three groups
+        let mut left = Vec.new@r()
+        let mut middle = Vec.new@r()
+        let mut right = Vec.new@r()
+
+        for x in arr.into_iter():
+            if x < pivot:
+                left.push(x)
+            else if x == pivot:
+                middle.push(x)
+            else:
+                right.push(x)
+
+        -- Recursively sort and concatenate
+        let sorted_left = quick_sort(left)
+        let sorted_right = quick_sort(right)
+
+        let mut result = sorted_left
+        result.extend(middle)
+        result.extend(sorted_right)
+        result
+
+-- Heap Sort - O(n log n) time, O(1) space
+-- Build max heap, repeatedly extract maximum
+fn heap_sort(arr: [Int]) -> [Int]:
+    let n = arr.len()
+    let mut result = arr
+
+    -- Build max heap
+    for i in (0..n/2).rev():
+        heapify(&mut result, n, i)
+
+    -- Extract elements from heap one by one
+    for i in (1..n).rev():
+        result.swap(0, i)
+        heapify(&mut result, i, 0)
+
+    result
+
+-- Helper: Maintain heap property
+fn heapify(arr: &mut [Int], n: Int, i: Int) -> ():
+    let mut largest = i
+    let left = 2 * i + 1
+    let right = 2 * i + 2
+
+    if left < n && arr[left] > arr[largest]:
+        largest = left
+
+    if right < n && arr[right] > arr[largest]:
+        largest = right
+
+    if largest != i:
+        arr.swap(i, largest)
+        heapify(arr, n, largest)
+
+-- Counting Sort - O(n + k) time, O(k) space
+-- Works well when range k is not significantly larger than n
+fn counting_sort(arr: [Int]) -> [Int]:
+    if arr.is_empty():
+        return arr
+
+    region r:
+        let min_val = arr.iter().min().unwrap()
+        let max_val = arr.iter().max().unwrap()
+        let range_size = max_val - min_val + 1
+
+        -- Count occurrences
+        let mut count = vec![0; range_size]@r
+        for &x in arr.iter():
+            count[(x - min_val) as usize] += 1
+
+        -- Build cumulative count
+        for i in 1..count.len():
+            count[i] += count[i - 1]
+
+        -- Build output array
+        let mut output = vec![0; arr.len()]@r
+        for &x in arr.iter().rev():
+            let idx = (x - min_val) as usize
+            count[idx] -= 1
+            output[count[idx]] = x
+
+        output
+
+-- Radix Sort - O(d * (n + k)) time
+-- Sort by individual digits, from least to most significant
+fn radix_sort(arr: [Int]) -> [Int]:
+    if arr.is_empty():
+        return arr
+
+    let max_val = arr.iter().max().unwrap()
+    let mut result = arr
+    let mut exp = 1
+
+    while max_val / exp > 0:
+        result = counting_sort_by_digit(result, exp)
+        exp *= 10
+
+    result
+
+-- Helper: Sort by specific digit
+fn counting_sort_by_digit(arr: [Int], exp: Int) -> [Int]:
+    region r:
+        let n = arr.len()
+        let mut output = vec![0; n]@r
+        let mut count = vec![0; 10]@r
+
+        -- Count occurrences of digit
+        for &x in arr.iter():
+            let idx = (x / exp) % 10
+            count[idx as usize] += 1
+
+        -- Cumulative count
+        for i in 1..10:
+            count[i] += count[i - 1]
+
+        -- Build output
+        for &x in arr.iter().rev():
+            let idx = (x / exp) % 10
+            count[idx as usize] -= 1
+            output[count[idx as usize]] = x
+
+        output
+
+-- Bucket Sort - O(n + k) average time
+-- Distribute elements into buckets, sort buckets, concatenate
+fn bucket_sort(arr: [Float], bucket_count: Int) -> [Float]:
+    if arr.is_empty():
+        return arr
+
+    region r:
+        let min_val = arr.iter().min().unwrap()
+        let max_val = arr.iter().max().unwrap()
+        let range = max_val - min_val
+
+        -- Create buckets
+        let mut buckets: [Vec<Float>] = (0..bucket_count)
+            .map(|_| Vec.new@r())
+            .collect@r()
+
+        -- Distribute elements into buckets
+        for &x in arr.iter():
+            let idx = if range == 0.0:
+                0
+            else:
+                ((x - min_val) / range * (bucket_count - 1) as Float) as Int
+            buckets[idx.min(bucket_count - 1) as usize].push(x)
+
+        -- Sort each bucket and concatenate
+        let mut result = Vec.new@r()
+        for bucket in buckets.into_iter():
+            let mut sorted_bucket = bucket
+            sorted_bucket.sort()  -- Use built-in sort for simplicity
+            result.extend(sorted_bucket)
+
+        result
+
+-- Demo and testing
+fn is_sorted(arr: &[Int]) -> Bool:
+    for i in 1..arr.len():
+        if arr[i - 1] > arr[i]:
+            return false
+    true
+
+fn generate_test_array@r(n: Int, max_val: Int) -> [Int]:
+    seed(42)
+    (0..n).map(|_| random_int(0, max_val)).collect@r()
+
+type TestCase = {
+    name: String,
+    array: [Int],
+}
+
+fn demo() -> ():
+    print("=".repeat(60))
+    print("Sorting Algorithms Demo - Ephapax")
+    print("=".repeat(60))
+
+    region r:
+        let test_cases: [TestCase] = [
+            TestCase { name: "Small array".to_string@r(), array: [64, 34, 25, 12, 22, 11, 90]@r },
+            TestCase { name: "Small random".to_string@r(), array: [5, 2, 8, 1, 9]@r },
+            TestCase { name: "Reverse sorted".to_string@r(), array: (1..=100).rev().collect@r() },
+            TestCase { name: "All same".to_string@r(), array: vec![1; 50]@r },
+            TestCase { name: "Random 100".to_string@r(), array: generate_test_array@r(100, 1000) },
+        ]
+
+        type Algorithm = {
+            name: String,
+            sort: fn([Int]) -> [Int],
+        }
+
+        let algorithms: [Algorithm] = [
+            Algorithm { name: "Bubble Sort".to_string@r(), sort: bubble_sort },
+            Algorithm { name: "Selection Sort".to_string@r(), sort: selection_sort },
+            Algorithm { name: "Insertion Sort".to_string@r(), sort: insertion_sort },
+            Algorithm { name: "Merge Sort".to_string@r(), sort: merge_sort },
+            Algorithm { name: "Quick Sort".to_string@r(), sort: quick_sort },
+            Algorithm { name: "Heap Sort".to_string@r(), sort: heap_sort },
+            Algorithm { name: "Counting Sort".to_string@r(), sort: counting_sort },
+            Algorithm { name: "Radix Sort".to_string@r(), sort: radix_sort },
+        ]
+
+        for test_case in test_cases.iter():
+            print("\n", "=".repeat(60))
+            print("Test case: ", &test_case.name)
+            print("Input size: ", test_case.array.len())
+            print("=".repeat(60))
+
+            for algo in algorithms.iter():
+                -- Clone array for each algorithm test
+                let arr_copy = test_case.array.clone@r()
+                let sorted = (algo.sort)(arr_copy)
+                let passed = is_sorted(&sorted)
+                let status = if passed { "✓ PASSED" } else { "✗ FAILED" }
+                print(status, " ", &algo.name)
+
+    print("\nDemo completed!")
+
+fn main() -> ():
+    demo()

@@ -1,0 +1,26 @@
+#!/bin/bash
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# wagasm-ssg commit-msg hook
+
+# Enforce conventional commits format
+commit_msg=$(cat "$1")
+
+# Pattern for conventional commits
+pattern="^(feat|fix|docs|style|refactor|test|chore|security|ci|build|perf)(\(.+\))?!?:\s.+"
+
+if ! echo "$commit_msg" | grep -qE "$pattern"; then
+    echo "ERROR: Commit message must follow conventional commits format"
+    echo ""
+    echo "Format: <type>(<scope>): <description>"
+    echo ""
+    echo "Types: feat, fix, docs, style, refactor, test, chore, security, ci, build, perf"
+    echo ""
+    echo "Examples:"
+    echo "  feat(wat): add markdown parsing support"
+    echo "  fix(host): correct file path handling"
+    echo "  docs: update README with build instructions"
+    echo "  ci: add WASM validation step"
+    echo ""
+    echo "Your message: $commit_msg"
+    exit 1
+fi

@@ -1,0 +1,18 @@
+{
+  "$schema": "./ssg/config-schema.json",
+  "name": "NoteG SSG Example Site",
+  "baseUrl": "https://example.com",
+  "language": "en",
+  "outputDir": "public",
+  "contentDir": "content",
+  "templateDir": "templates",
+  "theme": null,
+  "plugins": [],
+  "a11y": {
+    "enableBsl": true,
+    "enableGsl": false,
+    "enableAsl": true,
+    "enableMakaton": true,
+    "wcagLevel": "AA"
+  }
+}

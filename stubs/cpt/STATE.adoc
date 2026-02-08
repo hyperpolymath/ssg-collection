@@ -1,0 +1,37 @@
+= Project State
+:toc:
+
+== Metadata
+
+[cols="1,2"]
+|===
+|Project |cpt-ssg
+|Updated |2025-12-23
+|Language |QPL (Quantum Programming Language)
+|===
+
+== Position
+
+[cols="1,2"]
+|===
+|Phase |design
+|Maturity |experimental
+|===
+
+== Ecosystem
+
+[cols="1,2"]
+|===
+|Part of |https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp]
+|Satellite type |SSG adapter
+|MCP integration |Planned
+|===
+
+== Description
+
+A pure QPL (Quantum Programming Language) static site generator, demonstrating quantum-classical hybrid computation for document transformation. This project is a satellite of the poly-ssg-mcp ecosystem.
+
+== Dependencies
+
+* qpl-toolchain (QPL compiler and QRAM simulator)
+* Guix (package management)

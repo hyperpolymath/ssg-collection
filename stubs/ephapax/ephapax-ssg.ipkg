@@ -1,0 +1,17 @@
+-- SPDX-License-Identifier: PMPL-1.0-or-later
+-- Ephapax SSG - Idris2 Package File
+
+package ephapax-ssg
+
+version = 0.1.0
+authors = "Jonathan D.A. Jewell"
+license = "PMPL-1.0-or-later"
+
+depends = base >= 0.7.0
+
+sourcedir = "ssg"
+
+modules = Main
+
+main = Main
+executable = ephapax-ssg

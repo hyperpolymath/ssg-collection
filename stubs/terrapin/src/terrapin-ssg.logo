@@ -1,0 +1,183 @@
+; SPDX-License-Identifier: AGPL-3.0-or-later
+; terrapin-ssg - A static site generator written in Logo
+; Run with UCBLogo: logo terrapin-ssg.logo
+
+; Configuration
+make "site_title "TerrapinSite
+make "output_dir "_site
+make "content_dir "content
+
+; File utilities
+to read_file :filename
+  localmake "content []
+  openread :filename
+  setread :filename
+  while [not eofp] [
+    make "content lput readword :content
+  ]
+  close :filename
+  output :content
+end
+
+to write_file :filename :content
+  openwrite :filename
+  setwrite :filename
+  type :content
+  close :filename
+  setwrite []
+end
+
+; HTML generation
+to html_head :title
+  output (word
+    "<!DOCTYPE\ html>\n
+    "<html\ lang=\"en\">\n
+    "<head>\n
+    "\ \ <meta\ charset=\"UTF-8\">\n
+    "\ \ <meta\ name=\"viewport\"\ content=\"width=device-width,\ initial-scale=1.0\">\n
+    "\ \ <title> :title "</title>\n
+    "\ \ <style>\n
+    "\ \ \ \ body\ \{\ font-family:\ Georgia,\ serif;\ max-width:\ 800px;\ margin:\ 2rem\ auto;\ padding:\ 1rem;\ \}\n
+    "\ \ \ \ h1\ \{\ color:\ #228B22;\ \}\n
+    "\ \ \ \ nav\ a\ \{\ margin-right:\ 1rem;\ color:\ #2E8B57;\ \}\n
+    "\ \ \ \ .turtle-art\ \{\ margin:\ 2rem\ 0;\ \}\n
+    "\ \ </style>\n
+    "</head>\n
+    "<body>\n)
+end
+
+to html_foot
+  output "</body>\n</html>\n
+end
+
+; Turtle graphics to SVG
+to svg_start
+  make "svg_paths []
+  make "svg_x 250
+  make "svg_y 250
+  make "svg_angle -90
+  make "svg_pen_down "true
+  make "svg_color "#228B22
+  make "svg_current_path []
+end
+
+to svg_forward :dist
+  localmake "rad (:svg_angle * 3.14159 / 180)
+  localmake "newx (:svg_x + :dist * cos :rad)
+  localmake "newy (:svg_y + :dist * sin :rad)
+  if :svg_pen_down [
+    make "svg_current_path lput (list :svg_x :svg_y :newx :newy) :svg_current_path
+  ]
+  make "svg_x :newx
+  make "svg_y :newy
+end
+
+to svg_right :degrees
+  make "svg_angle (:svg_angle + :degrees)
+end
+
+to svg_left :degrees
+  make "svg_angle (:svg_angle - :degrees)
+end
+
+to svg_penup
+  make "svg_pen_down "false
+end
+
+to svg_pendown
+  make "svg_pen_down "true
+end
+
+to svg_setcolor :c
+  make "svg_color :c
+end
+
+to svg_render
+  localmake "result "<svg\ xmlns=\"http://www.w3.org/2000/svg\"\ viewBox=\"0\ 0\ 500\ 500\"\ width=\"500\"\ height=\"500\">\n
+  make "result (word :result "\ \ <rect\ width=\"500\"\ height=\"500\"\ fill=\"#f5f5dc\"/>\n)
+  foreach :svg_current_path [
+    localmake "p ?
+    make "result (word :result
+      "\ \ <line\ x1=\" first :p "\"\ y1=\" item 2 :p
+      "\"\ x2=\" item 3 :p "\"\ y2=\" last :p
+      "\"\ stroke=\" :svg_color "\"\ stroke-width=\"2\"/>\n)
+  ]
+  make "result (word :result "</svg>\n)
+  output :result
+end
+
+; Draw a square (example turtle graphic)
+to square :size
+  repeat 4 [svg_forward :size svg_right 90]
+end
+
+; Draw a spiral
+to spiral :size :angle :count
+  if :count < 1 [stop]
+  svg_forward :size
+  svg_right :angle
+  spiral (:size + 2) :angle (:count - 1)
+end
+
+; Draw a star
+to star :size
+  repeat 5 [svg_forward :size svg_right 144]
+end
+
+; Build a page with turtle art
+to build_page :slug :title :draw_proc
+  svg_start
+  run :draw_proc
+  localmake "svg svg_render
+  localmake "html (word
+    (html_head (word :title "\ -\ :site_title))
+    "\ \ <a\ href=\"index.html\">&larr;\ Back</a>\n
+    "\ \ <h1> :title "</h1>\n
+    "\ \ <div\ class=\"turtle-art\">\n
+    :svg
+    "\ \ </div>\n
+    html_foot)
+  write_file (word :output_dir "/ :slug ".html) :html
+  print (sentence "Built :slug ".html)
+end
+
+; Build the index page
+to build_index :pages
+  localmake "html (html_head :site_title)
+  make "html (word :html "\ \ <h1> :site_title "</h1>\n)
+  make "html (word :html "\ \ <nav>\n)
+  foreach :pages [
+    make "html (word :html "\ \ \ \ <a\ href=\" first ? ".html\"> last ? "</a>\n)
+  ]
+  make "html (word :html "\ \ </nav>\n html_foot)
+  write_file (word :output_dir "/index.html) :html
+  print "Built\ index.html
+end
+
+; Main build procedure
+to build
+  ; Create output directory (using shell)
+  (shell (list "mkdir "-p :output_dir))
+
+  ; Define the pages to build
+  localmake "pages [
+    [square "Square\ Art]
+    [spiral "Spiral\ Art]
+    [star "Star\ Art]
+  ]
+
+  ; Build each page
+  build_page "square "Square\ Art [square 100]
+  build_page "spiral "Spiral\ Art [spiral 5 30 50]
+  build_page "star "Star\ Art [star 150]
+
+  ; Build index
+  build_index :pages
+
+  print (sentence "Built count :pages "pages\ to :output_dir)
+end
+
+; Run the build
+print [Terrapin SSG - Logo Static Site Generator]
+build
+bye

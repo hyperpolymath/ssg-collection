@@ -1,0 +1,47 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// NoteG SSG - Base Template
+
+template base {
+  let siteName = site.name
+  let pageTitle = page.title
+  let content = body
+
+  <!DOCTYPE html>
+  <html lang="{{ site.language }}">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ pageTitle }} - {{ siteName }}</title>
+    <link rel="stylesheet" href="/css/style.css">
+
+    // Accessibility metadata
+    if page.a11y.bsl {
+      <link rel="alternate" type="video/mp4" href="{{ page.a11y.bsl.videoUrl }}" title="BSL interpretation">
+    }
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to main content</a>
+
+    <header role="banner">
+      <nav role="navigation" aria-label="Main navigation">
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/docs">Documentation</a></li>
+          <li><a href="/about">About</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main id="main" role="main">
+      <article>
+        <h1>{{ pageTitle }}</h1>
+        {{ content }}
+      </article>
+    </main>
+
+    <footer role="contentinfo">
+      <p>&copy; 2025 {{ siteName }}. All rights reserved.</p>
+    </footer>
+  </body>
+  </html>
+}

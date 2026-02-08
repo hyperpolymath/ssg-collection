@@ -1,0 +1,117 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+# Mustfile.epx - Ephapax deployment contract for rats-ssg
+
+# Authority-first deployment specification for rats-ssg MCP Server
+# Integrates with justfile for local tasks, governs deployment state transitions
+
+let MustSpec = {
+  version = "0.1.0",
+  name = "rats-ssg",
+  description = "MCP Server hub for 28 static site generators",
+
+  # Package metadata
+  package = {
+    name = "@hyperpolymath/rats-ssg",
+    version = "0.2.0",
+    license = "AGPL-3.0-or-later",
+    repository = "https://github.com/hyperpolymath/rats-ssg",
+  },
+
+  # Language policy enforcement
+  languages = {
+    allowed = [
+      "ReScript",
+      "JavaScript",  # Minimal glue only
+      "Nickel",
+      "Bash",
+    ],
+    banned = [
+      "TypeScript",
+      "Go",
+      "Python",
+      "Java",
+      "Kotlin",
+      "Swift",
+    ],
+  },
+
+  # Runtime requirements
+  runtime = {
+    primary = "deno",
+    version = ">=2.1.0",
+    fallback = null,
+  },
+
+  # Build tools
+  tools = {
+    required = [
+      { name = "deno", version = ">=2.1.0" },
+      { name = "just", version = ">=1.38.0" },
+      { name = "nickel", version = ">=1.9.0" },
+      { name = "rescript", version = ">=11.0.0" },
+    ],
+    optional = [
+      { name = "podman", version = ">=4.0.0" },
+    ],
+  },
+
+  # Deployment targets
+  targets = {
+    development = {
+      shell = "bash",
+      command = "just dev",
+    },
+    production = {
+      shell = "bash",
+      command = "just serve",
+    },
+    container = {
+      shell = "bash",
+      command = "just container-build && just container-run",
+    },
+  },
+
+  # State transitions (Ephapax Linear Logic)
+  transitions = {
+    # Clean → Built
+    build = {
+      from = "clean",
+      to = "built",
+      command = "just build",
+      validates = ["just check-all"],
+    },
+
+    # Built → Deployed
+    deploy = {
+      from = "built",
+      to = "deployed",
+      command = "just container-push",
+      requires = ["CI_REGISTRY"],
+    },
+
+    # Any → Clean
+    reset = {
+      from = "*",
+      to = "clean",
+      command = "just clean",
+    },
+  },
+
+  # Security constraints
+  security = {
+    no_secrets_in_code = true,
+    no_eval = true,
+    https_only = true,
+    spdx_headers = true,
+    sha_pinned_actions = true,
+  },
+
+  # Enforcement hooks
+  hooks = {
+    pre_commit = "just pre-commit",
+    pre_push = "just pre-push",
+    ci = "just ci",
+  },
+}
+in MustSpec

@@ -1,0 +1,653 @@
+// SPDX-License-Identifier: MPL-2.0-or-later
+// SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+= zigzag-ssg Cookbook
+:toc: left
+:toclevels: 3
+:sectanchors:
+:sectlinks:
+:source-highlighter: rouge
+
+The complete recipe collection for zigzag-ssg development and operations.
+
+== Quick Reference
+
+[cols="1,2,3"]
+|===
+|Task |Just Command |Must Command
+
+|Build
+|`just build`
+|`must-build`
+
+|Test
+|`just test`
+|`must-test`
+
+|Format
+|`just fmt`
+|`must-fmt`
+
+|All Checks
+|`just check`
+|`must-check`
+
+|Pre-Release
+|`just ci`
+|`must-release`
+|===
+
+[[cli]]
+== CLI Recipes
+
+Command-line recipes for direct Zig toolchain usage.
+
+=== Building
+
+[[cli-build]]
+==== Standard Build
+
+[source,bash]
+----
+# Build debug binary
+zig build
+
+# Build release binary
+zig build -Doptimize=ReleaseFast
+
+# Build for specific target (cross-compilation)
+zig build -Dtarget=aarch64-linux-gnu
+zig build -Dtarget=x86_64-windows-gnu
+zig build -Dtarget=wasm32-freestanding
+----
+
+[[cli-clean]]
+==== Clean Build Artifacts
+
+[source,bash]
+----
+rm -rf zig-cache zig-out
+----
+
+=== Testing
+
+[[cli-test]]
+==== Run Tests
+
+[source,bash]
+----
+# Run all unit tests
+zig build test
+
+# Run with verbose output
+zig build test 2>&1 | cat
+
+# Run specific test (Zig 0.12+)
+zig build test --test-filter "frontmatter"
+----
+
+[[cli-test-manual]]
+==== Manual Test Commands
+
+[source,bash]
+----
+# Test markdown parsing
+zig build run -- test-markdown
+
+# Test frontmatter parsing
+zig build run -- test-frontmatter
+
+# Full pipeline test
+zig build run -- test-full
+----
+
+=== Formatting
+
+[[cli-fmt]]
+==== Format Code
+
+[source,bash]
+----
+# Format all Zig files
+zig fmt src/
+
+# Check formatting (CI mode)
+zig fmt --check src/
+----
+
+=== Running
+
+[[cli-run]]
+==== Execute Binary
+
+[source,bash]
+----
+# Build and run
+zig build run
+
+# Run with arguments
+zig build run -- test-markdown
+zig build run -- --help
+----
+
+=== Adapter
+
+[[cli-adapter]]
+==== MCP Adapter Commands
+
+[source,bash]
+----
+# Install adapter dependencies
+cd adapters && npm install
+
+# Build ReScript adapter
+cd adapters && npm run build
+
+# Watch mode
+cd adapters && npm run watch
+
+# Clean
+cd adapters && npm run clean
+----
+
+[[just]]
+== Just Recipes
+
+The Justfile provides convenient shortcuts for common tasks.
+
+=== Installation
+
+[source,bash]
+----
+# Install Just
+cargo install just
+
+# Or via package manager
+brew install just      # macOS
+apt install just       # Debian/Ubuntu
+pacman -S just         # Arch
+----
+
+=== Build Recipes
+
+[[just-build]]
+==== Build Commands
+
+[source,bash]
+----
+just build          # Debug build
+just release        # Release build
+just debug          # Debug with symbols
+just clean          # Remove artifacts
+just build-target aarch64-linux-gnu  # Cross-compile
+----
+
+=== Test Recipes
+
+[[just-test]]
+==== Test Commands
+
+[source,bash]
+----
+just test           # Unit tests
+just test-verbose   # With output
+just test-e2e       # End-to-end
+just test-markdown  # Markdown parser
+just test-frontmatter  # Frontmatter parser
+just test-all       # Everything
+----
+
+=== Quality Recipes
+
+[[just-quality]]
+==== Quality Commands
+
+[source,bash]
+----
+just fmt            # Format code
+just fmt-check      # Check format
+just lint           # Run linter
+just check          # All quality checks
+just pre-commit     # Before committing
+just ci             # Full CI simulation
+----
+
+=== Adapter Recipes
+
+[[just-adapter]]
+==== Adapter Commands
+
+[source,bash]
+----
+just adapter-build  # Build adapter
+just adapter-clean  # Clean adapter
+just adapter-watch  # Watch mode
+----
+
+=== Utility Recipes
+
+[[just-utility]]
+==== Utility Commands
+
+[source,bash]
+----
+just info           # Project info
+just status         # Component status
+just setup          # Install dev tools
+just language-check # Verify Zig-only
+----
+
+=== Combination Recipes
+
+[[just-combos]]
+==== Command Combinations
+
+[source,bash]
+----
+just btf            # Build + Test + Format
+just cbt            # Clean + Build + Test
+just dev            # Full development cycle
+just quick          # Format + Build + Run
+----
+
+=== Aliases
+
+[source,bash]
+----
+just b  # build
+just t  # test
+just r  # run
+just f  # fmt
+just c  # check
+just w  # watch
+----
+
+[[must]]
+== Mustfile Recipes
+
+Must-pass quality gates that are NON-NEGOTIABLE.
+
+=== Individual Gates
+
+[[must-gates]]
+==== Quality Gates
+
+[source,bash]
+----
+must-build          # Build must succeed
+must-test           # Tests must pass
+must-fmt            # Format must be correct
+must-language       # Only Zig in src/
+must-no-secrets     # No secrets in code
+must-security-todos # No security TODOs
+must-docs           # Documentation exists
+must-spdx           # SPDX headers present
+must-scm            # SCM files present
+----
+
+=== Composite Gates
+
+[[must-composite]]
+==== Composite Commands
+
+[source,bash]
+----
+must-check          # Pre-commit (fmt + build + test + language)
+must-merge          # Pre-merge (check + docs + spdx + scm)
+must-release        # Pre-release (merge + security)
+must-security       # Security audit
+----
+
+[[nickel]]
+== Nickel Configuration (Future)
+
+Configuration management with Nickel language.
+
+=== Planned Configuration
+
+[[nickel-config]]
+==== Site Configuration
+
+[source,nickel]
+----
+# zigzag.ncl - Site configuration
+{
+  site = {
+    title = "My Site",
+    description = "Built with zigzag-ssg",
+    base_url = "https://example.com",
+  },
+
+  build = {
+    output_dir = "_site",
+    content_dir = "content",
+    template_dir = "templates",
+    drafts = false,
+  },
+
+  markdown = {
+    smart_quotes = true,
+    syntax_highlighting = true,
+    table_of_contents = true,
+  },
+}
+----
+
+[[nickel-validation]]
+==== Schema Validation
+
+[source,nickel]
+----
+# Validate configuration
+let SiteConfig = {
+  site : {
+    title : String,
+    description : String,
+    base_url : String,
+  },
+  build : {
+    output_dir : String,
+    content_dir : String,
+    drafts : Bool,
+  },
+} in
+
+let config = import "zigzag.ncl" in
+config : SiteConfig
+----
+
+[[nickel-eval]]
+==== Evaluation
+
+[source,bash]
+----
+# Evaluate configuration
+just nickel-eval
+
+# Or directly
+nickel eval zigzag.ncl
+
+# Export to JSON
+nickel export zigzag.ncl > config.json
+----
+
+[[containers]]
+== Container Recipes
+
+Container-based workflows for isolated builds.
+
+=== Building Images
+
+[[container-build]]
+==== Build Container
+
+[source,bash]
+----
+# With Podman
+podman build -t zigzag-ssg .
+
+# With Docker
+docker build -t zigzag-ssg .
+
+# Or via Just
+just container
+----
+
+=== Running Containers
+
+[[container-run]]
+==== Run Container
+
+[source,bash]
+----
+# Interactive
+podman run --rm -it zigzag-ssg
+
+# With volume mount
+podman run --rm -v $(pwd):/site zigzag-ssg build
+
+# Specific command
+podman run --rm zigzag-ssg test-markdown
+----
+
+[[ci-cd]]
+== CI/CD Recipes
+
+Continuous integration and deployment patterns.
+
+=== GitHub Actions
+
+[[cicd-github]]
+==== Workflow Trigger
+
+[source,yaml]
+----
+# .github/workflows/ci.yml triggers on:
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+----
+
+=== Local CI Simulation
+
+[[cicd-local]]
+==== Simulate CI Locally
+
+[source,bash]
+----
+# Run full CI pipeline
+just ci
+
+# Or step by step
+just fmt-check
+just build
+just test
+just test-e2e
+just language-check
+----
+
+[[hooks]]
+== Hook Recipes
+
+Git hooks and build hooks for automation.
+
+=== Git Hooks
+
+[[hooks-git]]
+==== Pre-commit Hook
+
+[source,bash]
+----
+#!/bin/bash
+# .git/hooks/pre-commit
+just pre-commit || exit 1
+----
+
+[[hooks-pre-push]]
+==== Pre-push Hook
+
+[source,bash]
+----
+#!/bin/bash
+# .git/hooks/pre-push
+must-check || exit 1
+----
+
+=== Build Hooks (Future)
+
+[[hooks-build]]
+==== Build Hook Structure
+
+[source,zig]
+----
+// hooks/pre-build.zig
+const std = @import("std");
+
+pub fn main() !void {
+    // Validate content before build
+    std.debug.print("Pre-build hook running...\n", .{});
+}
+----
+
+[[troubleshooting]]
+== Troubleshooting
+
+Common issues and solutions.
+
+=== Build Failures
+
+[[trouble-build]]
+==== Zig Not Found
+
+[source,bash]
+----
+# Check Zig installation
+zig version
+
+# Install via asdf
+asdf plugin add zig
+asdf install zig 0.11.0
+asdf global zig 0.11.0
+
+# Or download from ziglang.org
+----
+
+=== Test Failures
+
+[[trouble-test]]
+==== Debug Test Failures
+
+[source,bash]
+----
+# Run with verbose output
+just test-verbose
+
+# Run specific test
+zig build test -- --test-filter "markdown"
+----
+
+=== Format Issues
+
+[[trouble-fmt]]
+==== Fix Formatting
+
+[source,bash]
+----
+# Auto-fix formatting
+just fmt
+
+# Check what would change
+zig fmt --check src/ 2>&1 | head -20
+----
+
+[[reference]]
+== Reference
+
+=== Command Summary Table
+
+[cols="1,1,2"]
+|===
+|Category |Command |Description
+
+|Build
+|`just build`
+|Standard debug build
+
+|Build
+|`just release`
+|Optimized release build
+
+|Test
+|`just test`
+|Run all unit tests
+
+|Test
+|`just test-e2e`
+|End-to-end tests
+
+|Format
+|`just fmt`
+|Format all code
+
+|Quality
+|`just check`
+|All quality checks
+
+|Quality
+|`must-check`
+|Must-pass gates
+
+|Release
+|`must-release`
+|Pre-release validation
+
+|Container
+|`just container`
+|Build container image
+
+|CI
+|`just ci`
+|Full CI simulation
+|===
+
+=== Environment Variables
+
+[cols="1,2,1"]
+|===
+|Variable |Description |Default
+
+|`ZIGZAG_OUTPUT_DIR`
+|Output directory for built site
+|`_site`
+
+|`ZIGZAG_CONTENT_DIR`
+|Source content directory
+|`content`
+
+|`ZIGZAG_TEMPLATE_DIR`
+|Template directory
+|`templates`
+
+|`ZIGZAG_WATCH`
+|Enable watch mode
+|`false`
+
+|`ZIGZAG_VERBOSE`
+|Verbose output
+|`false`
+
+|`ZIGZAG_DRAFT`
+|Include draft content
+|`false`
+|===
+
+=== File Locations
+
+[cols="1,2"]
+|===
+|File |Purpose
+
+|`Justfile`
+|Development task runner
+
+|`Mustfile`
+|Must-pass quality gates
+
+|`build.zig`
+|Zig build configuration
+
+|`Containerfile`
+|Container image definition
+
+|`.tool-versions`
+|asdf tool versions
+
+|`.env.example`
+|Environment template
+|===
+
+---
+
+_Part of the zigzag-ssg documentation suite._
+_See also: README.adoc, SECURITY.md, CONTRIBUTING.md_

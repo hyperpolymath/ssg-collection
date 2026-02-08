@@ -1,0 +1,136 @@
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+= Gungir-SSG
+
+
+
+:toc: preamble
+:toclevels: 2
+:icons: font
+:source-highlighter: rouge
+:experimental:
+
+*Static site generator in Odin — data-oriented publishing with predictable performance*
+
+image:https://img.shields.io/badge/language-Odin-blue[Odin]
+image:https://img.shields.io/badge/MCP-compatible-purple[MCP Compatible]
+
+'''
+
+== Why Odin for Static Site Generation?
+
+Content pipelines are inherently data-oriented: parse source files, transform structured data, emit output. Odin's design philosophy—data-oriented programming with predictable, explicit control—maps directly to this domain.
+
+=== Data-Oriented Pipelines
+
+Odin provides first-class SOA (Structure of Arrays) data types and array programming primitives. Content processing becomes natural iteration over homogeneous data:
+
+[source,odin]
+----
+pages: [dynamic]Page
+for &page in pages {
+    page.html = render(page.content, templates[page.layout])
+}
+----
+
+No hidden allocations. No iterator abstractions. Just data flowing through transformations.
+
+=== Predictable Performance
+
+No garbage collector. No runtime pauses. Memory allocation is explicit and visible:
+
+[source,odin]
+----
+arena := virtual.arena_init()
+defer virtual.arena_destroy(&arena)
+allocator := virtual.arena_allocator(&arena)
+
+// All page processing uses arena allocation
+// Single deallocation when build completes
+----
+
+Build times scale linearly with content size. What you measure is what you get.
+
+=== Orthogonal Simplicity
+
+Odin's context system enables clean customization without global state or macro complexity:
+
+[source,odin]
+----
+context.allocator = tracking_allocator  // Track all allocations
+context.logger = file_logger            // Redirect all logging
+build_site(config)                      // No API changes needed
+----
+
+Third-party libraries respect your context. Debugging and profiling require no special builds.
+
+== Target Audience
+
+* **Systems programmers** seeking a web toolchain that respects their expectations
+* **Odin developers** wanting practical applications beyond games and graphics
+* **Performance engineers** who distrust GC pauses in build pipelines
+* **Minimalists** frustrated by JavaScript SSG dependency graphs
+
+== Architecture
+
+----
+gungir-ssg
+├── src/
+│   ├── parser/       # Markdown, frontmatter, templates
+│   ├── transform/    # Content processing, linking
+│   ├── emit/         # HTML, RSS, sitemap generation
+│   └── main.odin     # CLI and orchestration
+├── adapters/         # ReScript MCP adapter bindings
+└── templates/        # Default site templates
+----
+
+== Quick Start
+
+[source,bash]
+----
+# Clone the repository
+git clone https://github.com/hyperpolymath/gungir-ssg.git
+cd gungir-ssg
+
+# Build
+odin build src -out:gungir
+
+# Generate a site
+./gungir build --source content/ --output dist/
+
+# Development server with live reload
+./gungir serve --source content/ --port 8080
+----
+
+== Ecosystem Integration
+
+Gungir-SSG operates as a standalone tool with optional MCP integration:
+
+[cols="1,2"]
+|===
+|Component |Purpose
+
+|**gungir** (this repo)
+|Core SSG binary in Odin
+
+|**poly-ssg-mcp**
+|Unified MCP server exposing 28+ SSGs including Gungir
+
+|**ReScript adapter**
+|Type-safe bindings for MCP tool invocation
+|===
+
+The poly-mcp portfolio (https://github.com/hyperpolymath[hyperpolymath]) provides unified interfaces across domains: `poly-container-mcp`, `poly-iac-mcp`, `poly-k8s-mcp`, `poly-cloud-mcp`, and others. Gungir is the Odin implementation within `poly-ssg-mcp`.
+
+== Licence
+
+PMPL-1.0-or-later — See link:LICENSE.txt[LICENSE.txt]
+
+Copyright (C) 2025 Jonathan D.A. Jewell
+
+== Links
+
+* https://github.com/hyperpolymath/gungir-ssg[Repository]
+* https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp Hub]
+* https://odin-lang.org/[Odin Programming Language]

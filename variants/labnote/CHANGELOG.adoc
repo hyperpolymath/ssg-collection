@@ -1,0 +1,82 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+== [Unreleased]
+
+=== Added
+- Nickel configuration schemas (planned)
+- Additional adapter tests
+- User guide documentation
+
+== [0.3.0] - 2025-12-22
+
+=== Added
+- Build system with Justfile and Mustfile
+- Comprehensive cookbook.adoc with CLI, Just, Nickel recipes
+- Full CI/CD pipeline with Deno setup
+- Git hooks (pre-commit, pre-push, commit-msg)
+- Container support with Containerfile
+- Basic test suite for adapter validation
+- asdf .tool-versions file
+- PLAYBOOK.scm - Operational playbooks
+- AGENTIC.scm - AI agent configuration
+- NEUROSYM.scm - Neurosymbolic patterns
+
+=== Changed
+- Expanded META.scm with component matrix
+- Expanded ECOSYSTEM.scm with integration points
+- Updated STATE.scm with 44-component tracking
+- Fixed CONTRIBUTING.md template placeholders
+
+=== Security
+- Added security checks to CI pipeline
+- Hooks enforce secure command patterns
+
+== [0.2.0] - 2025-12-17
+
+=== Added
+- Complete SECURITY.md with vulnerability reporting process
+- Comprehensive README.adoc documentation
+
+=== Changed
+- Updated all SCM files with correct project name
+- Removed template placeholders from SECURITY.md
+
+=== Security
+- Reviewed all 28 adapters for command injection vulnerabilities
+- Verified Deno.Command usage with array arguments
+
+== [0.1.0] - 2025-12-16
+
+=== Added
+- Initial 28 SSG adapters for poly-ssg-mcp integration
+- Adapters for Rust, Elixir, Haskell, Clojure, Lisp, Julia, Scala, and more
+- RSR-compliant repository structure
+- CodeQL SAST workflow
+- Dependabot configuration
+- Issue templates
+- Code of Conduct
+
+=== Security
+- All adapters use safe Deno.Command execution
+- No shell string evaluation
+- SPDX license headers on all files
+
+== [0.0.1] - 2025-12-15
+
+=== Added
+- Initial repository setup
+- META.scm, ECOSYSTEM.scm, STATE.scm
+- RSR compliance foundations
+- Basic .gitignore and .gitattributes
+
+[Unreleased]: https://github.com/hyperpolymath/labnote-ssg/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/hyperpolymath/labnote-ssg/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/hyperpolymath/labnote-ssg/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/hyperpolymath/labnote-ssg/compare/v0.0.1...v0.1.0
+[0.0.1]: https://github.com/hyperpolymath/labnote-ssg/releases/tag/v0.0.1

@@ -1,0 +1,137 @@
+= cpt-ssg
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+
+
+
+:toc:
+:sectnums:
+
+// Badges
+image:https://img.shields.io/badge/RSR-Compliant-cd7f32[RSR Compliant,link=https://github.com/hyperpolymath/rhodium-standard-repositories]
+image:https://img.shields.io/badge/poly--ssg-satellite-blue[poly-ssg satellite,link=https://github.com/hyperpolymath/poly-ssg-mcp]
+image:https://img.shields.io/badge/Status-Experimental-orange[Status]
+
+*Pure QPL (Quantum Programming Language) static site generator.*
+
+Proving quantum-classical hybrid computation is viable for document transformation, not just physics simulation.
+
+== Who Is This For?
+
+* **Quantum computing researchers** exploring practical QPL applications beyond algorithms
+* **Functional programmers** curious about quantum data semantics
+* **Language enthusiasts** who appreciate Selinger's elegant type system
+* **Adventurous developers** seeking to build sites with measurement-based control flow
+
+== Why cpt-ssg?
+
+=== QPL as Source
+
+Hand-written QPL code—not compiled from classical languages. Your site generation logic exists as quantum procedures with classical control.
+
+=== Classical Control, Quantum Data
+
+[source,qpl]
+----
+proc build_page(content : qbit[]) : bit[] =
+  let parsed = measure(parse_markdown(content)) in
+  let templated = apply_template(parsed) in
+  measure(emit_html(templated))
+----
+
+The hallmark of QPL: classical control flow orchestrating quantum data transformations. Conditionals, loops, and recursion remain classical while operating on quantum state.
+
+=== Type-Safe Quantum Semantics
+
+QPL's linear type system ensures no-cloning compliance. Quantum data cannot be duplicated—only measured or transformed. This constraint, far from limiting, provides correctness guarantees classical SSGs cannot offer.
+
+=== QRAM Architecture
+
+Built for the QRAM machine model: a classical controller directing a quantum coprocessor. Your content pipeline maps naturally to this paradigm—classical orchestration with quantum acceleration for pattern matching and template instantiation.
+
+== Quick Start
+
+[source,bash]
+----
+# Ensure QRAM simulator is available
+guix shell qpl-toolchain
+
+# Compile QPL to executable
+qplc cpt-ssg.qpl -o ssg.qram
+
+# Generate site
+./ssg.qram --input content/ --output _site/
+----
+
+== Architecture
+
+[source]
+----
+┌─────────────────────────────────────────┐
+│           cpt-ssg.qpl                   │
+│  ┌─────────────────────────────────┐    │
+│  │  Classical Control Layer        │    │
+│  │  - File iteration               │    │
+│  │  - Directory traversal          │    │
+│  │  - Output coordination          │    │
+│  └──────────────┬──────────────────┘    │
+│                 │                       │
+│  ┌──────────────▼──────────────────┐    │
+│  │  Quantum Data Pipeline          │    │
+│  │  - Markdown superposition       │    │
+│  │  - Template entanglement        │    │
+│  │  - Measurement → HTML           │    │
+│  └─────────────────────────────────┘    │
+└─────────────────────────────────────────┘
+                  │
+                  ▼
+        ┌─────────────────┐
+        │    host.scm     │
+        │  (File I/O only)│
+        └─────────────────┘
+----
+
+All SSG logic—parsing, templating, routing—lives in QPL. The Scheme host handles only filesystem operations, maintaining the clean separation between quantum computation and classical I/O.
+
+== Core Concepts
+
+=== Measurement-Driven Rendering
+
+Unlike classical SSGs that transform deterministically, cpt-ssg uses quantum measurement to collapse content superpositions. A page in draft state exists in superposition until `measure` extracts its final form.
+
+=== Entangled Templates
+
+Templates and content share quantum entanglement. Modifying a template's quantum state instantly reflects across all pages—no rebuild required for correlated updates.
+
+=== Linear Resource Management
+
+QPL's linear types ensure each content file is processed exactly once. No accidental double-processing, no orphaned outputs. The type system enforces SSG correctness.
+
+== Requirements
+
+* **qpl-toolchain**: QPL compiler and QRAM simulator
+* **Guix**: `guix shell -D -f guix.scm`
+* **Optional**: Hardware QRAM backend for production builds
+
+== Part of poly-ssg
+
+cpt-ssg is a satellite of the https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp] ecosystem—a unified interface for static site generators across the programming language spectrum.
+
+Integration via MCP enables:
+
+* Consistent CLI across all poly-ssg generators
+* Unified configuration schema
+* Cross-generator content sharing
+* Orchestrated multi-language builds
+
+== References
+
+* Selinger, P. (2004). "Towards a Quantum Programming Language." _Mathematical Structures in Computer Science_, 14(4), 527-586.
+* https://www.mathstat.dal.ca/~selinger/papers/qpl.pdf[Original QPL Paper]
+* https://quantiki.org/wiki/quantum-programming-language[Quantiki: QPL Overview]
+
+== License
+
+SPDX-License-Identifier: PMPL-1.0-or-later-or-later
+
+Dual-licensed under PMPL-1.0-or-later for open source use.

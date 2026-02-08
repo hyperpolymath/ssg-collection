@@ -1,0 +1,10 @@
+{
+  "siteTitle": "Befunge Gallery",
+  "baseUrl": "/",
+  "inputDir": "site",
+  "outputDir": "dist",
+  "programsDir": "programs",
+  "assetsDir": "assets",
+  "maxGridWidth": 160,
+  "maxGridHeight": 80
+}

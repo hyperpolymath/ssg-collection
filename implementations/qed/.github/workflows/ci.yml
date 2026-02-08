@@ -1,0 +1,301 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# RSR-compliant CI workflow with SHA-pinned actions
+# Uses ReScript + Deno stack (no TypeScript/npm)
+
+name: CI
+
+on:
+  push:
+    branches: ["main", "develop"]
+  pull_request:
+    branches: ["main"]
+
+permissions: read-all
+
+env:
+  DENO_VERSION: "1.40.0"
+
+jobs:
+  # ============================================================================
+  # LANGUAGE POLICY ENFORCEMENT
+  # ============================================================================
+  enforce-policy:
+    name: Language Policy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Check for banned TypeScript files
+        run: |
+          if find . -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.mts" -o -name "*.cts" \) \
+              -not -path "./node_modules/*" -not -path "./.git/*" 2>/dev/null | grep -q .; then
+            echo "ERROR: TypeScript files detected. Use ReScript instead."
+            find . -type f \( -name "*.ts" -o -name "*.tsx" \) -not -path "./node_modules/*" -not -path "./.git/*"
+            exit 1
+          fi
+          echo "No banned TypeScript files"
+
+      - name: Check for banned npm/Node.js files
+        run: |
+          if [ -f "package.json" ] || [ -f "package-lock.json" ] || [ -f ".npmrc" ]; then
+            echo "ERROR: npm/Node.js files detected. Use Deno instead."
+            exit 1
+          fi
+          echo "No banned npm files"
+
+      - name: Check for banned Bun files
+        run: |
+          if [ -f "bun.lockb" ] || [ -f "bunfig.toml" ]; then
+            echo "ERROR: Bun files detected. Use Deno instead."
+            exit 1
+          fi
+          echo "No banned Bun files"
+
+      - name: Check for banned yarn/pnpm files
+        run: |
+          if [ -f "yarn.lock" ] || [ -f ".yarnrc" ] || [ -f "pnpm-lock.yaml" ]; then
+            echo "ERROR: yarn/pnpm files detected. Use Deno instead."
+            exit 1
+          fi
+          echo "No banned yarn/pnpm files"
+
+      - name: Check for banned Makefile
+        run: |
+          if [ -f "Makefile" ] || [ -f "makefile" ] || [ -f "GNUmakefile" ]; then
+            echo "ERROR: Makefile detected. Use Justfile instead."
+            exit 1
+          fi
+          echo "No banned Makefiles"
+
+      - name: Check for banned Go files
+        run: |
+          if find . -type f \( -name "*.go" -o -name "go.mod" \) -not -path "./.git/*" 2>/dev/null | grep -q .; then
+            echo "ERROR: Go files detected. Use Rust instead."
+            exit 1
+          fi
+          echo "No banned Go files"
+
+  # ============================================================================
+  # LINT JOB
+  # ============================================================================
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    needs: [enforce-policy]
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.2
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Check formatting (adapters)
+        run: |
+          if [ -d "adapters" ] && ls adapters/*.js 1> /dev/null 2>&1; then
+            deno fmt --check adapters/
+          else
+            echo "No adapters to format check yet"
+          fi
+
+      - name: Lint JavaScript (adapters)
+        run: |
+          if [ -d "adapters" ] && ls adapters/*.js 1> /dev/null 2>&1; then
+            deno lint adapters/
+          else
+            echo "No adapters to lint yet"
+          fi
+
+      - name: Check SPDX headers
+        run: |
+          failed=0
+          for dir in adapters src; do
+            if [ -d "$dir" ]; then
+              for f in $(find "$dir" -name "*.js" -o -name "*.res"); do
+                if ! head -3 "$f" | grep -q 'SPDX-License-Identifier'; then
+                  echo "Missing SPDX header: $f"
+                  failed=1
+                fi
+              done
+            fi
+          done
+          if [ $failed -eq 1 ]; then exit 1; fi
+          echo "All SPDX headers present"
+
+  # ============================================================================
+  # TEST JOB
+  # ============================================================================
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: [enforce-policy]
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.2
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Run unit tests
+        run: |
+          if [ -d "tests/unit" ] && ls tests/unit/*.res.js 1> /dev/null 2>&1; then
+            deno test --allow-read --allow-run tests/unit/
+          else
+            echo "No unit tests to run yet (ReScript tests pending compilation)"
+          fi
+
+      - name: Run tests with coverage
+        run: |
+          if [ -d "adapters" ] && ls adapters/*.js 1> /dev/null 2>&1; then
+            deno test --coverage=coverage/ --allow-read --allow-run adapters/
+            deno coverage coverage/ --lcov > coverage.lcov
+          else
+            echo "No adapters to test with coverage yet"
+          fi
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@13ce3aa6a8f2324fef00519cbe4deef7cc2e0e61 # v5.3.1
+        with:
+          files: coverage.lcov
+          fail_ci_if_error: false
+        if: hashFiles('coverage.lcov') != ''
+
+  # ============================================================================
+  # SECURITY AUDIT JOB
+  # ============================================================================
+  security:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    needs: [enforce-policy]
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Check for eval() usage
+        run: |
+          if grep -rn 'eval(' adapters/ src/ 2>/dev/null | grep -v '\.res$'; then
+            echo "ERROR: eval() usage detected!"
+            exit 1
+          fi
+          echo "No eval() usage found"
+
+      - name: Check for deprecated Deno.run
+        run: |
+          if grep -rn 'Deno\.run' adapters/ src/ 2>/dev/null; then
+            echo "ERROR: Deprecated Deno.run usage! Use Deno.Command instead."
+            exit 1
+          fi
+          echo "No deprecated Deno.run usage found"
+
+      - name: Check for hardcoded secrets
+        run: |
+          if grep -rn 'password\s*=\s*["\x27]' adapters/ src/ --include="*.js" 2>/dev/null; then
+            echo "WARNING: Possible hardcoded secrets!"
+            exit 1
+          fi
+          if grep -rn 'api.key\s*=\s*["\x27]' adapters/ src/ --include="*.js" 2>/dev/null; then
+            echo "WARNING: Possible hardcoded API keys!"
+            exit 1
+          fi
+          echo "No hardcoded secrets found"
+
+      - name: Verify parameterized commands
+        run: |
+          if [ -d "adapters" ] && ls adapters/*.js 1> /dev/null 2>&1; then
+            for f in adapters/*.js; do
+              if ! grep -q 'Deno.Command' "$f"; then
+                echo "WARNING: $f may not use Deno.Command"
+              fi
+            done
+          fi
+          echo "Command execution patterns verified"
+
+  # ============================================================================
+  # BUILD JOB
+  # ============================================================================
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: [lint, test, security]
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.2
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Type check adapters
+        run: |
+          if [ -d "adapters" ] && ls adapters/*.js 1> /dev/null 2>&1; then
+            deno check adapters/*.js
+          else
+            echo "No adapters to type check yet"
+          fi
+
+      - name: Verify adapter exports
+        run: |
+          if [ -d "adapters" ] && ls adapters/*.js 1> /dev/null 2>&1; then
+            for f in adapters/*.js; do
+              echo "Checking $f..."
+              deno eval "
+                import * as a from './$f';
+                if (!a.name) throw new Error('Missing name export');
+                if (!a.language) throw new Error('Missing language export');
+                if (!a.tools) throw new Error('Missing tools export');
+                console.log('  OK:', a.name, '-', a.language);
+              " || exit 1
+            done
+            echo "All adapters validated!"
+          else
+            echo "No adapters to validate yet"
+          fi
+
+  # ============================================================================
+  # E2E TEST JOB (optional, runs on main only)
+  # ============================================================================
+  e2e:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.2
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Run E2E tests
+        run: |
+          if [ -d "tests/e2e" ] && ls tests/e2e/*.res.js 1> /dev/null 2>&1; then
+            deno test --allow-all tests/e2e/
+          else
+            echo "E2E tests pending ReScript compilation"
+          fi

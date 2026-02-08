@@ -1,0 +1,49 @@
+= warp-ssg
+
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+:toc:
+:toc-title: Table of Contents
+:icons: font
+
+**Concatenative site generation in Factor.**
+"Warp" — Folding site data through the data stack. A generator where everything is a word.
+
+== Who Is This For?
+* **Stack-oriented developers** who value hyper-modular, concatenative logic.
+* **Systems Architects** requiring high-level metaprogramming in a low-level footprint.
+* **Minimalists** seeking a "code-as-data" approach to site synthesis.
+
+== Why warp-ssg?
+=== Word-Based Synthesis
+In `warp-ssg`, site logic is decomposed into "words" pushed onto a data stack. This enables extreme reuse and testing of tiny functional units.
+
+=== Homoiconic Templates
+Code and data share the same representation in Factor. You can manipulate your site's generation logic *as data* during the build process for advanced self-modifying layouts.
+
+=== High-Level Stack Logic
+Combines the efficiency of **Forth** with high-level features like garbage collection and an extensive library system. It is the most flexible stack engine in the fleet.
+
+== Quick Start
+[source,oil]
+----
+# Bootstrap Factor via asdf
+just setup
+
+# Build the site through the stack
+just build
+----
+
+== Features
+* **Stack-Oriented Metaprogramming** - High-level abstractions with minimal overhead.
+* **Podman-First** - Consistent builds across **Linux**, **Minix**, and **PC**.
+* **Accessibility** - Native metadata for **BSL**, **GSL**, and **Makaton**.
+
+== Requirements
+* **Factor (0.99 or later)**
+* **Just** (Orchestrator)
+
+== Part of poly-ssg
+`warp-ssg` is the concatenative representative of the **poly-ssg** family.
+
+== License
+PMPL-1.0-or-later

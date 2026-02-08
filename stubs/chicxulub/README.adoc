@@ -1,0 +1,167 @@
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+= chicxulub-ssg
+
+
+
+
+:toc: left
+:toclevels: 2
+:icons: font
+:source-highlighter: rouge
+
+Pipeline-driven static site generator in Bash. Let pipes connect. Let text transform. Let impact resonate.
+
+== Who Is This For?
+
+* **Shell enthusiasts** exploring practical applications of POSIX pipelines
+* **Minimalists** who reject dependency bloat and runtime overhead
+* **Systems administrators** who want SSG without installing language runtimes
+* **Developers** seeking zero-configuration portability across Unix-like systems
+
+== Why chicxulub-ssg?
+
+=== Pipeline Architecture
+
+Content flows through shell pipelines—parsing, transforming, and rendering as composable stages. Each command does one thing well. Chain them together for extinction-level impact.
+
+[source,bash]
+----
+find content -name '*.md' |
+  xargs -I{} sh -c 'parse_frontmatter "$1" | render_template' -- {} |
+  write_output
+----
+
+=== Zero Dependencies
+
+No package managers. No runtimes. No compilation. If you have `/bin/sh`, you have chicxulub-ssg. POSIX compliance means it runs on Linux, macOS, BSD, and any Unix-like system without modification.
+
+=== Text as the Universal Interface
+
+Everything is text. Frontmatter parses to text. Templates render to text. Output writes as text. Shell's native medium becomes the SSG's strength—`sed`, `awk`, and standard utilities are your templating engine.
+
+=== Features
+
+* **Pipeline Processing** — Content flows through composable shell stages
+* **POSIX Portable** — Runs anywhere `/bin/sh` exists
+* **No Runtime** — Zero installation beyond cloning the repository
+* **Text-Native** — Leverage `sed`, `awk`, and Unix text tools directly
+* **MCP Integration** — AI-assistable via link:https://github.com/hyperpolymath/poly-ssg[poly-ssg] satellite architecture
+
+== Quick Start
+
+[source,bash]
+----
+# Clone the repository
+git clone https://github.com/hyperpolymath/chicxulub-ssg.git
+cd chicxulub-ssg
+
+# Build your site
+./chicxulub build
+
+# Watch for changes
+./chicxulub watch
+
+# Serve locally
+./chicxulub serve
+----
+
+== Architecture
+
+[source]
+----
+                    ┌──────────────────────────────────────┐
+                    │           chicxulub-ssg              │
+                    │   Pipeline-driven Bash SSG           │
+                    └──────────────────┬───────────────────┘
+                                       │
+        ┌──────────────────────────────┼──────────────────────────────┐
+        │                              │                              │
+        ▼                              ▼                              ▼
+┌───────────────┐            ┌─────────────────┐            ┌─────────────────┐
+│    PARSE      │     |      │   TRANSFORM     │     |      │     EMIT        │
+│  frontmatter  │ ────────── │   templates     │ ────────── │   write files   │
+│  markdown     │   pipe     │   layouts       │   pipe     │   copy assets   │
+└───────────────┘            └─────────────────┘            └─────────────────┘
+        │                              │                              │
+        └──────────────────────────────┴──────────────────────────────┘
+                                       │
+                              Text streams flow
+                              through each stage
+----
+
+=== Pipeline Stages
+
+[cols="1,3"]
+|===
+|Stage |Description
+
+|**Parse** |Extract frontmatter, convert Markdown to HTML via standard tools
+|**Transform** |Apply templates, inject content into layouts, process includes
+|**Emit** |Write output files, copy static assets, generate indexes
+|===
+
+== Ecosystem Position
+
+chicxulub-ssg is a satellite in the link:https://github.com/hyperpolymath/poly-ssg[poly-ssg] constellation—one implementation among many language-specific SSGs, each bringing its paradigm's strengths to static site generation.
+
+[source]
+----
+┌─────────────────────────────────────────────────────────────────┐
+│                    poly-ssg (Hub)                               │
+│     Polyglot SSG framework with unified MCP interface           │
+└───────────────────────────┬─────────────────────────────────────┘
+                            │
+       ┌────────────────────┼────────────────────┐
+       │                    │                    │
+       ▼                    ▼                    ▼
+┌─────────────┐     ┌──────────────┐     ┌─────────────┐
+│ eclipse-ssg │     │chicxulub-ssg │     │    ...      │
+│   (Pony)    │     │   (Bash)     │     │  satellites │
+│   actors    │     │  pipelines   │     │             │
+└─────────────┘     └──────────────┘     └─────────────┘
+----
+
+== Development
+
+=== Prerequisites
+
+* POSIX-compliant shell (`/bin/sh`, `bash`, `dash`, `zsh`)
+* link:https://github.com/casey/just[Just] command runner (optional)
+* Git
+
+=== Commands
+
+[source,bash]
+----
+just setup    # Initial setup
+just build    # Build site
+just test     # Run tests
+just lint     # Check shell scripts
+just qa       # Run all quality checks
+----
+
+=== Git Hooks
+
+[source,bash]
+----
+./hooks/install.sh
+----
+
+== Contributing
+
+See link:CONTRIBUTING.md[CONTRIBUTING.md] for guidelines.
+
+== Security
+
+See link:SECURITY.md[SECURITY.md] for vulnerability reporting.
+
+== License
+
+PMPL-1.0-or-later
+
+== Links
+
+* link:https://github.com/hyperpolymath/poly-ssg[poly-ssg Hub]
+* link:https://github.com/hyperpolymath/poly-mcps[poly-mcps Assembly]

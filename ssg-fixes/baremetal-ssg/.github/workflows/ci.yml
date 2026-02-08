@@ -1,0 +1,195 @@
+# SPDX-License-Identifier: MPL-2.0-or-later
+# SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+# CI workflow for baremetal-ssg
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  # Format and lint check
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@e95548e56dfa95d6e0dedd3a07ae8220f2d7043c # v2.0.2
+        with:
+          deno-version: v1.x
+
+      - name: Format check
+        run: deno fmt --check adapters/
+
+      - name: Lint
+        run: deno lint adapters/
+
+  # Type checking
+  typecheck:
+    name: Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@e95548e56dfa95d6e0dedd3a07ae8220f2d7043c # v2.0.2
+        with:
+          deno-version: v1.x
+
+      - name: Type check adapters
+        run: |
+          for f in adapters/*.js; do
+            echo "Checking $f..."
+            deno check "$f"
+          done
+
+  # RSR Compliance
+  rsr-compliance:
+    name: RSR Compliance
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Check required files
+        run: |
+          echo "Checking RSR required files..."
+          test -f README.adoc && echo "✓ README.adoc"
+          test -f LICENSE.txt && echo "✓ LICENSE.txt"
+          test -f SECURITY.md && echo "✓ SECURITY.md"
+          test -f CONTRIBUTING.md && echo "✓ CONTRIBUTING.md"
+          test -f CODE_OF_CONDUCT.md && echo "✓ CODE_OF_CONDUCT.md"
+
+      - name: Check SPDX headers
+        run: |
+          echo "Checking SPDX headers in adapters..."
+          missing=0
+          for f in adapters/*.js; do
+            if ! grep -q "SPDX-License-Identifier" "$f"; then
+              echo "✗ Missing SPDX header: $f"
+              missing=$((missing + 1))
+            fi
+          done
+          if [ $missing -gt 0 ]; then
+            echo "Found $missing files missing SPDX headers"
+            exit 1
+          fi
+          echo "✓ All adapters have SPDX headers"
+
+      - name: Check SCM files
+        run: |
+          echo "Checking SCM metadata files..."
+          for scm in STATE.scm META.scm ECOSYSTEM.scm ROADMAP.scm PLAYBOOK.scm; do
+            test -f "$scm" && echo "✓ $scm" || echo "✗ Missing $scm"
+          done
+
+      - name: Check adapter count
+        run: |
+          count=$(ls -1 adapters/*.js | wc -l)
+          echo "Adapter count: $count"
+          if [ "$count" -lt 28 ]; then
+            echo "✗ Expected at least 28 adapters, found $count"
+            exit 1
+          fi
+          echo "✓ Adapter count check passed"
+
+  # Security checks
+  security:
+    name: Security
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Check for secrets
+        run: |
+          echo "Checking for hardcoded secrets..."
+          if grep -rE "(password|secret|api_key|token)\s*=" adapters/ 2>/dev/null; then
+            echo "✗ Potential secrets detected!"
+            exit 1
+          fi
+          echo "✓ No hardcoded secrets found"
+
+      - name: Check for eval usage
+        run: |
+          echo "Checking for eval() usage..."
+          if grep -rE "\beval\s*\(" adapters/ 2>/dev/null; then
+            echo "✗ eval() usage detected - security risk!"
+            exit 1
+          fi
+          echo "✓ No eval() usage found"
+
+      - name: Check SECURITY.md placeholders
+        run: |
+          echo "Checking for unresolved placeholders..."
+          if grep -E "\{\{" SECURITY.md 2>/dev/null; then
+            echo "✗ Unresolved placeholders in SECURITY.md"
+            exit 1
+          fi
+          echo "✓ No placeholders in SECURITY.md"
+
+  # Build validation
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: [lint, typecheck]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@e95548e56dfa95d6e0dedd3a07ae8220f2d7043c # v2.0.2
+        with:
+          deno-version: v1.x
+
+      - name: Validate all adapters
+        run: |
+          echo "Validating adapters..."
+          failed=0
+          for f in adapters/*.js; do
+            if deno check "$f" 2>/dev/null; then
+              echo "✓ $f"
+            else
+              echo "✗ $f"
+              failed=$((failed + 1))
+            fi
+          done
+          if [ $failed -gt 0 ]; then
+            echo "Failed to validate $failed adapters"
+            exit 1
+          fi
+          echo "All adapters validated successfully"
+
+  # Summary job
+  summary:
+    name: Summary
+    runs-on: ubuntu-latest
+    needs: [lint, typecheck, rsr-compliance, security, build]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Generate summary
+        run: |
+          echo "## CI Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Lint | ✓ Passed |" >> $GITHUB_STEP_SUMMARY
+          echo "| Type Check | ✓ Passed |" >> $GITHUB_STEP_SUMMARY
+          echo "| RSR Compliance | ✓ Passed |" >> $GITHUB_STEP_SUMMARY
+          echo "| Security | ✓ Passed |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | ✓ Passed |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Adapters:** $(ls -1 adapters/*.js | wc -l)" >> $GITHUB_STEP_SUMMARY
+          echo "**SCM Files:** $(ls -1 *.scm | wc -l)" >> $GITHUB_STEP_SUMMARY

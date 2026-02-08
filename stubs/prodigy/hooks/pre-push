@@ -1,0 +1,39 @@
+#!/bin/bash
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# prodigy-ssg pre-push hook
+# Install: cp hooks/pre-push .git/hooks/pre-push && chmod +x .git/hooks/pre-push
+
+set -e
+
+echo "🚀 Running pre-push checks..."
+
+# Run unit tests if swipl is available
+echo "  Running tests..."
+if command -v swipl >/dev/null 2>&1; then
+    if [ -f "tests/unit/test_runner.pl" ]; then
+        swipl -g "consult('tests/unit/test_runner.pl'), run_tests, halt(0)" -t 'halt(1)' 2>/dev/null || {
+            echo "❌ Unit tests failed"
+            exit 1
+        }
+        echo "  ✓ Unit tests passed"
+    fi
+else
+    echo "  ⚠ swipl not found, skipping tests"
+fi
+
+# Security check
+echo "  Running security audit..."
+if grep -rE "shell_exec|system\(" --include="*.pl" src/ engine/src/ 2>/dev/null | grep -v "% safe:"; then
+    echo "⚠ WARNING: Unreviewed shell execution found"
+    echo "  Add '% safe: <reason>' comment to mark as reviewed"
+fi
+
+# Check for large files
+echo "  Checking for large files..."
+large_files=$(find . -type f -size +1M -not -path "./.git/*" 2>/dev/null || true)
+if [ -n "$large_files" ]; then
+    echo "⚠ WARNING: Large files detected (>1MB):"
+    echo "$large_files"
+fi
+
+echo "✅ Pre-push checks passed!"

@@ -1,0 +1,64 @@
+= iota-ssg
+
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/Philosophy-Palimpsest-indigo.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+
+:toc:
+:toc-title: Table of Contents
+:icons: font
+
+**Array-oriented static site generator in APL.**
+"iota" (⍳) — The generator of indices. A site engine where content is a vector and transformations are pure array-logic.
+
+== Who Is This For?
+* **APL/Dyalog developers** who treat content as high-dimensional data.
+* **Systems Engineers** deploying to **Minix**, **ASICs**, or **Edge tech** where binary size and execution speed are critical.
+* **Architects** needing to bridge legacy array-logic with modern **ReScript/Deno** orchestration via MCP.
+
+== Why iota-ssg?
+
+=== Array-Oriented Templates
+Your templates are not string interpolations; they are functions mapped across content arrays. By leveraging `⍳`, `iota-ssg` generates site structures with $O(1)$ index-based access.
+
+=== Massive Parallelism
+Because APL operations are inherently vectorised, `iota-ssg` synthesises thousands of pages simultaneously. It is the fastest engine in the `poly-ssg` family for high-volume documentation.
+
+=== Rank-Based Routing
+Define your site hierarchy through array rank. Nested folders are simply higher-rank dimensions in your content matrix. No more recursive file-system crawls.
+
+=== Zero-Overhead Metadata
+Frontmatter is parsed into typed arrays. Use **Nickel** to define the schema, and `iota-ssg` will ensure your site shape matches your data shape at compile-time.
+
+== Quick Start
+[source,oil]
+----
+# Install via asdf
+asdf install iota-ssg latest
+
+# Create a site (Uses ReScript/Deno wrapper)
+just init my-array-site
+
+# Build with APL core (Defaults to Podman)
+just build
+
+# Type-check without building
+just check
+----
+
+== Features
+* **Vectorised Site Logic** - High-throughput generation via array-logic core.
+* **ReScript Bridge** - Safe, functional interface for **Deno** and **MCP** consumers.
+* **Podman-First** - Containerised builds for **Linux**, **Minix**, and **PC**.
+* **Accessibility** - Native metadata for **BSL**, **GSL**, **ASL**, and **Makaton**.
+
+== Requirements
+* **Dyalog APL** or **GNU APL**
+* **Deno** (for ReScript adapters)
+* **Just** (for task orchestration)
+
+== Part of poly-ssg
+`iota-ssg` is part of the **poly-ssg** family of language-native static site generators, unified through MCP integration.
+
+== License
+PMPL-1.0-or-later

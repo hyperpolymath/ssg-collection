@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: MPL-2.0-or-later
+# Dependabot configuration for wagasm-ssg
+# Pure WAT SSG with ReScript MCP adapter
+
+version: 2
+updates:
+  # GitHub Actions - always include for CI security
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      actions:
+        patterns:
+          - "*"
+
+  # Node.js/npm - for ReScript adapter in adapters/
+  - package-ecosystem: "npm"
+    directory: "/adapters"
+    schedule:
+      interval: "weekly"

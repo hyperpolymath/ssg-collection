@@ -1,0 +1,24 @@
+#!/bin/bash
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# prodigy-ssg post-merge hook
+# Install: cp hooks/post-merge .git/hooks/post-merge && chmod +x .git/hooks/post-merge
+
+echo "🔄 Running post-merge tasks..."
+
+# Update adapter dependencies if package.json changed
+if git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD | grep -q "adapters/package.json"; then
+    echo "  Updating adapter dependencies..."
+    if [ -d "adapters" ] && [ -f "adapters/package.json" ]; then
+        cd adapters && npm install && cd ..
+        echo "  ✓ Adapter dependencies updated"
+    fi
+fi
+
+# Clean build artifacts if engine changed
+if git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD | grep -qE "^(src|engine)/"; then
+    echo "  Engine files changed, cleaning build..."
+    rm -rf _site 2>/dev/null || true
+    echo "  ✓ Build artifacts cleaned"
+fi
+
+echo "✅ Post-merge tasks complete!"

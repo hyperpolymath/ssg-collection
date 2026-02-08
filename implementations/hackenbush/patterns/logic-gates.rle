@@ -1,0 +1,44 @@
+#N Logic Gates Pattern Library
+#C Basic logic gates implemented in Conway's Game of Life
+#C These form the foundation for computational Life patterns
+#O hackenbush-ssg project
+#R B3/S23
+#
+# This file contains composite patterns for logic operations.
+# Each gate uses glider streams for input/output signaling.
+#
+# === AND GATE ===
+# Two input glider streams, output only when both present
+# Uses collision-based detection
+#
+# === OR GATE ===
+# Two input glider streams, output when either present
+# Uses parallel paths with merge point
+#
+# === NOT GATE ===
+# Single input, inverts signal using glider gun + eater
+# Continuous output interrupted by input glider
+#
+# === XOR GATE ===
+# Two inputs, output when exactly one present
+# Complex collision pattern
+
+# AND Gate - collision point at (20, 10)
+x = 40, y = 20, rule = B3/S23
+# Placeholder pattern - full implementation requires extensive design
+10b2o$10b2o5$5bo$4bobo$5bo!
+
+# OR Gate - merge at (25, 10)
+x = 50, y = 20, rule = B3/S23
+# Placeholder pattern
+20b2o$20b2o!
+
+# NOT Gate - gun + eater configuration
+x = 60, y = 20, rule = B3/S23
+# Placeholder pattern - requires Gosper gun + precisely placed eater
+30b2o$30b2o!
+
+# XOR Gate - exclusive or via controlled collisions
+x = 70, y = 30, rule = B3/S23
+# Placeholder pattern - most complex gate
+40b2o$40b2o!

@@ -1,0 +1,53 @@
+= canon-ssg
+
+image:https://img.shields.io/badge/License-MPL_2.0-blue.svg[MPL-2.0-or-later,link="https://opensource.org/licenses/MPL-2.0"]
+:toc:
+:toc-title: Table of Contents
+:icons: font
+
+**The formally specified functional generator in Standard ML.**
+"Canon" — The law of the functional world. Stability over alpha.
+
+== Who Is This For?
+* **Functional Programming purists** who value the rigour of a formally defined language.
+* **Systems Architects** requiring ultimate longevity and immutable semantics.
+* **Teams** prioritising "Stability > Alpha" in their documentation pipelines.
+
+== Why canon-ssg?
+=== Mathematical Definition
+Standard ML is legendary for having its semantics formally defined in a mathematical specification. In `canon-ssg`, your site logic is anchored in a language that does not change on a whim, ensuring your build process is reproducible for decades.
+
+=== Milner-Grade Correctness
+Following the discipline of Robin Milner, this engine provides high-integrity site synthesis. The strict module system and functional purity of SML prevent the "logic rot" common in less disciplined scripting environments.
+
+=== Legacy Modernisation
+While SML is a "classic" language, `canon-ssg` bridges this stability with modern **ReScript/Deno** orchestration and **Podman-first** deployment, offering the most stable core in the **poly-ssg** family.
+
+== Quick Start
+[source,oil]
+----
+# Bootstrap the SML environment (MLton or SML/NJ) via asdf
+just setup
+
+# Build the site using formally defined functional logic
+just build
+
+# Type-check the site structure
+just check
+----
+
+== Features
+* **Formally Defined Semantics** - Immutable build logic based on the SML '97 standard.
+* **Strict Module System** - Clear separation of concerns for complex site architectures.
+* **Podman-First** - Isolated runtimes for formally specified logic.
+* **Accessibility** - Integrated support for **BSL**, **GSL**, **ASL**, and **Makaton**.
+
+== Requirements
+* **MLton** or **SML/NJ**
+* **Just** (Orchestrator)
+
+== Part of poly-ssg
+`canon-ssg` is the formally specified functional member of the **poly-ssg** family.
+
+== License
+AGPL-3.0-or-later

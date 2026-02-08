@@ -1,0 +1,10 @@
+(lang dune 3.0)
+(name rescript_wasm)
+
+(package
+ (name rescript_wasm)
+ (synopsis "ReScript WASM-GC backend - Phase 1 MVP")
+ (description "Compiles ReScript Lambda IR to WebAssembly with GC support")
+ (depends
+  (ocaml (>= 4.14.0))
+  (dune (>= 3.0))))

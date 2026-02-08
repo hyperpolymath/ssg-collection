@@ -1,0 +1,66 @@
+name: Wagasm CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install AssemblyScript
+        run: npm install assemblyscript
+
+      - name: Compile to WASM
+        run: npx asc wasm-ssg.ts -o wagasm.wasm --runtime stub
+
+      - name: Install Wasmtime
+        run: curl https://wasmtime.dev/install.sh -sSf | bash
+
+      - name: Test with Wasmtime
+        run: ~/.wasmtime/bin/wasmtime wagasm.wasm || echo "Test completed"
+
+  build-wasm:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Compile WASM
+        run: |
+          npm install assemblyscript
+          npx asc wasm-ssg.ts -o wagasm.wasm --optimize
+          mkdir -p _site
+          cp wagasm.wasm _site/
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build-wasm
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+    steps:
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4

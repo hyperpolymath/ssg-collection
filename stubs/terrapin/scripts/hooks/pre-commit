@@ -1,0 +1,38 @@
+#!/bin/bash
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+# terrapin-ssg pre-commit hook
+
+set -e
+
+echo "🐢 Running pre-commit checks..."
+
+# Check for forbidden languages
+echo "  Checking language enforcement..."
+forbidden=$(find src/ -type f \( -name "*.py" -o -name "*.js" -o -name "*.ts" \) 2>/dev/null || true)
+if [ -n "$forbidden" ]; then
+    echo "ERROR: Found forbidden language files in src/:"
+    echo "$forbidden"
+    exit 1
+fi
+echo "  ✓ Language check passed"
+
+# Lint Logo files
+echo "  Linting Logo files..."
+for f in src/*.logo; do
+    if [ -f "$f" ]; then
+        if grep -q "^TO\|^to" "$f"; then
+            echo "  ✓ $f has procedures"
+        else
+            echo "  ⚠ $f may be empty"
+        fi
+    fi
+done
+
+# Check for secrets
+echo "  Checking for secrets..."
+if grep -rE "(password|secret|token)\s*=" src/ 2>/dev/null | grep -v "^Binary"; then
+    echo "  ⚠ Potential secrets found - review before committing"
+fi
+
+echo "✓ Pre-commit checks passed"

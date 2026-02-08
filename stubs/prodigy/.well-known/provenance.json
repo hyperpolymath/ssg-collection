@@ -1,0 +1,18 @@
+{
+  "$schema": "https://hyperpolymath.org/schemas/provenance-v1.json",
+  "project": "prodigy-ssg",
+  "version": "0.1.0",
+  "canonical": "https://github.com/hyperpolymath/prodigy-ssg",
+  "singleSourceOfTruth": "github",
+  "mirrors": [
+    {
+      "platform": "gitlab",
+      "url": "https://gitlab.com/hyperpolymath/prodigy-ssg",
+      "type": "mirror"
+    }
+  ],
+  "authors": [{"name": "Jonathan D.A. Jewell", "role": "maintainer"}],
+  "license": {"spdx": "AGPL-3.0-or-later"},
+  "consent": {"framework": "consent-aware-http", "ai-training": "explicit-consent-required"},
+  "metadata": {"created": "2025-12-16", "language": "Prolog", "ecosystem": "poly-ssg"}
+}

@@ -1,0 +1,7 @@
+#N Glider Eater Pattern
+#C Consumes gliders without producing debris
+#C Essential for controlled signal termination
+#O hackenbush-ssg project
+x = 10, y = 10, rule = B3/S23
+# Standard eater - asymmetric still life
+2b2o$bobo$bo$2o!

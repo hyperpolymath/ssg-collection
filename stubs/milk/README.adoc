@@ -1,0 +1,77 @@
+= milk-ssg
+
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/Philosophy-Palimpsest-indigo.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+
+:toc: auto
+:toclevels: 2
+
+image:https://img.shields.io/badge/RSR-compliant-gold[RSR Compliant,link=https://github.com/hyperpolymath/rhodium-standard-repositories]
+image:https://img.shields.io/badge/poly--ssg-satellite-blue[poly-ssg,link=https://github.com/hyperpolymath/poly-ssg]
+
+**Esoteric static site generator in COW.**
+
+Proving Turing-completeness can be entertaining. Moo.
+
+== Who Is This For?
+
+* **Esoteric language enthusiasts** who appreciate the absurd
+* **Computer science educators** demonstrating universality
+* **Anyone with a sense of humor** about their tooling
+* **People who want to prove a point** about language capability
+
+== Why milk-ssg?
+
+=== Because We Can
+
+If it's Turing-complete, it can build a website. Yes, even COW. This SSG moos its way through your content.
+
+=== Educational Value
+
+Understanding how a Brainfuck variant can generate HTML teaches more about computation than any textbook.
+
+=== Conversation Starter
+
+"What's your tech stack?" "COW." "...like, the animal?" "Exactly."
+
+=== Minimal Syntax
+
+Twelve commands. That's it. No keywords to memorize, no syntax to debate. Just variations of "moo."
+
+== COW Commands
+
+[cols="1,3"]
+|===
+| moo | Skip next if register = 0
+| mOo | Move pointer back
+| moO | Move pointer forward
+| mOO | Execute memory as instruction
+| Moo | Print char or read input
+| MOo | Decrement
+| MoO | Increment
+| MOO | Loop end
+| OOO | Zero memory
+| MMM | Copy register
+| OOM | Print as integer
+| oom | Read integer
+|===
+
+== Quick Start
+
+[source,bash]
+----
+# Run with a COW interpreter
+cow src/milk-ssg.cow
+
+# Or use the bundled interpreter
+./run-cow.sh src/milk-ssg.cow
+----
+
+== Part of poly-ssg
+
+milk-ssg is part of the https://github.com/hyperpolymath/poly-ssg[poly-ssg] family, unified through https://github.com/hyperpolymath/poly-ssg-mcp[MCP integration].
+
+== License
+
+PMPL-1.0-or-later

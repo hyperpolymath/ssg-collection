@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Dependabot configuration for zigzag-ssg
+
+version: 2
+updates:
+  # GitHub Actions - always include
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      actions:
+        patterns:
+          - "*"
+
+  # Node.js/npm for ReScript MCP adapter
+  - package-ecosystem: "npm"
+    directory: "/adapters"
+    schedule:
+      interval: "weekly"

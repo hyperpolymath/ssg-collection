@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+# Pre-commit hook — iota-ssg
+
+set -e
+
+echo "Running pre-commit checks..."
+
+# Color codes
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Check for secrets
+echo -n "Checking for secrets... "
+if git diff --cached --name-only | xargs grep -l -E "(password|secret|api_key|token)\s*=\s*['\"][^'\"]+['\"]" 2>/dev/null | grep -v "description"; then
+    echo -e "${RED}FAILED${NC}"
+    echo "Potential secrets found in staged files!"
+    exit 1
+fi
+echo -e "${GREEN}OK${NC}"
+
+# Check for .env files
+echo -n "Checking for .env files... "
+if git diff --cached --name-only | grep -E "^\.env" >/dev/null; then
+    echo -e "${RED}FAILED${NC}"
+    echo ".env files should not be committed!"
+    exit 1
+fi
+echo -e "${GREEN}OK${NC}"
+
+# Lint JavaScript files if eslint is available
+if command -v eslint &> /dev/null; then
+    JS_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.js$' || true)
+    if [ -n "$JS_FILES" ]; then
+        echo -n "Linting JavaScript files... "
+        if ! echo "$JS_FILES" | xargs eslint --quiet; then
+            echo -e "${RED}FAILED${NC}"
+            echo "ESLint errors found. Please fix before committing."
+            exit 1
+        fi
+        echo -e "${GREEN}OK${NC}"
+    fi
+fi
+
+# Check adapter syntax with deno if available
+if command -v deno &> /dev/null; then
+    ADAPTER_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^adapters/.*\.js$' || true)
+    if [ -n "$ADAPTER_FILES" ]; then
+        echo -n "Checking adapter syntax... "
+        for f in $ADAPTER_FILES; do
+            if ! deno check "$f" 2>/dev/null; then
+                echo -e "${YELLOW}WARNING${NC}: $f has type issues (non-blocking)"
+            fi
+        done
+        echo -e "${GREEN}OK${NC}"
+    fi
+fi
+
+# Format check with prettier if available
+if command -v prettier &> /dev/null; then
+    PRETTIER_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(js|md|json|yml|yaml)$' || true)
+    if [ -n "$PRETTIER_FILES" ]; then
+        echo -n "Checking formatting... "
+        if ! echo "$PRETTIER_FILES" | xargs prettier --check --ignore-unknown 2>/dev/null; then
+            echo -e "${YELLOW}WARNING${NC}: Some files need formatting"
+            echo "Run 'just fmt' to fix formatting"
+        else
+            echo -e "${GREEN}OK${NC}"
+        fi
+    fi
+fi
+
+echo -e "${GREEN}Pre-commit checks passed!${NC}"

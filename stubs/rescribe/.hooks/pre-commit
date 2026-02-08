@@ -1,0 +1,28 @@
+#!/bin/sh
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Pre-commit hook for rescribe-ssg
+#
+# Install: cp .hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+
+set -e
+
+echo "🔍 Running pre-commit checks..."
+
+# Check for forbidden languages
+echo "  Checking language enforcement..."
+if find src/ -name "*.py" -o -name "*.ts" -o -name "*.js" 2>/dev/null | grep -q .; then
+    echo "❌ FORBIDDEN: Non-ReScript files found in src/"
+    exit 1
+fi
+echo "  ✅ Language check passed"
+
+# Build check
+echo "  Building..."
+cd adapters && npm run build --silent
+echo "  ✅ Build passed"
+
+# Lint check (optional, non-blocking)
+echo "  Checking format..."
+npx rescript format -check src/ 2>/dev/null || echo "  ⚠️ Format issues (non-blocking)"
+
+echo "✅ Pre-commit checks complete"

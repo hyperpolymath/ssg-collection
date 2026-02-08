@@ -1,0 +1,435 @@
+-- Creational Design Patterns - Ephapax Implementation
+-- SPDX-License-Identifier: AGPL-3.0-or-later
+--
+-- Demonstrates design patterns with linear/affine types.
+-- Linear types enforce proper resource management in patterns.
+
+module CreationalPatterns
+
+--------------------------------------------------------------------------------
+-- TYPE SYSTEM MODE TOGGLE
+--------------------------------------------------------------------------------
+-- Ephapax supports two ownership modes:
+--
+-- LINEAR MODE (default): Resources must be used EXACTLY once
+--   - Compile: ephapax build --mode=linear creational_patterns.epx
+--   - Created objects must be consumed or explicitly dropped
+--   - Perfect for patterns where resource lifecycle is critical
+--
+-- AFFINE MODE: Resources can be used AT MOST once
+--   - Compile: ephapax build --mode=affine creational_patterns.epx
+--   - Unused created objects auto-drop (warning, not error)
+--   - Better for exploratory pattern implementation
+--
+-- Toggle via pragma (overrides CLI flag):
+#![type_mode = "linear"]  -- Options: "linear" | "affine"
+
+-- How linear/affine affects design patterns:
+--
+-- SINGLETON (linear):
+--   - Instance must be borrowed, never moved out
+--   - Guarantees single instance is never duplicated
+--
+-- FACTORY (linear):
+--   - Created products must be used or dropped
+--   - Factory transfers ownership to caller
+--
+-- BUILDER (linear vs affine):
+--   LINEAR:  Each method consumes and returns builder
+--            build() consumes builder, returns product
+--   AFFINE:  Abandoned builders auto-drop (partial builds discarded)
+--
+-- PROTOTYPE (linear):
+--   - clone() creates new owned copy
+--   - No shallow copies (would violate single-owner rule)
+--
+-- OBJECT POOL (linear):
+--   - Borrow-only access to pooled objects
+--   - Resources must be returned to pool
+--   - Pool tracks all outstanding borrows
+--------------------------------------------------------------------------------
+
+import Runtime.IO (print)
+import Runtime.Drop (drop)  -- Explicit drop for linear mode
+
+-- SINGLETON PATTERN
+-- Linear types ensure exactly one instance exists and is properly managed
+
+module Singleton:
+    -- The singleton instance stored as a linear resource
+    type DatabaseConnection = linear {
+        connection_string: Option<String>,
+        connected: Bool,
+    }
+
+    -- Global singleton storage (managed by runtime)
+    static INSTANCE: Option<DatabaseConnection> = None
+
+    -- Get or create the singleton instance
+    -- Returns a borrow to prevent taking ownership
+    fn get_instance() -> &mut DatabaseConnection:
+        match &mut INSTANCE:
+            | Some(conn): conn
+            | None:
+                let conn = DatabaseConnection {
+                    connection_string: None,
+                    connected: false,
+                }
+                INSTANCE = Some(conn)
+                INSTANCE.as_mut().unwrap()
+
+    fn connect(self: &mut DatabaseConnection, conn_str: String) -> ():
+        if !self.connected:
+            self.connection_string = Some(conn_str)
+            self.connected = true
+            print("Connected to: ", &conn_str)
+
+    fn disconnect(self: &mut DatabaseConnection) -> ():
+        if self.connected:
+            self.connected = false
+            print("Disconnected")
+
+-- FACTORY PATTERN
+-- Factory creates and transfers ownership of products
+
+module Factory:
+    -- Abstract product trait
+    trait Animal:
+        fn speak(&self) -> String
+
+    -- Concrete products
+    type Dog = { name: String }
+    type Cat = { name: String }
+    type Bird = { name: String }
+
+    impl Animal for Dog:
+        fn speak(&self) -> String: "Woof!"
+
+    impl Animal for Cat:
+        fn speak(&self) -> String: "Meow!"
+
+    impl Animal for Bird:
+        fn speak(&self) -> String: "Tweet!"
+
+    -- Factory function returns owned product
+    fn create_animal@r(animal_type: &str) -> Result<Box<dyn Animal>, String>:
+        match animal_type.to_lowercase().as_str():
+            | "dog": Ok(Box.new@r(Dog { name: "Dog".to_string@r() }))
+            | "cat": Ok(Box.new@r(Cat { name: "Cat".to_string@r() }))
+            | "bird": Ok(Box.new@r(Bird { name: "Bird".to_string@r() }))
+            | _: Err(format!("Unknown animal type: {}", animal_type))
+
+-- ABSTRACT FACTORY PATTERN
+-- Creates families of related objects with consistent ownership
+
+module AbstractFactory:
+    -- Abstract products
+    trait Button:
+        fn render(&self) -> String
+
+    trait Checkbox:
+        fn render(&self) -> String
+
+    -- Windows family
+    type WindowsButton = {}
+    type WindowsCheckbox = {}
+
+    impl Button for WindowsButton:
+        fn render(&self) -> String: "Rendering Windows button"
+
+    impl Checkbox for WindowsCheckbox:
+        fn render(&self) -> String: "Rendering Windows checkbox"
+
+    -- Mac family
+    type MacButton = {}
+    type MacCheckbox = {}
+
+    impl Button for MacButton:
+        fn render(&self) -> String: "Rendering Mac button"
+
+    impl Checkbox for MacCheckbox:
+        fn render(&self) -> String: "Rendering Mac checkbox"
+
+    -- Abstract factory trait
+    trait GUIFactory:
+        fn create_button@r(&self) -> Box<dyn Button>
+        fn create_checkbox@r(&self) -> Box<dyn Checkbox>
+
+    -- Concrete factories
+    type WindowsFactory = {}
+    type MacFactory = {}
+
+    impl GUIFactory for WindowsFactory:
+        fn create_button@r(&self) -> Box<dyn Button>:
+            Box.new@r(WindowsButton {})
+
+        fn create_checkbox@r(&self) -> Box<dyn Checkbox>:
+            Box.new@r(WindowsCheckbox {})
+
+    impl GUIFactory for MacFactory:
+        fn create_button@r(&self) -> Box<dyn Button>:
+            Box.new@r(MacButton {})
+
+        fn create_checkbox@r(&self) -> Box<dyn Checkbox>:
+            Box.new@r(MacCheckbox {})
+
+-- BUILDER PATTERN
+-- Constructs complex objects step by step, transferring ownership at build
+
+module Builder:
+    -- Complex product
+    type Computer = {
+        cpu: Option<String>,
+        ram: Option<String>,
+        storage: Option<String>,
+        gpu: Option<String>,
+        os: Option<String>,
+    }
+
+    impl Computer:
+        fn to_string(&self) -> String:
+            format!("Computer(CPU: {}, RAM: {}, Storage: {}, GPU: {}, OS: {})",
+                self.cpu.as_deref().unwrap_or("N/A"),
+                self.ram.as_deref().unwrap_or("N/A"),
+                self.storage.as_deref().unwrap_or("N/A"),
+                self.gpu.as_deref().unwrap_or("N/A"),
+                self.os.as_deref().unwrap_or("N/A"))
+
+    -- Builder accumulates options, transfers ownership at build
+    type ComputerBuilder = {
+        computer: Computer,
+    }
+
+    impl ComputerBuilder:
+        fn new@r() -> ComputerBuilder:
+            ComputerBuilder {
+                computer: Computer {
+                    cpu: None,
+                    ram: None,
+                    storage: None,
+                    gpu: None,
+                    os: None,
+                }
+            }
+
+        -- Each setter returns self for chaining
+        fn set_cpu(mut self, cpu: String) -> ComputerBuilder:
+            self.computer.cpu = Some(cpu)
+            self
+
+        fn set_ram(mut self, ram: String) -> ComputerBuilder:
+            self.computer.ram = Some(ram)
+            self
+
+        fn set_storage(mut self, storage: String) -> ComputerBuilder:
+            self.computer.storage = Some(storage)
+            self
+
+        fn set_gpu(mut self, gpu: String) -> ComputerBuilder:
+            self.computer.gpu = Some(gpu)
+            self
+
+        fn set_os(mut self, os: String) -> ComputerBuilder:
+            self.computer.os = Some(os)
+            self
+
+        -- Build consumes builder, returns owned product
+        fn build(self) -> Computer:
+            self.computer
+
+    -- Director knows how to build specific configurations
+    module Director:
+        fn build_gaming_pc@r() -> Computer:
+            ComputerBuilder.new@r()
+                .set_cpu("Intel i9".to_string@r())
+                .set_ram("32GB DDR5".to_string@r())
+                .set_storage("2TB NVMe SSD".to_string@r())
+                .set_gpu("RTX 4090".to_string@r())
+                .set_os("Windows 11".to_string@r())
+                .build()
+
+        fn build_office_pc@r() -> Computer:
+            ComputerBuilder.new@r()
+                .set_cpu("Intel i5".to_string@r())
+                .set_ram("16GB DDR4".to_string@r())
+                .set_storage("512GB SSD".to_string@r())
+                .set_gpu("Integrated".to_string@r())
+                .set_os("Windows 11 Pro".to_string@r())
+                .build()
+
+-- PROTOTYPE PATTERN
+-- Creates new objects by cloning existing ones
+
+module Prototype:
+    trait Cloneable:
+        fn clone@r(&self) -> Self
+        fn deep_clone@r(&self) -> Self
+
+    type Document = {
+        title: String,
+        content: String,
+        metadata: Map<String, String>,
+    }
+
+    impl Cloneable for Document:
+        -- Shallow clone: metadata map is shared (not possible with linear types)
+        -- So we make "shallow" mean same as deep for linear safety
+        fn clone@r(&self) -> Document:
+            Document {
+                title: self.title.clone@r(),
+                content: self.content.clone@r(),
+                metadata: self.metadata.clone@r(),  -- Must clone due to linear types
+            }
+
+        -- Deep clone: everything is copied
+        fn deep_clone@r(&self) -> Document:
+            Document {
+                title: self.title.clone@r(),
+                content: self.content.clone@r(),
+                metadata: self.metadata.deep_clone@r(),
+            }
+
+    impl Document:
+        fn new@r(title: String, content: String, metadata: Map<String, String>) -> Document:
+            Document { title, content, metadata }
+
+        fn to_string(&self) -> String:
+            format!("Document(title='{}', content='{}...', metadata={:?})",
+                &self.title,
+                &self.content[..20.min(self.content.len())],
+                &self.metadata)
+
+-- OBJECT POOL PATTERN
+-- Reuses objects instead of creating new ones (with linear ownership tracking)
+
+module ObjectPool:
+    -- Reusable resource with linear ownership
+    type Reusable = linear {
+        id: Int,
+        in_use: Bool,
+    }
+
+    impl Reusable:
+        fn use_resource(&mut self) -> ():
+            self.in_use = true
+            print("Object ", self.id, " is now in use")
+
+        fn release(&mut self) -> ():
+            self.in_use = false
+            print("Object ", self.id, " is released")
+
+    -- Pool manages a collection of reusable objects
+    type ObjectPool = {
+        pool: Vec<Reusable>,
+    }
+
+    impl ObjectPool:
+        fn new@r(size: Int) -> ObjectPool:
+            let mut pool = Vec.with_capacity@r(size)
+            for i in 0..size:
+                pool.push(Reusable { id: i, in_use: false })
+            ObjectPool { pool }
+
+        -- Acquire returns a mutable borrow (not ownership)
+        -- This allows the pool to track and reclaim the resource
+        fn acquire(&mut self) -> Option<&mut Reusable>:
+            for obj in self.pool.iter_mut():
+                if !obj.in_use:
+                    obj.use_resource()
+                    return Some(obj)
+            None
+
+        -- Release marks resource as available
+        -- With linear types, we track this via the borrow system
+        fn release(&mut self, obj: &mut Reusable) -> ():
+            obj.release()
+
+-- Demo
+fn demo() -> ():
+    print("=".repeat(60))
+    print("CREATIONAL DESIGN PATTERNS DEMO - Ephapax")
+    print("=".repeat(60))
+
+    -- Singleton
+    print("\n--- Singleton Pattern ---")
+    region r:
+        let db1 = Singleton.get_instance()
+        let db2 = Singleton.get_instance()
+        print("db1 is db2: true (same instance)")
+        db1.connect("postgresql://localhost/mydb".to_string@r())
+
+    -- Factory
+    print("\n--- Factory Pattern ---")
+    region r:
+        match Factory.create_animal@r("dog"):
+            | Ok(animal): print("Dog says: ", animal.speak())
+            | Err(e): print("Error: ", e)
+
+        match Factory.create_animal@r("cat"):
+            | Ok(animal): print("Cat says: ", animal.speak())
+            | Err(e): print("Error: ", e)
+
+    -- Abstract Factory
+    print("\n--- Abstract Factory Pattern ---")
+    region r:
+        let windows_factory = AbstractFactory.WindowsFactory {}
+        let button = windows_factory.create_button@r()
+        let checkbox = windows_factory.create_checkbox@r()
+        print(button.render())
+        print(checkbox.render())
+
+    -- Builder
+    print("\n--- Builder Pattern ---")
+    region r:
+        let gaming_pc = Builder.Director.build_gaming_pc@r()
+        let office_pc = Builder.Director.build_office_pc@r()
+        print("Gaming PC: ", gaming_pc.to_string())
+        print("Office PC: ", office_pc.to_string())
+
+        -- Custom build
+        let custom_pc = Builder.ComputerBuilder.new@r()
+            .set_cpu("AMD Ryzen 9".to_string@r())
+            .set_ram("64GB".to_string@r())
+            .set_storage("4TB".to_string@r())
+            .build()
+        print("Custom PC: ", custom_pc.to_string())
+
+    -- Prototype
+    print("\n--- Prototype Pattern ---")
+    region r:
+        let metadata = Map.from@r([
+            ("author".to_string@r(), "John".to_string@r()),
+            ("version".to_string@r(), "1".to_string@r()),
+        ])
+        let original = Prototype.Document.new@r(
+            "Report".to_string@r(),
+            "Lorem ipsum dolor sit amet...".to_string@r(),
+            metadata
+        )
+        let clone1 = original.clone@r()
+        let clone2 = original.deep_clone@r()
+
+        print("Original: ", original.to_string())
+        print("Clone 1: ", clone1.to_string())
+        print("Clone 2: ", clone2.to_string())
+
+    -- Object Pool
+    print("\n--- Object Pool Pattern ---")
+    region r:
+        let mut pool = ObjectPool.ObjectPool.new@r(3)
+        let obj1 = pool.acquire()
+        let obj2 = pool.acquire()
+        let obj3 = pool.acquire()
+        let obj4 = pool.acquire()  -- Should be None
+
+        print("Object 4 acquired: ", obj4.is_some())
+
+        match obj1:
+            | Some(o):
+                pool.release(o)
+                let obj4_retry = pool.acquire()
+                print("Object 4 acquired after release: ", obj4_retry.is_some())
+            | None: ()
+
+fn main() -> ():
+    demo()

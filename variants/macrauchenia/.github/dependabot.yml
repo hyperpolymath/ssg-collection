@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Dependabot configuration for macrauchenia-ssg
+# Only includes ecosystems actually used in this project
+
+version: 2
+updates:
+  # GitHub Actions - always include for CI security
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      actions:
+        patterns:
+          - "*"
+
+  # Note: This project uses Deno-based JavaScript adapters
+  # npm ecosystem is included in case package.json is added for tooling
+  # Deno dependencies are managed via import URLs (no native dependabot support)

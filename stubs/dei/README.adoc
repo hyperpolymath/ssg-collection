@@ -1,0 +1,168 @@
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= DEI-SSG
+
+
+
+
+:toc:
+:sectnums:
+
+**A consent-aware static site generator written in WokeLang**, emphasizing human collaboration, ethical computing, and empathetic design as first-class language constructs.
+
+image:https://img.shields.io/badge/Language-WokeLang-e91e63[WokeLang]
+image:https://img.shields.io/badge/SSG-Ethical-00c853[SSG]
+image:https://img.shields.io/badge/poly--ssg--mcp-satellite-cd7f32[poly-ssg-mcp]
+
+== Who Is This For?
+
+* **WokeLang enthusiasts** wanting real-world examples of ethical language constructs
+* **Content creators** seeking SSG tooling with built-in consent and attribution
+* **Developers** exploring human-centered programming paradigms
+* **Teams** requiring auditable decision trails in their build pipelines
+
+== Why WokeLang for an SSG?
+
+[cols="1,2"]
+|===
+|Construct |SSG Application
+
+|`thanks to` (gratitude annotations)
+|Auto-generated contributor credits in page footers
+
+|`only if okay` (consent gates)
+|Permission prompts before processing sensitive content or external embeds
+
+|`measured in` (units of measure)
+|Type-safe handling of image dimensions, file sizes, cache durations
+
+|`@feeling` (empathy annotations)
+|Document confidence levels in generated output decisions
+|===
+
+== Value Propositions
+
+=== Consent All the Way Down
+
+Every transformation that touches user data or external resources passes through explicit consent gates—no silent third-party fetches, no hidden tracking embeds.
+
+[source,woke]
+----
+render page from source
+  only if okay with "embed external fonts"
+  only if okay with "analytics snippet"
+----
+
+=== Attribution by Default
+
+Contributor acknowledgment isn't an afterthought—gratitude annotations generate living `CREDITS.adoc` and per-page attribution blocks automatically.
+
+[source,woke]
+----
+thanks to "Alex Chen" for "accessibility audit"
+thanks to "River Okonkwo" for "dark mode palette"
+
+build styles using palette
+----
+
+=== Type-Safe Content Pipeline
+
+Units of measure prevent dimension mismatches and cache-duration bugs at compile time.
+
+[source,woke]
+----
+thumbnail: Image measured in 320px × 240px
+cache_ttl: Duration measured in 24 hours
+
+resize hero_image to thumbnail dimensions
+set cache header to cache_ttl
+----
+
+== Architecture
+
+[source]
+----
+                    ┌─────────────────────────────────────────────┐
+                    │              DEI-SSG Pipeline               │
+                    └─────────────────────────────────────────────┘
+
+  ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐
+  │ Watcher  │───▶│  Parser  │───▶│ Renderer │───▶│  Emitter │
+  │          │    │          │    │          │    │          │
+  │ @feeling │    │ thanks   │    │ only if  │    │ measured │
+  │ cautious │    │ to...    │    │ okay...  │    │ in...    │
+  └──────────┘    └──────────┘    └──────────┘    └──────────┘
+       │               │               │               │
+       ▼               ▼               ▼               ▼
+   Filesystem     Attribution      Consent         Type-safe
+   Changes        Tracking         Prompts         Output
+----
+
+== Features
+
+* **Incremental builds** — only regenerate changed pages
+* **Hot reload** — live preview with consent state preservation
+* **Multi-format** — AsciiDoc, Markdown, and WokeLang templates
+* **WASM target** — compile to WebAssembly for browser-based preview
+* **Ethical defaults** — no external resources without explicit consent gates
+
+== Ecosystem Integration
+
+DEI-SSG is a standalone project with its own value, and a satellite of the broader poly-mcp portfolio:
+
+* https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp] — unified MCP server for 28+ static site generators
+* https://github.com/hyperpolymath/poly-container-mcp[poly-container-mcp] — multi-runtime container management
+* https://github.com/hyperpolymath/poly-iac-mcp[poly-iac-mcp] — infrastructure as code orchestration
+
+ReScript adapters enable integration with the poly-ssg-mcp protocol layer.
+
+== Quick Start
+
+[source,bash]
+----
+# Clone
+git clone https://github.com/hyperpolymath/dei-ssg
+cd dei-ssg
+
+# Enter development environment
+guix shell -D -f guix.scm
+
+# Build site
+just build
+
+# Preview with consent prompts
+just serve
+----
+
+== WokeLang Primer
+
+[cols="1,2,2"]
+|===
+|Construct |Syntax |Purpose
+
+|Gratitude
+|`thanks to "Name" for "contribution"`
+|Explicit attribution tracking
+
+|Consent Gate
+|`only if okay with "action"`
+|User permission checkpoint
+
+|Units
+|`value measured in unit`
+|Compile-time dimension safety
+
+|Empathy
+|`@feeling confident\|cautious\|uncertain`
+|Decision confidence metadata
+|===
+
+== License
+
+SPDX-License-Identifier: PMPL-1.0-or-later-or-later
+
+== Links
+
+* https://github.com/hyperpolymath/wokelang[WokeLang] — the language
+* https://github.com/hyperpolymath/eclipse-ssg[eclipse-ssg] — Pony-based sibling SSG
+* https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp] — MCP integration layer

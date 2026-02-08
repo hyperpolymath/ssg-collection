@@ -1,0 +1,151 @@
+= eclipse-ssg
+image:https://img.shields.io/badge/License-MPL_2.0-blue.svg[MPL-2.0-or-later,link="https://opensource.org/licenses/MPL-2.0"]
+
+
+
+
+image:https://img.shields.io/badge/Philosophy-Palimpsest-indigo.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+
+:toc: auto
+:toclevels: 2
+
+image:https://img.shields.io/badge/RSR-compliant-gold[RSR Compliant,link=https://github.com/hyperpolymath/rhodium-standard-repositories]
+image:https://img.shields.io/badge/poly--ssg-satellite-blue[poly-ssg,link=https://github.com/hyperpolymath/poly-ssg-mcp]
+image:https://img.shields.io/badge/status-experimental-orange[Experimental]
+
+== License & Philosophy
+
+This project must declare **MPL-2.0-or-later** for platform/tooling compatibility.
+
+Philosophy: **Palimpsest**. The Palimpsest-MPL (PMPL) text is provided in `license/PMPL-1.0.txt`, and the canonical source is the palimpsest-license repository.
+
+**Actor-model static site generator in Pony.**
+
+Let actors gallop. Let capabilities guard. Let pages render.
+
+== Who Is This For?
+
+* **Pony enthusiasts** exploring real-world applications
+* **Concurrency-minded developers** who appreciate lock-free design
+* **Systems programmers** seeking memory safety without GC pauses
+* **Capability-curious engineers** ready to think differently about access control
+
+== Why eclipse-ssg?
+
+=== Actors All the Way Down
+
+Content parsing, template rendering, and file emission each run as isolated actors. No shared mutable state. No data races. Ever.
+
+[source,pony]
+----
+actor PageBuilder
+  let _renderer: Renderer tag
+
+  be build(content: String val, template: Template val) =>
+    let html = _renderer.apply(content, template)
+    FileEmitter.emit(html)
+----
+
+=== Reference Capabilities
+
+Pony's type system tracks aliasing and mutability. `val` means immutable and shareable. `iso` means isolated and transferable. The compiler enforces safety at compile time.
+
+[source,pony]
+----
+// Content is immutable (val) - safe to share across actors
+fun parse(source: String val): AST val =>
+  MarkdownParser.parse(source)
+----
+
+=== Zero-Copy Where It Matters
+
+Isolated references (`iso`) transfer ownership without copying. Large content moves between pipeline stages efficiently.
+
+=== Deny Capabilities, Grant Safety
+
+What you _can't_ do defines what _can't_ go wrong. No null. No data races. No use-after-free. The compiler proves it.
+
+== Quick Start
+
+[source,bash]
+----
+# Install Pony
+brew install ponyc  # or: apt install ponyc
+
+# Clone and build
+git clone https://github.com/hyperpolymath/eclipse-ssg
+cd eclipse-ssg
+ponyc --debug
+
+# Generate your site
+./eclipse-ssg build content/ --output dist/
+----
+
+== Architecture
+
+----
+┌─────────────────────────────────────────────────────────┐
+│                    Scheduler (Pony runtime)             │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌──────────┐   ┌──────────┐   ┌──────────┐            │
+│  │ Watcher  │──▶│  Parser  │──▶│ Renderer │            │
+│  │  actor   │   │  actor   │   │  actor   │            │
+│  └──────────┘   └──────────┘   └──────────┘            │
+│                                      │                  │
+│                               ┌──────▼──────┐          │
+│                               │ FileEmitter │          │
+│                               │   actor     │          │
+│                               └─────────────┘          │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+----
+
+Each actor processes messages asynchronously. The Pony scheduler distributes work across available cores automatically.
+
+== Features
+
+* **Incremental builds** — Watcher actor triggers rebuilds only for changed files
+* **Parallel rendering** — Multiple pages render concurrently, safely
+* **Hot reload** — Dev server actor pushes changes via SSE
+* **Markdown + templating** — Built-in parsing with extensible syntax
+* **Zero runtime exceptions** — Pony's exhaustive matching prevents missed cases
+
+== Reference Capability Primer
+
+[cols="1,2,3"]
+|===
+|Capability |Meaning |Use in eclipse-ssg
+
+|`val`
+|Immutable, shareable
+|Parsed content, templates, config
+
+|`iso`
+|Isolated, transferable
+|Large buffers moving between actors
+
+|`ref`
+|Mutable, unique
+|Builder state during page construction
+
+|`tag`
+|Identity only, no read/write
+|Actor references for message passing
+|===
+
+== Requirements
+
+* **Pony compiler** (ponyc 0.58+)
+* **Corral** for dependency management (optional)
+
+== Part of poly-ssg
+
+eclipse-ssg is part of the https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp] hub, providing MCP integration for Claude and other AI assistants.
+
+Available tools: `eclipse_init`, `eclipse_build`, `eclipse_serve`
+
+== License
+
+PMPL-1.0-or-later

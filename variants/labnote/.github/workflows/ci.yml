@@ -1,0 +1,176 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+# RSR-compliant CI workflow with SHA-pinned actions
+
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+env:
+  DENO_VERSION: "v1.40.0"
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.2
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Lint adapters
+        run: deno lint adapters/
+
+      - name: Check formatting
+        run: deno fmt --check adapters/
+
+  check:
+    name: Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.2
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Check adapters
+        run: deno check adapters/*.js
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: [lint, check]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.2
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Run tests
+        run: |
+          if [ -d "tests" ] && [ "$(ls -A tests/*.js 2>/dev/null)" ]; then
+            deno test --allow-run --allow-read tests/
+          else
+            echo "No tests found - skipping"
+          fi
+
+      - name: Run coverage
+        run: |
+          if [ -d "tests" ] && [ "$(ls -A tests/*.js 2>/dev/null)" ]; then
+            deno test --allow-run --allow-read --coverage=coverage/ tests/
+            deno coverage coverage/
+          fi
+        continue-on-error: true
+
+  security:
+    name: Security Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Check for dangerous patterns
+        run: |
+          echo "Checking for dangerous code patterns..."
+          if grep -rn 'eval\s*(' adapters/; then
+            echo "::error::Found eval() usage - potential security risk"
+            exit 1
+          fi
+          if grep -rn 'new Function' adapters/; then
+            echo "::error::Found Function constructor - potential security risk"
+            exit 1
+          fi
+          echo "✓ No dangerous patterns found"
+
+      - name: Verify safe command execution
+        run: |
+          echo "Verifying all adapters use Deno.Command..."
+          count=$(grep -l 'Deno.Command' adapters/*.js | wc -l)
+          total=$(ls adapters/*.js | wc -l)
+          echo "Adapters using Deno.Command: $count/$total"
+          if [ "$count" -ne "$total" ]; then
+            echo "::warning::Not all adapters use Deno.Command"
+          fi
+
+      - name: Check for hardcoded secrets
+        run: |
+          echo "Checking for hardcoded secrets..."
+          if grep -rniE '(password|secret|api.?key|token)\s*[:=]\s*["\x27][^"\x27]+["\x27]' adapters/; then
+            echo "::error::Potential hardcoded secret found"
+            exit 1
+          fi
+          echo "✓ No hardcoded secrets found"
+
+  adapter-validation:
+    name: Validate Adapters
+    runs-on: ubuntu-latest
+    needs: [lint, check]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.2
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Validate adapter exports
+        run: |
+          echo "Validating adapter exports..."
+          for adapter in adapters/*.js; do
+            echo "Checking: $adapter"
+            deno eval "
+              import * as a from './$adapter';
+              const required = ['name', 'language', 'description', 'connect', 'disconnect', 'isConnected', 'tools'];
+              const missing = required.filter(k => !(k in a));
+              if (missing.length > 0) {
+                console.error('Missing exports:', missing.join(', '));
+                Deno.exit(1);
+              }
+              console.log('  ✓', a.name, '-', a.tools.length, 'tools');
+            "
+          done
+          echo "✓ All adapters validated"
+
+      - name: Count adapters
+        run: |
+          count=$(ls adapters/*.js | wc -l)
+          echo "Total adapters: $count"
+          if [ "$count" -ne 28 ]; then
+            echo "::warning::Expected 28 adapters, found $count"
+          fi
+
+  summary:
+    name: CI Summary
+    runs-on: ubuntu-latest
+    needs: [lint, check, test, security, adapter-validation]
+    if: always()
+    steps:
+      - name: Check results
+        run: |
+          echo "## CI Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Lint | ${{ needs.lint.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | ${{ needs.check.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Test | ${{ needs.test.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Security | ${{ needs.security.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Adapter Validation | ${{ needs.adapter-validation.result }} |" >> $GITHUB_STEP_SUMMARY

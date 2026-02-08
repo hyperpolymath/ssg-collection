@@ -1,0 +1,56 @@
+{
+  "$schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
+  "name": "@hyperpolymath/labnote-ssg",
+  "version": "1.0.0",
+  "license": "MIT OR AGPL-3.0-or-later",
+  "exports": "./src/Main.res.js",
+
+  "tasks": {
+    "build": "deno run -A npm:rescript build",
+    "watch": "deno run -A npm:rescript build -w",
+    "start": "deno run --allow-all src/Main.res.js",
+    "dev": "deno run --watch --allow-all src/Main.res.js",
+    "test": "deno test --allow-read --allow-run tests/",
+    "ci": "deno task build && deno task test"
+  },
+  "nodeModulesDir": "none",
+
+  "imports": {
+    "@std/assert": "jsr:@std/assert@1",
+    "@std/testing": "jsr:@std/testing@1",
+    "@std/path": "jsr:@std/path@1",
+    "@std/fs": "jsr:@std/fs@1"
+  },
+
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true
+  },
+
+  "lint": {
+    "include": ["adapters/", "tests/"],
+    "exclude": ["node_modules/", "coverage/"],
+    "rules": {
+      "tags": ["recommended"],
+      "include": ["no-eval", "no-explicit-any"]
+    }
+  },
+
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 100,
+    "indentWidth": 2,
+    "semiColons": true,
+    "singleQuote": false,
+    "proseWrap": "preserve",
+    "include": ["adapters/", "tests/"],
+    "exclude": ["node_modules/", "coverage/", "docs/"]
+  },
+
+  "test": {
+    "include": ["tests/"],
+    "exclude": ["tests/fixtures/"]
+  }
+}

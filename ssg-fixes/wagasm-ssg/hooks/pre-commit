@@ -1,0 +1,65 @@
+#!/bin/bash
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# wagasm-ssg pre-commit hook
+
+set -e
+
+echo "=== wagasm-ssg pre-commit checks ==="
+
+# Color codes
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+NC='\033[0m'
+
+# 1. Language compliance check (FATAL)
+echo -n "Checking language compliance... "
+forbidden=$(find src/ -type f \( -name "*.ts" -o -name "*.js" -o -name "*.rs" -o -name "*.py" -o -name "*.as" \) 2>/dev/null || true)
+if [ -n "$forbidden" ]; then
+    echo -e "${RED}FAILED${NC}"
+    echo "FATAL: Found FORBIDDEN language files in src/:"
+    echo "$forbidden"
+    echo ""
+    echo "wagasm-ssg MUST be pure WAT. No TypeScript, AssemblyScript, Rust, etc."
+    exit 1
+fi
+echo -e "${GREEN}PASSED${NC}"
+
+# 2. WAT compilation check
+echo -n "Checking WAT compilation... "
+if ! wat2wasm src/wagasm-ssg.wat -o /tmp/wagasm-precommit-test.wasm 2>/dev/null; then
+    echo -e "${RED}FAILED${NC}"
+    echo "WAT compilation failed. Fix syntax errors before committing."
+    exit 1
+fi
+rm -f /tmp/wagasm-precommit-test.wasm
+echo -e "${GREEN}PASSED${NC}"
+
+# 3. Host runtime check (warning only)
+echo -n "Checking host runtime... "
+if grep -qE 'parseMarkdown|renderTemplate|generateRoute|processContent' runtime/host.ts 2>/dev/null; then
+    echo -e "${YELLOW}WARNING${NC}"
+    echo "Host runtime may contain SSG logic. Review carefully."
+else
+    echo -e "${GREEN}PASSED${NC}"
+fi
+
+# 4. SPDX header check
+echo -n "Checking SPDX headers... "
+missing_spdx=""
+for file in src/*.wat runtime/*.ts; do
+    if [ -f "$file" ]; then
+        if ! grep -q "SPDX-License-Identifier" "$file" 2>/dev/null; then
+            missing_spdx="$missing_spdx $file"
+        fi
+    fi
+done
+if [ -n "$missing_spdx" ]; then
+    echo -e "${YELLOW}WARNING${NC}"
+    echo "Missing SPDX headers in:$missing_spdx"
+else
+    echo -e "${GREEN}PASSED${NC}"
+fi
+
+echo ""
+echo -e "${GREEN}Pre-commit checks passed${NC}"

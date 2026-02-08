@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/hyperpolymath/rescribe-ssg/a11y/bsl-schema.json",
+  "title": "British Sign Language (BSL) Metadata Schema",
+  "description": "Schema for BSL content integration in rescribe-ssg",
+  "type": "object",
+  "required": ["version", "language"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "language": {
+      "type": "string",
+      "const": "bsl",
+      "description": "British Sign Language identifier"
+    },
+    "iso639_3": {
+      "type": "string",
+      "const": "bfi",
+      "description": "ISO 639-3 code for BSL"
+    },
+    "content": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/bslContent"
+      }
+    },
+    "glossary": {
+      "type": "object",
+      "description": "Sign glossary mappings",
+      "additionalProperties": {
+        "$ref": "#/$defs/glossaryEntry"
+      }
+    },
+    "interpreter": {
+      "type": "object",
+      "description": "Interpreter information",
+      "properties": {
+        "name": { "type": "string" },
+        "qualification": { "type": "string" },
+        "registrationNumber": { "type": "string" }
+      }
+    }
+  },
+  "$defs": {
+    "bslContent": {
+      "type": "object",
+      "required": ["id", "type"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique content identifier"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["video", "gif", "avatar"],
+          "description": "Content type"
+        },
+        "src": {
+          "type": "string",
+          "format": "uri",
+          "description": "Source URL"
+        },
+        "transcript": {
+          "type": "string",
+          "description": "Text transcript"
+        },
+        "duration": {
+          "type": "number",
+          "description": "Duration in seconds"
+        },
+        "captions": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "glossaryEntry": {
+      "type": "object",
+      "properties": {
+        "term": { "type": "string" },
+        "signVideo": { "type": "string", "format": "uri" },
+        "description": { "type": "string" },
+        "handshape": { "type": "string" },
+        "movement": { "type": "string" },
+        "location": { "type": "string" }
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+/* TEAM */
+Project: milk-ssg
+Maintainer: Jonathan D.A. Jewell
+Contact: jonathan@hyperpolymath.org
+Location: Netherlands
+
+/* SITE */
+Last update: 2025-12-16
+Software: milk-ssg (COW)
+Standards: Consent-Aware HTTP, RSR
+
+/* PHILOSOPHY */
+Language: COW (poly-ssg satellite)

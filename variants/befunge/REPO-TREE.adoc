@@ -1,0 +1,30 @@
+= befunge-ssg Directory Structure
+
+[source]
+----
+befunge-ssg/
+├── cli.mjs              # CLI entry point
+├── deno.json            # Deno config + tasks
+├── befunge-ssg.json     # Site configuration
+├── src/                 # Deno host code
+│   ├── ssg.mjs          # Build logic
+│   ├── serve.mjs        # Dev server
+│   ├── dev.mjs          # Watch mode
+│   └── util.mjs         # Utilities
+├── rs/                  # ReScript adapter
+│   ├── rescript.json    # ReScript config
+│   └── src/
+│       ├── Adapter.res  # Main adapter
+│       ├── Render.res   # HTML generation
+│       ├── Html.res     # HTML utilities
+│       └── Slug.res     # URL slugs
+├── assets/              # Theme assets
+│   └── site.css         # Styles
+├── site/                # Content
+│   └── programs/        # Befunge programs
+│       ├── hello.bf
+│       └── befunge-ssg.bf
+├── STATE.scm            # Project state
+├── ECOSYSTEM.scm        # Ecosystem position
+└── dist/                # Generated (gitignored)
+----

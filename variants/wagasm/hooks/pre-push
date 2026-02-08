@@ -1,0 +1,59 @@
+#!/bin/bash
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# wagasm-ssg pre-push hook
+
+set -e
+
+echo "=== wagasm-ssg pre-push checks ==="
+
+# Color codes
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m'
+
+# 1. Full compilation and validation
+echo -n "Compiling WAT... "
+if ! wat2wasm src/wagasm-ssg.wat -o src/wagasm-ssg.wasm 2>/dev/null; then
+    echo -e "${RED}FAILED${NC}"
+    echo "WAT compilation failed"
+    exit 1
+fi
+echo -e "${GREEN}OK${NC}"
+
+echo -n "Validating WASM... "
+if ! wasm-validate src/wagasm-ssg.wasm 2>/dev/null; then
+    echo -e "${RED}FAILED${NC}"
+    echo "WASM validation failed"
+    exit 1
+fi
+echo -e "${GREEN}OK${NC}"
+
+# 2. Build test
+echo -n "Testing build... "
+if ! deno run --allow-read --allow-write runtime/host.ts 2>/dev/null; then
+    echo -e "${RED}FAILED${NC}"
+    echo "Site generation failed"
+    exit 1
+fi
+echo -e "${GREEN}OK${NC}"
+
+# 3. Output verification
+echo -n "Verifying output... "
+if [ ! -f _site/index.html ]; then
+    echo -e "${RED}FAILED${NC}"
+    echo "index.html not generated"
+    exit 1
+fi
+echo -e "${GREEN}OK${NC}"
+
+# 4. Language compliance (final check)
+echo -n "Final compliance check... "
+if find src/ -type f \( -name "*.ts" -o -name "*.js" -o -name "*.rs" -o -name "*.py" \) 2>/dev/null | grep -q .; then
+    echo -e "${RED}FAILED${NC}"
+    echo "Forbidden files in src/"
+    exit 1
+fi
+echo -e "${GREEN}OK${NC}"
+
+echo ""
+echo -e "${GREEN}All pre-push checks passed${NC}"

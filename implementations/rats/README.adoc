@@ -1,0 +1,148 @@
+= rats-ssg
+
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/Philosophy-Palimpsest-indigo.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+
+:toc:
+:toc-title: Table of Contents
+:icons: font
+
+**MCP Server Hub for 28 Static Site Generators**
+
+A Model Context Protocol (MCP) server that provides a unified interface to 28 different static site generators. Written in ReScript, running on Deno.
+
+== Who Is This For?
+
+* **AI Assistants** needing to interact with multiple SSGs through a standardized protocol
+* **Developers** wanting a single interface to manage various static site generators
+* **Tool Builders** integrating SSG capabilities into AI-powered workflows
+
+== Why rats-ssg?
+
+=== Unified Interface, Multiple Backends
+
+`rats-ssg` provides a single MCP-compliant API to interact with 28 SSGs across 18 programming languages. No need to learn each tool's CLI - just connect and use.
+
+=== ReScript + Deno
+
+Written in ReScript for type safety and compiled to JavaScript running on Deno for security and simplicity. No npm/node_modules pollution.
+
+=== MCP Protocol Compliant
+
+Full implementation of the Model Context Protocol, enabling seamless integration with AI assistants like Claude.
+
+== Supported SSGs (28)
+
+[cols="2,2,3", options="header"]
+|===
+| SSG | Language | Description
+
+| Zola | Rust | Fast static site generator
+| Cobalt | Rust | Static site generator
+| mdBook | Rust | Documentation builder
+| Hakyll | Haskell | Customizable static site compiler
+| Ema | Haskell | Hot-reloading static site generator
+| Serum | Elixir | Simple static website generator
+| Tableau | Elixir | Markdown publishing framework
+| Franklin.jl | Julia | Static site generator for technical content
+| Documenter.jl | Julia | Documentation generator
+| StaticWebPages.jl | Julia | Academic webpage generator
+| Cryogen | Clojure | Static site generator
+| Perun | Clojure | Composable static site generator
+| YOCaml | OCaml | Yet another static site generator
+| Frog | Racket | Static blog generator
+| Pollen | Racket | Publishing system
+| Fornax | F# | Scriptable static site generator
+| Laika | Scala | Text markup transformer
+| Scalatex | Scala | Programmable documents
+| Orchid | Kotlin | Documentation engine
+| Publish | Swift | Static site generator for Swift developers
+| Nimrod | Nim | Nim-based SSG
+| NimblePublisher | Nim | Markdown-based publishing
+| Reggae | D | Build system and SSG
+| Marmot | Crystal | Static site generator
+| Zotonic | Erlang | Content management framework
+| Wub | Tcl | Web application framework
+| Coleslaw | Common Lisp | Static blog generator
+| Babashka | ClojureScript | Scripting environment
+|===
+
+== Quick Start
+
+[source,bash]
+----
+# Install dependencies
+just setup
+
+# Start development server
+just dev
+
+# Run tests
+just test
+
+# Build for production
+just build
+----
+
+== Architecture
+
+----
+rats-ssg/
+├── src/                    # ReScript source code
+│   ├── Bindings/          # Deno API bindings
+│   ├── Mcp/               # MCP protocol implementation
+│   └── *.res              # Core modules
+├── runtime/               # Minimal JS glue for Deno APIs
+├── adapters/              # SSG adapter implementations (JS)
+├── config/                # Nickel configuration
+├── test/                  # ReScript tests
+└── lib/                   # Compiled output (generated)
+----
+
+== Language Policy
+
+This project follows the Hyperpolymath language standard:
+
+* **ReScript** - Primary application code
+* **JavaScript** - Minimal glue for Deno APIs only
+* **Nickel** - Configuration
+* **Deno** - Runtime (no npm/node)
+
+Banned: TypeScript, Go, Python (except SaltStack), Makefile
+
+== MCP Protocol
+
+Connect via stdio:
+[source,bash]
+----
+deno run --allow-all server.js --stdio
+----
+
+Or HTTP for debugging:
+[source,bash]
+----
+deno run --allow-all server.js
+# Health check: http://127.0.0.1:3000/health
+----
+
+== Development
+
+[source,bash]
+----
+# Build ReScript
+just rescript-build
+
+# Watch mode
+just rescript-watch
+
+# Run all checks
+just check-all
+
+# Enforce language policy
+just enforce-policy
+----
+
+== License
+
+PMPL-1.0-or-later

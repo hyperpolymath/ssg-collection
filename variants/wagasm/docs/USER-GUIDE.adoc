@@ -1,0 +1,152 @@
+= wagasm-ssg User Guide
+:toc: left
+:toclevels: 2
+
+A guide to using wagasm-ssg, the pure WebAssembly Text static site generator.
+
+== Prerequisites
+
+=== Required Tools
+
+* **WABT** (WebAssembly Binary Toolkit) - for `wat2wasm` compiler
+* **Deno** or another WASM runtime
+
+=== Installation
+
+[source,bash]
+----
+# Ubuntu/Debian
+sudo apt install wabt
+
+# macOS
+brew install wabt
+
+# Deno
+curl -fsSL https://deno.land/install.sh | sh
+----
+
+== Quick Start
+
+[source,bash]
+----
+# Clone the repository
+git clone https://github.com/hyperpolymath/wagasm-ssg
+
+# Enter directory
+cd wagasm-ssg
+
+# Compile WAT to WASM
+wat2wasm src/wagasm-ssg.wat -o src/wagasm-ssg.wasm
+
+# Generate site
+deno run --allow-read --allow-write runtime/host.ts
+
+# View output
+cat _site/index.html
+----
+
+== Architecture
+
+=== The WAT Core
+
+All SSG logic is in `src/wagasm-ssg.wat`. This includes:
+
+* HTML template generation
+* Memory management
+* String handling
+* Output buffering
+
+=== The Host Runtime
+
+`runtime/host.ts` provides I/O capabilities:
+
+* `write_file` - Write generated files
+* `log` - Console logging
+
+IMPORTANT: The host runtime contains NO SSG logic. It is a dumb I/O provider.
+
+== Memory Layout
+
+The WAT module uses linear memory with this layout:
+
+[cols="1,2,3"]
+|===
+| Offset | Size | Purpose
+
+| 0-1023
+| 1KB
+| HTML output buffer
+
+| 1024-2047
+| 1KB
+| Title buffer
+
+| 2048-4095
+| 2KB
+| Body content buffer
+
+| 4096+
+| Variable
+| Static string data
+|===
+
+== Building
+
+=== Using Just
+
+[source,bash]
+----
+# Full build
+just build
+
+# Compile only
+just compile
+
+# Run tests
+just test
+----
+
+=== Manual Build
+
+[source,bash]
+----
+# Compile
+wat2wasm src/wagasm-ssg.wat -o src/wagasm-ssg.wasm
+
+# Validate
+wasm-validate src/wagasm-ssg.wasm
+
+# Run
+deno run --allow-read --allow-write runtime/host.ts
+----
+
+== Customization
+
+=== Setting Title and Content
+
+The host runtime can set page title and content via exported functions:
+
+[source,typescript]
+----
+// Set title
+exports.set_title(titlePtr, titleLen);
+
+// Set body content
+exports.set_body(bodyPtr, bodyLen);
+
+// Generate site
+exports.generate_site();
+----
+
+== Troubleshooting
+
+=== Common Issues
+
+WAT Syntax Error::
+Check for mismatched parentheses and proper type annotations.
+
+WASM Validation Error::
+Ensure stack is balanced in all code paths.
+
+No Output Generated::
+Verify WASM file exists and Deno has write permissions.

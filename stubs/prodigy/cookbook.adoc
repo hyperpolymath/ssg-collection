@@ -1,0 +1,517 @@
+= prodigy-ssg Cookbook
+:toc: left
+:toclevels: 3
+:sectnums:
+:icons: font
+:source-highlighter: rouge
+
+Comprehensive recipe guide for prodigy-ssg - the Prolog static site generator.
+
+== Overview
+
+This cookbook contains all recipes, commands, and configurations for building, testing, and deploying prodigy-ssg sites.
+
+[[cli]]
+== CLI Commands
+
+Command-line recipes for direct shell execution.
+
+[[cli-build]]
+=== Building Sites
+
+[source,bash]
+----
+# Basic build
+swipl -g "consult('src/prodigy.pl'), build_site('_site'), halt"
+
+# Build with custom output
+swipl -g "consult('src/prodigy.pl'), build_site('/var/www/mysite'), halt"
+
+# Build with config file
+swipl -g "consult('src/prodigy.pl'), load_config('site.json'), build_site('_site'), halt"
+----
+
+[[cli-test]]
+=== Testing
+
+[source,bash]
+----
+# Run all tests
+swipl -g "consult('tests/unit/test_runner.pl'), run_tests, halt"
+
+# Run specific test suite
+swipl -g "consult('tests/unit/test_runner.pl'), run_tests(markdown), halt"
+
+# E2E tests
+swipl -g "consult('tests/e2e/e2e_runner.pl'), run_e2e_tests, halt"
+
+# Syntax check all Prolog files
+for f in src/*.pl engine/src/*.pl; do swipl -g halt "$f"; done
+----
+
+[[cli-dev]]
+=== Development
+
+[source,bash]
+----
+# Start REPL with project loaded
+swipl -l src/prodigy.pl
+
+# Query site structure
+swipl -g "consult('src/prodigy.pl'), site_config(C), writeln(C), halt"
+
+# Check Prolog version
+swipl --version
+----
+
+[[cli-adapter]]
+=== MCP Adapter
+
+[source,bash]
+----
+# Build ReScript adapter
+cd adapters && npm install && npm run build
+
+# Watch for changes
+cd adapters && npm run watch
+
+# Clean adapter build
+cd adapters && npm run clean
+----
+
+[[just]]
+== Just Recipes
+
+Task automation via link:https://just.systems[Just].
+
+[[just-reference]]
+=== Quick Reference
+
+[cols="2,3,1"]
+|===
+| Recipe | Description | Category
+
+| `just build` | Build site to _site/ | Build
+| `just build output` | Build to custom dir | Build
+| `just clean` | Remove build artifacts | Build
+| `just rebuild` | Clean + build | Build
+| `just test` | Run all tests | Test
+| `just test-unit` | Unit tests only | Test
+| `just test-e2e` | E2E tests only | Test
+| `just test-markdown` | Test markdown parser | Test
+| `just check` | Syntax check all files | Quality
+| `just lint` | Lint Prolog files | Quality
+| `just dev` | Development server | Dev
+| `just repl` | Start Prolog REPL | Dev
+| `just lsp` | Start LSP server | Dev
+| `just adapter-build` | Build MCP adapter | Adapter
+| `just docs` | Build documentation | Docs
+| `just container-build` | Build container | Deploy
+| `just audit` | Security audit | Security
+| `just all` | All quality checks | CI
+|===
+
+[[just-build]]
+=== Build Recipes
+
+[source,just]
+----
+# Build with defaults
+just build
+
+# Build to custom directory
+just build public
+
+# Full rebuild
+just rebuild
+----
+
+[[just-test]]
+=== Test Recipes
+
+[source,just]
+----
+# All tests
+just test
+
+# Unit tests only
+just test-unit
+
+# Specific test file
+just test-file tests/unit/test_markdown.pl
+
+# With coverage
+just test-coverage
+----
+
+[[just-dev]]
+=== Development Recipes
+
+[source,just]
+----
+# Interactive REPL
+just repl
+
+# Start LSP
+just lsp
+
+# Development mode with watch
+just dev
+
+# Generate editor configs
+just editor-config
+----
+
+[[just-deploy]]
+=== Deployment Recipes
+
+[source,just]
+----
+# Container build
+just container-build
+
+# Run in container
+just container-run
+
+# Create release tag
+just release 1.2.0
+
+# Check release readiness
+just release-check
+----
+
+[[nickel]]
+== Nickel Configuration
+
+Type-safe configuration via link:https://nickel-lang.org[Nickel].
+
+[[nickel-schema]]
+=== Configuration Schema
+
+[source,nickel]
+----
+# Project configuration structure
+let Project = {
+  name : String,
+  version : String,
+  language : String,
+  interpreter : String,
+  license : String,
+}
+
+# Path configuration
+let Paths = {
+  source : String,
+  engine : String,
+  content : String,
+  templates : String,
+  output : String,
+}
+----
+
+[[nickel-commands]]
+=== Command Definitions
+
+[source,nickel]
+----
+let Commands = {
+  build = "just build",
+  test = "just test",
+  check = "just check",
+  lint = "just lint",
+  dev = "just dev",
+}
+----
+
+[[nickel-deployment]]
+=== Deployment Configuration
+
+[source,nickel]
+----
+let Deployment = {
+  container = {
+    engine = "podman",
+    image_name = "prodigy-ssg",
+    tag = "1.1.0",
+  },
+  system = {
+    install_prefix = "/usr/local",
+    config_dir = "~/.config/prodigy",
+  },
+}
+----
+
+[[nickel-security]]
+=== Security Configuration
+
+[source,nickel]
+----
+let Security = {
+  sast_tools = ["CodeQL", "Semgrep"],
+  dependency_scanning = true,
+  secrets_scanning = true,
+  forbidden_patterns = [
+    "password\\s*=",
+    "secret\\s*=",
+    "api_key\\s*=",
+  ],
+}
+----
+
+[[permutations]]
+== Command Permutations
+
+Common command combinations and workflows.
+
+[[permutations-ci]]
+=== CI/CD Pipeline
+
+[source,bash]
+----
+# Full CI pipeline
+just check && just lint && just test && just audit
+
+# Quick verification
+just check && just test-unit
+
+# Release preparation
+just all && just release-check
+----
+
+[[permutations-dev]]
+=== Development Workflows
+
+[source,bash]
+----
+# Start fresh development session
+just clean && just bootstrap && just repl
+
+# After code changes
+just check && just test-unit && just build
+
+# Prepare for PR
+just tidy && just lint && just test && just docs
+----
+
+[[permutations-deploy]]
+=== Deployment Workflows
+
+[source,bash]
+----
+# Container deployment
+just container-build && just container-run
+
+# Local installation
+just bootstrap && just build && just test
+
+# Full release
+just all && just release 1.2.0 && git push --tags
+----
+
+[[concatenations]]
+== Command Concatenations
+
+Chained operations for complex workflows.
+
+[[concat-quality]]
+=== Quality Assurance Chain
+
+[source,bash]
+----
+# Format → Lint → Test → Audit
+just tidy && just lint && just test && just audit
+
+# With documentation
+just tidy && just lint && just test && just docs && just audit
+----
+
+[[concat-release]]
+=== Release Chain
+
+[source,bash]
+----
+# Full release workflow
+just clean && \
+just bootstrap && \
+just all && \
+just release-check && \
+just container-build && \
+just release ${VERSION}
+----
+
+[[concat-multi-arch]]
+=== Multi-Architecture Build
+
+[source,bash]
+----
+# Build for multiple architectures
+for arch in amd64 arm64; do
+  just container-build arch=$arch
+done
+----
+
+[[hooks]]
+== Hooks Integration
+
+Git hooks and automation triggers.
+
+[[hooks-pre-commit]]
+=== Pre-commit Hook
+
+[source,bash]
+----
+#!/bin/bash
+# .git/hooks/pre-commit
+
+# Check syntax
+just check || exit 1
+
+# Run linter
+just lint || exit 1
+
+# Quick tests
+just test-unit || exit 1
+
+echo "Pre-commit checks passed!"
+----
+
+[[hooks-pre-push]]
+=== Pre-push Hook
+
+[source,bash]
+----
+#!/bin/bash
+# .git/hooks/pre-push
+
+# Full test suite
+just test || exit 1
+
+# Security audit
+just audit || exit 1
+
+echo "Pre-push checks passed!"
+----
+
+[[hooks-post-merge]]
+=== Post-merge Hook
+
+[source,bash]
+----
+#!/bin/bash
+# .git/hooks/post-merge
+
+# Rebuild after merge
+just clean && just bootstrap
+
+echo "Post-merge setup complete!"
+----
+
+[[recipes-prolog]]
+== Prolog Recipes
+
+Common Prolog operations and queries.
+
+[[prolog-query]]
+=== Site Queries
+
+[source,prolog]
+----
+% Query all pages
+?- page(Name, Title, _).
+
+% Find orphan pages (not linked)
+?- page(X, _, _), \+ linked_from(_, X).
+
+% List all tags
+?- setof(Tag, Page^Tags^(page(Page, _, Tags), member(Tag, Tags)), AllTags).
+
+% Find pages by date range
+?- page(Name, _, Meta), get_dict(date, Meta, Date), Date @>= "2025-01-01".
+----
+
+[[prolog-template]]
+=== Template Operations
+
+[source,prolog]
+----
+% Apply template with context
+?- apply_template(page, _{title: "Hello", content: "World"}, Html).
+
+% Register custom helper
+?- register_helper(uppercase, string_upper).
+
+% Load custom template
+?- load_template('custom', Template).
+----
+
+[[prolog-build]]
+=== Build Operations
+
+[source,prolog]
+----
+% Build with custom config
+?- Config = config{input_dir: 'content', output_dir: 'public'},
+   build_site(Config, 'public').
+
+% Incremental build (only changed files)
+?- incremental_build('_site').
+
+% Generate sitemap
+?- generate_sitemap('_site/sitemap.xml').
+----
+
+[[reference]]
+== Quick Reference Card
+
+.Build Commands
+[source,bash]
+----
+just build              # Build site
+just build DIR          # Build to DIR
+just rebuild            # Clean + build
+just clean              # Remove artifacts
+----
+
+.Test Commands
+[source,bash]
+----
+just test               # All tests
+just test-unit          # Unit tests
+just test-e2e           # E2E tests
+just test-coverage      # With coverage
+----
+
+.Development Commands
+[source,bash]
+----
+just dev                # Dev server
+just repl               # Prolog REPL
+just lsp                # LSP server
+just check              # Syntax check
+just lint               # Lint files
+----
+
+.Deployment Commands
+[source,bash]
+----
+just container-build    # Build container
+just container-run      # Run container
+just release VER        # Create release
+just release-check      # Verify release
+----
+
+.Quality Commands
+[source,bash]
+----
+just all                # All checks
+just audit              # Security audit
+just tidy               # Clean whitespace
+just loc                # Lines of code
+----
+
+== See Also
+
+* link:README.adoc[README] - Project overview
+* link:CONTRIBUTING.md[Contributing Guide] - How to contribute
+* link:docs/guides/USER-GUIDE.adoc[User Guide] - Detailed usage
+* link:SECURITY.md[Security Policy] - Reporting vulnerabilities

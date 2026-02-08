@@ -1,0 +1,52 @@
+= 60-ssg
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+
+
+
+image:https://img.shields.io/badge/Philosophy-Palimpsest-indigo.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+
+:toc:
+:toc-title: Table of Contents
+:icons: font
+
+**The foundational block-structured generator in ALGOL 60.**
+"60" — The standard of algorithmic publication. Pure, block-structured site synthesis.
+
+== Who Is This For?
+* **Computer Science purists** who value the "Latin" of structured programming.
+* **Systems Architects** requiring rigid, block-scoped build logic.
+* **Historians and Researchers** exploring the origins of lexical scope in site generation.
+
+== Why 60-ssg?
+=== Lexical Scope Rigour
+ALGOL 60 introduced the code block (`begin`...`end`). In `60-ssg`, site variables are strictly scoped to their blocks, preventing the global-state corruption common in modern scripting engines.
+
+=== Algorithmic Clarity
+Used as the standard for algorithm publication for decades, this engine provides a level of readability and discipline that prioritises stability over alpha features.
+
+== Quick Start
+[source,oil]
+----
+# Prepare the ALGOL 60 environment via asdf
+just setup
+
+# Build the site using block-structured logic
+just build
+----
+
+== Features
+* **Strict Block Scoping** - Variables restricted to local execution units.
+* **Podman-First** - Isolated runtimes for legacy block-logic.
+* **Accessibility** - Integrated support for **BSL**, **GSL**, and **Makaton**.
+
+== Requirements
+* **ALGOL 60 Interpreter**
+* **Just** (Orchestrator)
+
+== Part of poly-ssg
+`60-ssg` is the block-structured ancestor of the **poly-ssg** family.
+
+== License
+PMPL-1.0-or-later

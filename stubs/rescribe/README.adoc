@@ -1,0 +1,84 @@
+= rescribe-ssg
+:toc: auto
+:toclevels: 2
+
+image:https://img.shields.io/badge/RSR-compliant-gold[RSR Compliant,link=https://github.com/hyperpolymath/rhodium-standard-repositories]
+image:https://img.shields.io/badge/poly--ssg-satellite-blue[poly-ssg,link=https://github.com/hyperpolymath/poly-ssg]
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+**Type-safe static site generator in ReScript.**
+
+ML-family types meet the JavaScript ecosystem.
+
+== Who Is This For?
+
+* **ReScript developers** who love the language
+* **Former BuckleScript users** seeking modern tooling
+* **Teams wanting type safety** without leaving the JS ecosystem
+* **Anyone frustrated** by runtime type errors in Node SSGs
+
+== Why rescribe-ssg?
+
+=== ML-Family Type Inference
+
+Write code naturally. Types are inferred. Errors are caught at compile time.
+
+[source,rescript]
+----
+let buildPage = (page: page) => {
+  let html = page.content->Markdown.toHtml
+  html->Template.apply(page.frontmatter)
+}
+// Types inferred, errors caught
+----
+
+=== Readable JavaScript Output
+
+The generated JavaScript is readable and debuggable. No runtime overhead from the type system.
+
+=== Full JS Ecosystem Access
+
+npm packages work seamlessly. Bindings are type-safe. Best of both worlds.
+
+=== Pattern Matching for Content
+
+Variant types and pattern matching make content handling elegant.
+
+== Quick Start
+
+[source,bash]
+----
+# Install
+npm install -g rescribe-ssg
+
+# Create a site
+rescribe init my-site
+cd my-site
+
+# Build
+rescribe build
+
+# Watch mode
+rescribe watch
+----
+
+== Features
+
+* **Sound type system** - if it compiles, it works
+* **Variant types** - model content precisely
+* **Pattern matching** - elegant content handling
+* **Fast compilation** - sub-second rebuilds
+* **npm compatibility** - use any JS library
+
+== Requirements
+
+* Node.js 18 or later
+* ReScript 11+
+
+== Part of poly-ssg
+
+rescribe-ssg is part of the https://github.com/hyperpolymath/poly-ssg[poly-ssg] family, unified through https://github.com/hyperpolymath/poly-ssg-mcp[MCP integration].
+
+== License
+
+PMPL-1.0-or-later

@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://eclipse-ssg.hyperpolymath.org/schemas/gsl.json",
+  "title": "German Sign Language (DGS) Metadata Schema",
+  "description": "Schema for Deutsche Gebärdensprache (DGS/GSL) accessibility content",
+  "type": "object",
+  "properties": {
+    "dgsVideo": {
+      "type": "object",
+      "description": "DGS video translation",
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to DGS video"
+        },
+        "duration": {
+          "type": "string",
+          "pattern": "^PT\\d+M\\d+S$",
+          "description": "Video duration in ISO 8601 format"
+        },
+        "interpreter": {
+          "type": "string",
+          "description": "Name of DGS interpreter"
+        },
+        "certification": {
+          "type": "string",
+          "description": "Interpreter certification"
+        },
+        "format": {
+          "type": "string",
+          "enum": ["mp4", "webm", "mov"],
+          "description": "Video format"
+        }
+      },
+      "required": ["url"]
+    },
+    "dgsGlossary": {
+      "type": "array",
+      "description": "DGS sign glossary for technical terms",
+      "items": {
+        "type": "object",
+        "properties": {
+          "term": {
+            "type": "string",
+            "description": "German term"
+          },
+          "englishTerm": {
+            "type": "string",
+            "description": "English equivalent"
+          },
+          "signVideo": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to individual sign video"
+          },
+          "signDescription": {
+            "type": "string",
+            "description": "Text description of how to form the sign"
+          }
+        },
+        "required": ["term"]
+      }
+    },
+    "dgsTranscript": {
+      "type": "string",
+      "description": "German transcript of DGS content"
+    }
+  }
+}

@@ -1,0 +1,234 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Comprehensive CI/CD workflow for zigzag-ssg
+name: Zig CI
+
+permissions: read-all
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:  # Manual trigger
+
+env:
+  ZIG_VERSION: '0.11.0'
+
+jobs:
+  # ============================================================================
+  # Build Job
+  # ============================================================================
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v4
+
+      - name: Setup Zig
+        uses: goto-bus-stop/setup-zig@abea47f85e598557f500fa1fd2ab7464fcb39406 # v2
+        with:
+          version: ${{ env.ZIG_VERSION }}
+
+      - name: Check Format
+        run: zig fmt --check src/ || (echo "Format check failed. Run 'zig fmt src/' locally." && exit 1)
+
+      - name: Build Debug
+        run: zig build
+
+      - name: Build Release
+        run: zig build -Doptimize=ReleaseFast
+
+      - name: Run Unit Tests
+        run: zig build test
+
+      - name: Run E2E Tests
+        run: |
+          zig build run -- test-markdown
+          zig build run -- test-frontmatter
+          zig build run -- test-full
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v4
+        with:
+          name: zigzag-ssg-linux
+          path: zig-out/bin/zigzag-ssg
+          if-no-files-found: ignore
+
+  # ============================================================================
+  # Language Enforcement Job
+  # ============================================================================
+  language-check:
+    name: Language Enforcement
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v4
+
+      - name: Verify Zig-only in src/
+        run: |
+          echo "::group::Checking for forbidden languages"
+          forbidden=$(find src/ -type f \( \
+            -name "*.py" -o \
+            -name "*.js" -o \
+            -name "*.ts" -o \
+            -name "*.rs" -o \
+            -name "*.rb" -o \
+            -name "*.go" -o \
+            -name "*.java" \
+          \) 2>/dev/null || true)
+          if [ -n "$forbidden" ]; then
+            echo "::error::Found forbidden language files in src/:"
+            echo "$forbidden"
+            exit 1
+          fi
+          echo "OK: Only Zig files in src/"
+          echo "::endgroup::"
+
+      - name: Verify ReScript-only in adapters/
+        run: |
+          echo "::group::Checking adapter languages"
+          # ReScript (.res, .resi) and config files are allowed
+          forbidden=$(find adapters/src/ -type f \( \
+            -name "*.py" -o \
+            -name "*.rb" -o \
+            -name "*.go" \
+          \) 2>/dev/null || true)
+          if [ -n "$forbidden" ]; then
+            echo "::error::Found forbidden language files in adapters/src/:"
+            echo "$forbidden"
+            exit 1
+          fi
+          echo "OK: Only ReScript files in adapters/src/"
+          echo "::endgroup::"
+
+  # ============================================================================
+  # Security Check Job
+  # ============================================================================
+  security:
+    name: Security Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v4
+
+      - name: Check for Secrets
+        run: |
+          echo "::group::Scanning for potential secrets"
+          if grep -rE "(password|secret|api.?key|token)\s*=\s*['\"][^'\"]+['\"]" src/ 2>/dev/null; then
+            echo "::error::Potential secrets found in source code"
+            exit 1
+          fi
+          echo "No secrets detected"
+          echo "::endgroup::"
+
+      - name: Check for Security TODOs
+        run: |
+          echo "::group::Checking for security TODOs"
+          if grep -rn "TODO.*[Ss]ecurity" src/ 2>/dev/null; then
+            echo "::warning::Security TODOs found - please address"
+          fi
+          echo "::endgroup::"
+
+      - name: Verify SPDX Headers
+        run: |
+          echo "::group::Checking SPDX headers"
+          for f in src/*.zig; do
+            if ! head -5 "$f" | grep -q "SPDX-License-Identifier"; then
+              echo "::error::Missing SPDX header in $f"
+              exit 1
+            fi
+          done
+          echo "All Zig files have SPDX headers"
+          echo "::endgroup::"
+
+  # ============================================================================
+  # Documentation Check Job
+  # ============================================================================
+  docs:
+    name: Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v4
+
+      - name: Check Required Docs
+        run: |
+          echo "::group::Checking required documentation"
+          required_files="README.adoc SECURITY.md LICENSE.txt CONTRIBUTING.md CODE_OF_CONDUCT.md"
+          for f in $required_files; do
+            if [ ! -f "$f" ]; then
+              echo "::error::Required file missing: $f"
+              exit 1
+            fi
+          done
+          echo "All required documentation present"
+          echo "::endgroup::"
+
+      - name: Check SCM Files
+        run: |
+          echo "::group::Checking SCM files"
+          scm_files="META.scm STATE.scm ECOSYSTEM.scm PLAYBOOK.scm AGENTIC.scm NEUROSYM.scm"
+          for f in $scm_files; do
+            if [ ! -f "$f" ]; then
+              echo "::error::Required SCM file missing: $f"
+              exit 1
+            fi
+          done
+          echo "All SCM files present"
+          echo "::endgroup::"
+
+  # ============================================================================
+  # Adapter Build Job
+  # ============================================================================
+  adapter:
+    name: Build Adapter
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: adapters/package-lock.json
+
+      - name: Install Dependencies
+        working-directory: adapters
+        run: npm ci || npm install
+
+      - name: Build Adapter
+        working-directory: adapters
+        run: npm run build
+
+  # ============================================================================
+  # Cross-Platform Build Matrix (Optional)
+  # ============================================================================
+  cross-build:
+    name: Cross-Platform Build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    strategy:
+      matrix:
+        target:
+          - x86_64-linux-gnu
+          - aarch64-linux-gnu
+          - x86_64-windows-gnu
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v4
+
+      - name: Setup Zig
+        uses: goto-bus-stop/setup-zig@abea47f85e598557f500fa1fd2ab7464fcb39406 # v2
+        with:
+          version: ${{ env.ZIG_VERSION }}
+
+      - name: Build for ${{ matrix.target }}
+        run: zig build -Dtarget=${{ matrix.target }} -Doptimize=ReleaseFast
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v4
+        with:
+          name: zigzag-ssg-${{ matrix.target }}
+          path: zig-out/bin/zigzag-ssg*
+          if-no-files-found: ignore

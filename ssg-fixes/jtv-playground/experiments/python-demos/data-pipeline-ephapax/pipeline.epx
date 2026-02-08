@@ -1,0 +1,492 @@
+-- Data Processing Pipeline - Ephapax Implementation
+-- SPDX-License-Identifier: AGPL-3.0-or-later
+--
+-- Demonstrates ETL operations with linear/affine types and regions.
+-- Ensures data ownership is tracked throughout the pipeline.
+
+module Pipeline
+
+--------------------------------------------------------------------------------
+-- TYPE SYSTEM MODE TOGGLE
+--------------------------------------------------------------------------------
+-- Ephapax supports two ownership modes:
+--
+-- LINEAR MODE (default): Resources must be used EXACTLY once
+--   - Compile: ephapax build --mode=linear pipeline.epx
+--   - Data must flow through all stages or be explicitly dropped
+--   - Guarantees no data leaks in ETL pipeline
+--
+-- AFFINE MODE: Resources can be used AT MOST once
+--   - Compile: ephapax build --mode=affine pipeline.epx
+--   - Partial pipeline execution allowed (unused data auto-dropped)
+--   - Better for prototyping and debugging
+--
+-- Toggle via pragma (overrides CLI flag):
+#![type_mode = "linear"]  -- Options: "linear" | "affine"
+
+-- Pipeline stage transitions with ownership:
+--
+-- LINEAR: Each stage MUST consume its input and produce output
+--   load() -> [Employee]           -- Creates owned data
+--   clean([Employee]) -> [CleanedEmployee]  -- Consumes input, returns new
+--   transform([CleanedEmployee]) -> [TransformedEmployee]  -- Consumes, returns
+--   analyze([TransformedEmployee]) -> AnalysisResult  -- Consumes, returns
+--
+-- AFFINE: Stages can short-circuit (auto-drop uncommitted data)
+--   let data = load()
+--   let cleaned = clean(data)
+--   -- If we stop here, `cleaned` auto-drops (warning in affine, error in linear)
+--------------------------------------------------------------------------------
+
+import Runtime.IO (read_csv, write_csv, write_json, print)
+import Runtime.Drop (drop)  -- Explicit drop for linear mode
+import Runtime.Random (seed, random_int, random_float, random_choice)
+import Runtime.DateTime (now, parse_date, format_date)
+import Runtime.Math (mean, median, sum, min, max, std_dev)
+
+-- Record types for our data
+type Employee = {
+    id: Int,
+    name: String,
+    age: Int,
+    email: String,
+    salary: Float,
+    department: String,
+    join_date: Date,
+    performance_score: Float,
+    is_active: Bool,
+}
+
+type CleanedEmployee = {
+    id: Int,
+    name: String,
+    age: Int,
+    email: String,
+    salary: Float,
+    department: String,
+    join_date: Date,
+    performance_score: Float,
+    is_active: Bool,
+}
+
+type TransformedEmployee = {
+    ...CleanedEmployee,
+    years_with_company: Float,
+    salary_per_performance: Float,
+    age_group: String,
+    performance_percentage: Float,
+    salary_band: String,
+}
+
+type SummaryStats = {
+    total_records: Int,
+    active_employees: Int,
+    average_age: Float,
+    average_salary: Float,
+    average_performance: Float,
+}
+
+type DepartmentStats = {
+    department: String,
+    count: Int,
+    avg_salary: Float,
+    median_salary: Float,
+    min_salary: Float,
+    max_salary: Float,
+    avg_performance: Float,
+    avg_age: Float,
+}
+
+type AnalysisResults = {
+    summary: SummaryStats,
+    by_department: [DepartmentStats],
+    by_age_group: Map<String, AgeGroupStats>,
+    by_salary_band: Map<String, SalaryBandStats>,
+    salary_correlations: Map<String, Float>,
+}
+
+-- Pipeline state with linear ownership
+type Pipeline = {
+    input_path: Option<String>,
+    raw_data: Option<[Employee]>,
+    cleaned_data: Option<[CleanedEmployee]>,
+    transformed_data: Option<[TransformedEmployee]>,
+    results: Option<AnalysisResults>,
+}
+
+-- Create new pipeline
+fn new(input_path: Option<String>) -> Pipeline:
+    Pipeline {
+        input_path,
+        raw_data: None,
+        cleaned_data: None,
+        transformed_data: None,
+        results: None,
+    }
+
+-- Load data from file or generate sample data
+-- Returns ownership of loaded data
+fn load_data(pipeline: &mut Pipeline) -> Result<(), String>:
+    region r:
+        match &pipeline.input_path:
+            | Some(path):
+                let data = read_csv@r(path)?
+                let employees = parse_employees@r(data)
+                pipeline.raw_data = Some(employees)
+                print("Loaded ", employees.len(), " records from ", path)
+
+            | None:
+                print("No input file provided. Generating sample data...")
+                let employees = generate_sample_data@r(1000)
+                pipeline.raw_data = Some(employees)
+
+        Ok(())
+
+-- Generate sample data with controlled randomness
+fn generate_sample_data@r(n: Int) -> [Employee]:
+    seed(42)  -- Reproducible results
+
+    let departments = ["Engineering", "Sales", "Marketing", "HR", "Finance"]
+    let base_date = parse_date("2020-01-01")
+
+    let mut employees = Vec.with_capacity@r(n)
+
+    for i in 1..=n:
+        let employee = Employee {
+            id: i,
+            name: format!("User_{}", i),
+            age: random_int(18, 80),
+            email: format!("user{}@example.com", i),
+            salary: random_float(30000.0, 150000.0),
+            department: random_choice(&departments),
+            join_date: base_date.add_days(i - 1),
+            performance_score: random_float(1.0, 5.0),
+            is_active: random_float(0.0, 1.0) < 0.9,
+        }
+        employees.push(employee)
+
+    -- Introduce some missing values (set to NaN)
+    for _ in 0..50:
+        let idx = random_int(0, n - 1)
+        employees[idx].salary = Float.NAN
+
+    for _ in 0..30:
+        let idx = random_int(0, n - 1)
+        employees[idx].performance_score = Float.NAN
+
+    employees
+
+-- Clean data: handle missing values, duplicates, outliers
+-- Consumes raw_data, produces cleaned_data
+fn clean_data(pipeline: &mut Pipeline) -> Result<(), String>:
+    region r:
+        let raw = pipeline.raw_data.take()
+            .ok_or("No data loaded. Call load_data() first.")?
+
+        print("\nCleaning data...")
+        print("Initial count: ", raw.len())
+
+        -- Remove duplicates (by id)
+        let mut seen_ids = Set.new@r()
+        let mut deduplicated = Vec.new@r()
+
+        for emp in raw.into_iter():
+            if !seen_ids.contains(&emp.id):
+                seen_ids.insert(emp.id)
+                deduplicated.push(emp)
+
+        let dups_removed = raw.len() - deduplicated.len()
+        print("Duplicates removed: ", dups_removed)
+
+        -- Handle missing values
+        let mut missing_before = 0
+        for emp in deduplicated.iter():
+            if emp.salary.is_nan(): missing_before += 1
+            if emp.performance_score.is_nan(): missing_before += 1
+
+        -- Calculate medians for imputation
+        let valid_salaries: [Float] = deduplicated.iter()
+            .filter(|e| !e.salary.is_nan())
+            .map(|e| e.salary)
+            .collect@r()
+
+        let valid_scores: [Float] = deduplicated.iter()
+            .filter(|e| !e.performance_score.is_nan())
+            .map(|e| e.performance_score)
+            .collect@r()
+
+        let salary_median = median(&valid_salaries)
+        let score_median = median(&valid_scores)
+
+        -- Fill missing values with medians
+        let mut cleaned = Vec.new@r()
+        for emp in deduplicated.into_iter():
+            let cleaned_emp = CleanedEmployee {
+                id: emp.id,
+                name: emp.name,
+                age: emp.age,
+                email: emp.email,
+                salary: if emp.salary.is_nan() { salary_median } else { emp.salary },
+                department: emp.department,
+                join_date: emp.join_date,
+                performance_score: if emp.performance_score.is_nan() { score_median } else { emp.performance_score },
+                is_active: emp.is_active,
+            }
+            cleaned.push(cleaned_emp)
+
+        print("Missing values filled: ", missing_before, " -> 0")
+
+        -- Handle outliers using IQR method for salary
+        let salaries: [Float] = cleaned.iter().map(|e| e.salary).collect@r()
+        let q1 = percentile(&salaries, 0.25)
+        let q3 = percentile(&salaries, 0.75)
+        let iqr = q3 - q1
+        let lower = q1 - 1.5 * iqr
+        let upper = q3 + 1.5 * iqr
+
+        let mut outliers = 0
+        for emp in cleaned.iter_mut():
+            if emp.salary < lower || emp.salary > upper:
+                outliers += 1
+                emp.salary = emp.salary.clamp(lower, upper)
+
+        print("Salary outliers capped: ", outliers)
+        print("Final count: ", cleaned.len())
+
+        pipeline.cleaned_data = Some(cleaned)
+        Ok(())
+
+-- Transform data: feature engineering
+fn transform_data(pipeline: &mut Pipeline) -> Result<(), String>:
+    region r:
+        let cleaned = pipeline.cleaned_data.take()
+            .ok_or("No cleaned data. Call clean_data() first.")?
+
+        print("\nTransforming data...")
+
+        let current_date = now()
+        let mut transformed = Vec.with_capacity@r(cleaned.len())
+
+        for emp in cleaned.into_iter():
+            let years = days_between(emp.join_date, current_date) / 365.25
+
+            let age_group = match emp.age:
+                | 0..=30: "Young"
+                | 31..=45: "Mid-Career"
+                | 46..=60: "Senior"
+                | _: "Veteran"
+
+            let salary_band = match emp.salary:
+                | 0.0..50000.0: "Low"
+                | 50000.0..75000.0: "Medium"
+                | 75000.0..100000.0: "High"
+                | _: "Very High"
+
+            let t_emp = TransformedEmployee {
+                ...emp,
+                years_with_company: years,
+                salary_per_performance: emp.salary / emp.performance_score,
+                age_group: String.from@r(age_group),
+                performance_percentage: (emp.performance_score / 5.0) * 100.0,
+                salary_band: String.from@r(salary_band),
+            }
+            transformed.push(t_emp)
+
+        let new_features = 5  -- years_with_company, salary_per_performance, age_group, performance_percentage, salary_band
+        print("New features created: ", new_features)
+
+        pipeline.transformed_data = Some(transformed)
+        Ok(())
+
+-- Analyze data: compute statistics and insights
+fn analyze_data(pipeline: &mut Pipeline) -> Result<(), String>:
+    region r:
+        let data = pipeline.transformed_data.as_ref()
+            .ok_or("No transformed data. Call transform_data() first.")?
+
+        print("\nAnalyzing data...")
+
+        -- Summary statistics
+        let summary = SummaryStats {
+            total_records: data.len(),
+            active_employees: data.iter().filter(|e| e.is_active).count(),
+            average_age: mean(data.iter().map(|e| e.age as Float)),
+            average_salary: mean(data.iter().map(|e| e.salary)),
+            average_performance: mean(data.iter().map(|e| e.performance_score)),
+        }
+
+        -- Department analysis
+        let departments = data.iter()
+            .map(|e| &e.department)
+            .collect_unique@r()
+
+        let mut by_department = Vec.new@r()
+        for dept in departments.iter():
+            let dept_employees: [&TransformedEmployee] = data.iter()
+                .filter(|e| &e.department == dept)
+                .collect@r()
+
+            let salaries: [Float] = dept_employees.iter()
+                .map(|e| e.salary)
+                .collect@r()
+
+            let stats = DepartmentStats {
+                department: dept.clone@r(),
+                count: dept_employees.len(),
+                avg_salary: mean(&salaries),
+                median_salary: median(&salaries),
+                min_salary: min(&salaries),
+                max_salary: max(&salaries),
+                avg_performance: mean(dept_employees.iter().map(|e| e.performance_score)),
+                avg_age: mean(dept_employees.iter().map(|e| e.age as Float)),
+            }
+            by_department.push(stats)
+
+        -- Performance analysis
+        let high_performers: [&TransformedEmployee] = data.iter()
+            .filter(|e| e.performance_score >= 4.0)
+            .collect@r()
+
+        let low_performers: [&TransformedEmployee] = data.iter()
+            .filter(|e| e.performance_score < 2.5)
+            .collect@r()
+
+        print("High performers: ", high_performers.len())
+        print("Low performers: ", low_performers.len())
+
+        let results = AnalysisResults {
+            summary,
+            by_department,
+            by_age_group: compute_age_group_stats@r(data),
+            by_salary_band: compute_salary_band_stats@r(data),
+            salary_correlations: compute_correlations@r(data),
+        }
+
+        pipeline.results = Some(results)
+        Ok(())
+
+-- Export data and results
+fn export_data(pipeline: &Pipeline, output_dir: String) -> Result<(), String>:
+    region r:
+        print("\nExporting data to ", &output_dir, "...")
+
+        -- Create output directory
+        create_dir_all(&output_dir)?
+
+        -- Export transformed data as CSV
+        if let Some(data) = &pipeline.transformed_data:
+            let csv_path = format!("{}/transformed_data.csv", &output_dir)
+            write_csv@r(&csv_path, data)?
+            print("Exported CSV: ", &csv_path)
+
+        -- Export analysis results as JSON
+        if let Some(results) = &pipeline.results:
+            let json_path = format!("{}/analysis_results.json", &output_dir)
+            write_json@r(&json_path, results)?
+            print("Exported JSON: ", &json_path)
+
+        Ok(())
+
+-- Run the complete pipeline
+fn run_pipeline(pipeline: &mut Pipeline, export: Bool) -> Result<AnalysisResults, String>:
+    print("=".repeat(60))
+    print("Starting Data Processing Pipeline")
+    print("=".repeat(60))
+
+    load_data(pipeline)?
+    clean_data(pipeline)?
+    transform_data(pipeline)?
+    analyze_data(pipeline)?
+
+    if export:
+        export_data(pipeline, "output".to_string())?
+
+    print("\n", "=".repeat(60))
+    print("Pipeline completed successfully!")
+    print("=".repeat(60))
+
+    pipeline.results.clone()
+        .ok_or("No results available".to_string())
+
+-- Main entry point
+fn main() -> Result<(), String>:
+    let mut pipeline = new(None)
+    let results = run_pipeline(&mut pipeline, true)?
+
+    print("\n--- Summary Statistics ---")
+    print("Total records: ", results.summary.total_records)
+    print("Active employees: ", results.summary.active_employees)
+    print("Average age: ", format!("{:.1}", results.summary.average_age))
+    print("Average salary: $", format!("{:,.2}", results.summary.average_salary))
+    print("Average performance: ", format!("{:.2}", results.summary.average_performance))
+
+    print("\n--- Department Analysis ---")
+    print("Number of departments: ", results.by_department.len())
+
+    Ok(())
+
+-- Helper functions
+fn percentile@r(values: &[Float], p: Float) -> Float:
+    let mut sorted = values.clone@r()
+    sorted.sort()
+    let idx = ((values.len() - 1) as Float * p) as Int
+    sorted[idx]
+
+fn days_between(from: Date, to: Date) -> Float:
+    (to.timestamp() - from.timestamp()) as Float / (24.0 * 60.0 * 60.0)
+
+fn compute_age_group_stats@r(data: &[TransformedEmployee]) -> Map<String, AgeGroupStats>:
+    let mut result = Map.new@r()
+    for group in ["Young", "Mid-Career", "Senior", "Veteran"]:
+        let members: [&TransformedEmployee] = data.iter()
+            .filter(|e| e.age_group == group)
+            .collect@r()
+        if !members.is_empty():
+            result.insert(group.to_string@r(), AgeGroupStats {
+                count: members.len(),
+                avg_salary: mean(members.iter().map(|e| e.salary)),
+                avg_performance: mean(members.iter().map(|e| e.performance_score)),
+            })
+    result
+
+fn compute_salary_band_stats@r(data: &[TransformedEmployee]) -> Map<String, SalaryBandStats>:
+    let mut result = Map.new@r()
+    for band in ["Low", "Medium", "High", "Very High"]:
+        let members: [&TransformedEmployee] = data.iter()
+            .filter(|e| e.salary_band == band)
+            .collect@r()
+        if !members.is_empty():
+            result.insert(band.to_string@r(), SalaryBandStats {
+                count: members.len(),
+                avg_performance: mean(members.iter().map(|e| e.performance_score)),
+                avg_years: mean(members.iter().map(|e| e.years_with_company)),
+            })
+    result
+
+fn compute_correlations@r(data: &[TransformedEmployee]) -> Map<String, Float>:
+    let mut result = Map.new@r()
+    let salaries: [Float] = data.iter().map(|e| e.salary).collect@r()
+
+    result.insert("age".to_string@r(), correlation(&salaries, &data.iter().map(|e| e.age as Float).collect@r()))
+    result.insert("performance".to_string@r(), correlation(&salaries, &data.iter().map(|e| e.performance_score).collect@r()))
+    result.insert("years".to_string@r(), correlation(&salaries, &data.iter().map(|e| e.years_with_company).collect@r()))
+
+    result
+
+fn correlation(x: &[Float], y: &[Float]) -> Float:
+    let n = x.len() as Float
+    let mean_x = mean(x)
+    let mean_y = mean(y)
+
+    let mut cov = 0.0
+    let mut var_x = 0.0
+    let mut var_y = 0.0
+
+    for i in 0..x.len():
+        let dx = x[i] - mean_x
+        let dy = y[i] - mean_y
+        cov += dx * dy
+        var_x += dx * dx
+        var_y += dy * dy
+
+    cov / (var_x.sqrt() * var_y.sqrt())

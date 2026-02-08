@@ -1,0 +1,232 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// WokeLang Static Site Generator - Main Entry Point
+
+#care on
+#verbose
+
+// Site configuration
+type SiteConfig = {
+    title: String,
+    url: String,
+    description: String,
+    author: String,
+    contentDir: String,
+    outputDir: String,
+    templatesDir: String
+};
+
+// Page metadata from frontmatter
+type PageMeta = {
+    title: String,
+    description: String,
+    template: String,
+    draft: Bool
+};
+
+// Parsed page
+type Page = {
+    meta: PageMeta,
+    content: String,
+    slug: String
+};
+
+to main() {
+    remember config = createConfig();
+
+    print("🚀 WokeLang SSG - Building wokelang.org");
+    print("");
+
+    // Build the site
+    consent for file.read:content {
+        consent for file.write:public {
+            buildSite(config);
+        } or {
+            print("❌ Cannot build without write permission");
+        }
+    } or {
+        print("❌ Cannot build without read permission");
+    }
+
+    print("");
+    print("✨ Build complete!");
+}
+
+to createConfig() gives back SiteConfig {
+    // Load from config.yaml or use defaults
+    // This is a general-purpose SSG, config comes from user
+    give back {
+        title: "My Site",
+        url: "https://example.com",
+        description: "A static site built with WokeLang SSG",
+        author: "Site Author",
+        contentDir: "content",
+        outputDir: "public",
+        templatesDir: "templates"
+    };
+}
+
+to buildSite(config: SiteConfig) {
+    print("📂 Reading content from " + config.contentDir);
+
+    // Read all markdown files
+    remember pages = findMarkdownFiles(config.contentDir);
+
+    print("📝 Processing " + toString(length(pages)) + " pages");
+
+    // Process each page
+    forEach(pages, to processPage(path: String) {
+        remember page = parsePage(path);
+
+        when not page.meta.draft {
+            remember html = renderPage(page, config);
+            remember outputPath = config.outputDir + "/" + page.slug + ".html";
+
+            writeFile(outputPath, html);
+            print("  ✓ " + page.meta.title);
+        }
+    });
+
+    // Generate feeds and sitemap
+    print("📡 Generating feeds");
+    generateFeeds(pages, config);
+
+    print("🗺️  Generating sitemap");
+    generateSitemap(pages, config);
+}
+
+to findMarkdownFiles(dir: String) gives back List[String] {
+    // Use stdlib file operations
+    remember files = listDir(dir);
+    remember mdFiles = filter(files, to isMd(file: String) gives back Bool {
+        give back endsWith(file, ".md");
+    });
+
+    give back mdFiles;
+}
+
+to parsePage(path: String) gives back Page {
+    remember content = readFile(path);
+    remember parts = splitFrontMatter(content);
+    remember meta = parseFrontMatter(parts.frontmatter);
+    remember slug = extractSlug(path);
+
+    give back {
+        meta: meta,
+        content: parts.content,
+        slug: slug
+    };
+}
+
+to splitFrontMatter(content: String) gives back { frontmatter: String, content: String } {
+    // Parse YAML frontmatter between --- markers
+    when startsWith(content, "---") {
+        remember rest = substring(content, 4, length(content));
+        remember endPos = indexOf(rest, "\n---\n");
+
+        when endPos > 0 {
+            remember fm = substring(rest, 0, endPos);
+            remember body = substring(rest, endPos + 5, length(rest));
+
+            give back { frontmatter: fm, content: body };
+        }
+    }
+
+    // No frontmatter found
+    give back { frontmatter: "", content: content };
+}
+
+to parseFrontMatter(yaml: String) gives back PageMeta {
+    // Simple YAML parsing for frontmatter
+    // In real implementation, would use proper YAML parser
+
+    remember lines = split(yaml, "\n");
+    remember title = extractYamlValue(lines, "title");
+    remember desc = extractYamlValue(lines, "description");
+    remember template = extractYamlValue(lines, "template");
+    remember draft = extractYamlValue(lines, "draft");
+
+    give back {
+        title: title,
+        description: desc,
+        template: when template == "" then "page.html" else template,
+        draft: draft == "true"
+    };
+}
+
+to extractYamlValue(lines: List[String], key: String) gives back String {
+    remember keyPrefix = key + ":";
+    remember found = find(lines, to matchesKey(line: String) gives back Bool {
+        give back startsWith(trim(line), keyPrefix);
+    });
+
+    when found {
+        remember line = found;
+        remember afterColon = substring(line, length(keyPrefix) + 1, length(line));
+        give back trim(afterColon);
+    } else {
+        give back "";
+    }
+}
+
+to renderPage(page: Page, config: SiteConfig) gives back String {
+    // Convert markdown to HTML
+    remember html = markdownToHtml(page.content);
+
+    // Load template
+    remember templatePath = config.templatesDir + "/" + page.meta.template;
+    remember template = readFile(templatePath);
+
+    // Simple template substitution
+    remember output = template;
+    remember output = replace(output, "{{ page.title }}", page.meta.title);
+    remember output = replace(output, "{{ page.description }}", page.meta.description);
+    remember output = replace(output, "{{ page.html }}", html);
+    remember output = replace(output, "{{ site.title }}", config.title);
+    remember output = replace(output, "{{ site.description }}", config.description);
+    remember output = replace(output, "{{ site.url }}", config.url);
+    remember output = replace(output, "{{ site.author }}", config.author);
+
+    give back output;
+}
+
+to markdownToHtml(markdown: String) gives back String {
+    // Basic markdown to HTML conversion
+    // In real implementation, would use proper markdown parser
+
+    remember html = markdown;
+
+    // Headers
+    remember html = replace(html, "# ", "<h1>");
+    remember html = replace(html, "## ", "<h2>");
+    remember html = replace(html, "### ", "<h3>");
+
+    // Bold
+    remember html = replacePattern(html, "\\*\\*(.+?)\\*\\*", "<strong>$1</strong>");
+
+    // Italic
+    remember html = replacePattern(html, "\\*(.+?)\\*", "<em>$1</em>");
+
+    // Paragraphs
+    remember html = "<p>" + html + "</p>";
+
+    give back html;
+}
+
+to generateFeeds(pages: List[Page], config: SiteConfig) {
+    remember feedPath = config.outputDir + "/feed.xml";
+    remember rss = buildRssFeed(pages, config);
+    writeFile(feedPath, rss);
+}
+
+to generateSitemap(pages: List[Page], config: SiteConfig) {
+    remember sitemapPath = config.outputDir + "/sitemap.xml";
+    remember xml = buildSitemapXml(pages, config);
+    writeFile(sitemapPath, xml);
+}
+
+to extractSlug(path: String) gives back String {
+    remember parts = split(path, "/");
+    remember filename = last(parts);
+    remember withoutExt = replace(filename, ".md", "");
+    give back withoutExt;
+}

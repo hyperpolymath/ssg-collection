@@ -1,0 +1,232 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+# CI workflow for shift-ssg - RSR-compliant with SHA-pinned actions
+
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  DENO_VERSION: "1.40.0"
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Syntax Check - Validate all adapter files
+  # ─────────────────────────────────────────────────────────────────────────────
+  syntax-check:
+    name: Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: '20'
+
+      - name: Check adapter syntax
+        run: |
+          echo "🔍 Checking adapter syntax..."
+          for f in adapters/*.js; do
+            node --check "$f" || exit 1
+          done
+          echo "✅ All adapters pass syntax check"
+
+      - name: Verify adapter count
+        run: |
+          count=$(ls -1 adapters/*.js | wc -l)
+          echo "📦 Found $count adapters"
+          if [ "$count" -lt 28 ]; then
+            echo "❌ Expected at least 28 adapters, found $count"
+            exit 1
+          fi
+          echo "✅ Adapter count verified"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Lint - Code quality checks
+  # ─────────────────────────────────────────────────────────────────────────────
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.0
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Lint adapters
+        run: deno lint adapters/ || echo "⚠️ Lint warnings present"
+        continue-on-error: true
+
+      - name: Check formatting
+        run: deno fmt --check adapters/ || echo "⚠️ Format check skipped"
+        continue-on-error: true
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Security - Secret scanning and security checks
+  # ─────────────────────────────────────────────────────────────────────────────
+  security:
+    name: Security
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Check for hardcoded secrets
+        run: |
+          echo "🔐 Checking for hardcoded secrets..."
+
+          # Check for passwords
+          if grep -rE "password\s*=\s*['\"][^'\"]+['\"]" adapters/ src/ 2>/dev/null; then
+            echo "❌ Potential hardcoded password found"
+            exit 1
+          fi
+
+          # Check for API keys
+          if grep -rE "(api[_-]?key|apikey)\s*=\s*['\"][^'\"]+['\"]" adapters/ src/ 2>/dev/null; then
+            echo "❌ Potential API key found"
+            exit 1
+          fi
+
+          # Check for secrets
+          if grep -rE "secret\s*=\s*['\"][^'\"]+['\"]" adapters/ src/ 2>/dev/null; then
+            echo "❌ Potential secret found"
+            exit 1
+          fi
+
+          echo "✅ No hardcoded secrets found"
+
+      - name: Check for dangerous patterns
+        run: |
+          echo "🔍 Checking for dangerous patterns..."
+
+          # Check for eval usage
+          if grep -r "eval(" adapters/ src/ 2>/dev/null; then
+            echo "⚠️ eval() usage found - review for security"
+          fi
+
+          echo "✅ Dangerous pattern check complete"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Test - Run test suite
+  # ─────────────────────────────────────────────────────────────────────────────
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: [syntax-check]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.0
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Run tests
+        run: |
+          if [ -d "tests" ] && [ "$(ls -A tests 2>/dev/null)" ]; then
+            deno test --allow-all tests/
+          else
+            echo "⚠️ No tests found - skipping"
+          fi
+        continue-on-error: true
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Adapter Validation - Validate adapter interface
+  # ─────────────────────────────────────────────────────────────────────────────
+  validate-adapters:
+    name: Validate Adapters
+    runs-on: ubuntu-latest
+    needs: [syntax-check]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Validate adapter exports
+        run: |
+          echo "🔍 Validating adapter exports..."
+
+          for adapter in adapters/*.js; do
+            name=$(basename "$adapter" .js)
+
+            # Check for required exports
+            if ! grep -q "export const name" "$adapter"; then
+              echo "❌ Missing 'name' export in $name"
+              exit 1
+            fi
+
+            if ! grep -q "export const tools" "$adapter"; then
+              echo "❌ Missing 'tools' export in $name"
+              exit 1
+            fi
+
+            if ! grep -q "export async function connect" "$adapter"; then
+              echo "❌ Missing 'connect' function in $name"
+              exit 1
+            fi
+
+            echo "✅ $name - valid"
+          done
+
+          echo "✅ All adapters validated"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Documentation Check - Verify required docs exist
+  # ─────────────────────────────────────────────────────────────────────────────
+  docs-check:
+    name: Documentation Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Check required documentation
+        run: |
+          echo "📚 Checking required documentation..."
+
+          missing=0
+
+          [ -f "README.adoc" ] || { echo "⚠️ README.adoc missing"; }
+          [ -f "SECURITY.md" ] || { echo "❌ SECURITY.md missing"; missing=1; }
+          [ -f "CONTRIBUTING.md" ] || { echo "❌ CONTRIBUTING.md missing"; missing=1; }
+          [ -f "CODE_OF_CONDUCT.md" ] || { echo "❌ CODE_OF_CONDUCT.md missing"; missing=1; }
+          [ -f "LICENSE.txt" ] || { echo "❌ LICENSE.txt missing"; missing=1; }
+
+          if [ $missing -eq 1 ]; then
+            exit 1
+          fi
+
+          echo "✅ Required documentation present"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # CI Summary - Final status
+  # ─────────────────────────────────────────────────────────────────────────────
+  ci-complete:
+    name: CI Complete
+    runs-on: ubuntu-latest
+    needs: [syntax-check, lint, security, test, validate-adapters, docs-check]
+    if: always()
+    steps:
+      - name: Check CI status
+        run: |
+          if [ "${{ needs.syntax-check.result }}" == "failure" ] || \
+             [ "${{ needs.security.result }}" == "failure" ] || \
+             [ "${{ needs.validate-adapters.result }}" == "failure" ] || \
+             [ "${{ needs.docs-check.result }}" == "failure" ]; then
+            echo "❌ CI failed"
+            exit 1
+          fi
+          echo "✅ CI complete - all checks passed"

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://rats-ssg.hyperpolymath.dev/schemas/config.json",
+  "name": "example-site",
+  "version": "1.0.0",
+  "server": {
+    "port": 3000,
+    "host": "127.0.0.1"
+  },
+  "adapters": {
+    "enabled": ["zola", "hakyll", "mdbook"],
+    "timeout": 30000,
+    "retries": 3
+  },
+  "build": {
+    "contentDir": "content",
+    "templatesDir": "templates",
+    "outputDir": "public"
+  },
+  "security": {
+    "tlsVerify": true
+  }
+}

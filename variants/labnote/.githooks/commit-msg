@@ -1,0 +1,37 @@
+#!/bin/bash
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Commit message hook - enforces conventional commits
+
+commit_msg_file=$1
+commit_msg=$(cat "$commit_msg_file")
+
+# Conventional commit pattern
+pattern="^(feat|fix|docs|style|refactor|test|chore|security|perf|build|ci)(\(.+\))?: .{1,72}"
+
+# Allow merge commits
+if echo "$commit_msg" | grep -qE "^Merge "; then
+    exit 0
+fi
+
+# Allow revert commits
+if echo "$commit_msg" | grep -qE "^Revert "; then
+    exit 0
+fi
+
+if ! echo "$commit_msg" | grep -qE "$pattern"; then
+    echo "❌ Invalid commit message format"
+    echo ""
+    echo "Expected format: type(scope): description"
+    echo ""
+    echo "Types: feat, fix, docs, style, refactor, test, chore, security, perf, build, ci"
+    echo ""
+    echo "Examples:"
+    echo "  feat(adapters): add new hugo adapter"
+    echo "  fix(zola): correct build path handling"
+    echo "  docs: update README with examples"
+    echo "  security: fix command injection vulnerability"
+    echo ""
+    exit 1
+fi
+
+echo "✅ Commit message valid"

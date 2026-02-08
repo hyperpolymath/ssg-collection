@@ -1,0 +1,23 @@
+{
+  "$schema": "https://raw.githubusercontent.com/rescript-lang/rescript-compiler/master/docs/docson/build-schema.json",
+  "name": "@hyperpolymath/eclipse-ssg",
+  "version": "0.2.0",
+  "sources": [
+    { "dir": "ssg/src", "subdirs": true },
+    { "dir": "noteg-lang/src", "subdirs": true },
+    { "dir": "a11y", "subdirs": false },
+    { "dir": "tests", "subdirs": true }
+  ],
+  "package-specs": [
+    {
+      "module": "es6",
+      "in-source": true
+    }
+  ],
+  "suffix": ".res.js",
+  "bs-dependencies": [],
+  "warnings": {
+    "error": "+101"
+  },
+  "bsc-flags": ["-open Belt"]
+}

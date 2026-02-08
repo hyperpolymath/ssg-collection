@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# hello.noteg - First Note G program
+# Based on Ada Lovelace's algorithmic notation from 1843
+
+Card 1: Store "# Hello from 1843" in Register A
+Card 2: Store "Ada Lovelace's algorithm lives on." in Register B
+Card 3: Transform Register A via Markdown-Engine into Register C
+Card 4: Transform Register B via Markdown-Engine into Register D
+Card 5: Apply template/default.html to Registers C,D into Register E
+Card 6: Emit Register E to _site/index.html
+
+# End of Cards

@@ -1,0 +1,70 @@
+= estate-ssg
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+
+
+:toc: auto
+:toclevels: 2
+
+image:https://img.shields.io/badge/RSR-compliant-gold[RSR Compliant,link=https://github.com/hyperpolymath/rhodium-standard-repositories]
+image:https://img.shields.io/badge/poly--ssg-satellite-blue[poly-ssg,link=https://github.com/hyperpolymath/poly-ssg]
+
+
+== Who Is This For?
+
+* **Forth programmers** who think in stacks
+* **Embedded systems developers** wanting familiar tooling for docs
+* **Minimalists** seeking zero-dependency solutions
+* **Educators** teaching stack-based programming concepts
+
+== Why estate-ssg?
+
+=== Zero Dependencies
+
+Just Forth. No package managers, no node_modules, no virtual environments. One file, infinite power.
+
+=== Interactive Development
+
+REPL-driven site building. See changes immediately. Test transformations word by word.
+
+=== Concatenative Clarity
+
+Content flows through the stack. Transformations compose naturally. No hidden state.
+
+=== Tiny Binaries
+
+Your site generator can fit on a floppy disk (with room to spare).
+
+== Quick Start
+
+[source,forth]
+----
+\ Load the SSG
+include estate.fs
+
+\ Build a site
+s" content/" s" output/" build
+
+\ Preview locally
+8080 serve
+----
+
+== Features
+
+* **Interactive REPL** - test templates word by word
+* **Stack visualization** - see your content flow
+* **Dictionary extensibility** - add new words for custom processing
+* **Minimal footprint** - runs on anything with a Forth
+* **Literate programming** - code and content interleaved
+
+== Requirements
+
+* Gforth 0.7 or any ANS Forth
+
+== Part of poly-ssg
+
+estate-ssg is part of the https://github.com/hyperpolymath/poly-ssg[poly-ssg] family, unified through https://github.com/hyperpolymath/poly-ssg-mcp[MCP integration].
+
+== License
+
+PMPL-1.0-or-later

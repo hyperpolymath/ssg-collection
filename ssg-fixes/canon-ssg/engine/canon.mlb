@@ -1,0 +1,9 @@
+(* SPDX-License-Identifier: AGPL-3.0-or-later *)
+(* SPDX-FileCopyrightText: 2025 hyperpolymath *)
+(*
+ * canon-ssg: Standard ML static site generator
+ * ML Basis file for MLton/SML/NJ compilation
+ *)
+
+$(SML_LIB)/basis/basis.mlb
+src/canon.sml

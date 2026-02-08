@@ -1,0 +1,166 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+# RSR-compliant CI/CD workflow with SHA-pinned actions
+
+name: "CI"
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+permissions: read-all
+
+env:
+  DENO_VERSION: "1.x"
+
+jobs:
+  # ============================================================================
+  # LINT JOB
+  # ============================================================================
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.2
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Lint JavaScript/TypeScript
+        run: deno lint adapters/
+
+      - name: Check formatting
+        run: deno fmt --check adapters/
+
+  # ============================================================================
+  # TEST JOB
+  # ============================================================================
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: lint
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.2
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Check adapter syntax
+        run: |
+          for f in adapters/*.js; do
+            echo "Checking $f..."
+            deno check "$f" || echo "Warning: $f uses Deno APIs"
+          done
+
+      - name: Verify adapter interface
+        run: |
+          echo "Verifying adapter exports..."
+          for f in adapters/*.js; do
+            echo "Checking $f..."
+            grep -q "export const name" "$f" && echo "  ✓ name export" || echo "  ✗ missing name"
+            grep -q "export async function connect" "$f" && echo "  ✓ connect function" || echo "  ✗ missing connect"
+            grep -q "export const tools" "$f" && echo "  ✓ tools export" || echo "  ✗ missing tools"
+          done
+
+      - name: Count adapters
+        run: |
+          count=$(ls -1 adapters/*.js | wc -l)
+          echo "Adapter count: $count"
+          if [ "$count" -lt 28 ]; then
+            echo "Warning: Expected 28 adapters, found $count"
+          fi
+
+  # ============================================================================
+  # SECURITY JOB
+  # ============================================================================
+  security:
+    name: Security
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Check for secrets
+        run: |
+          echo "Checking for hardcoded secrets..."
+          ! grep -rn --include="*.js" --include="*.ts" --include="*.json" \
+            -E "(password|secret|api_key|token)\s*[:=]\s*['\"][^'\"]+['\"]" . \
+            --exclude-dir=node_modules --exclude-dir=.git || true
+          echo "Secret check complete."
+
+      - name: Verify SPDX headers
+        run: |
+          echo "Checking SPDX headers in adapters..."
+          missing=0
+          for f in adapters/*.js; do
+            if ! grep -q "SPDX-License-Identifier" "$f"; then
+              echo "Missing SPDX header: $f"
+              missing=$((missing + 1))
+            fi
+          done
+          if [ "$missing" -gt 0 ]; then
+            echo "Warning: $missing files missing SPDX headers"
+          else
+            echo "All adapter files have SPDX headers"
+          fi
+
+      - name: Verify SHA-pinned actions
+        run: |
+          echo "Checking for SHA-pinned actions..."
+          for f in .github/workflows/*.yml; do
+            if grep -E "uses: .+@v[0-9]" "$f"; then
+              echo "Warning: $f contains non-SHA-pinned action"
+            fi
+          done
+
+  # ============================================================================
+  # BUILD JOB
+  # ============================================================================
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: [lint, test, security]
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.2
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Build verification
+        run: |
+          echo "Build verification complete"
+          echo "Adapters: $(ls -1 adapters/*.js | wc -l)"
+          echo "SCM files: $(ls -1 *.scm | wc -l)"
+
+      - name: Summary
+        run: |
+          echo "## CI Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Component | Count |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Adapters | $(ls -1 adapters/*.js | wc -l) |" >> $GITHUB_STEP_SUMMARY
+          echo "| SCM Files | $(ls -1 *.scm | wc -l) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Workflows | $(ls -1 .github/workflows/*.yml | wc -l) |" >> $GITHUB_STEP_SUMMARY

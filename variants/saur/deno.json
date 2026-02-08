@@ -1,0 +1,18 @@
+{
+  "$schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
+  "name": "@hyperpolymath/saur-ssg",
+  "version": "0.1.0",
+  "exports": "./src/Main.res.js",
+  "tasks": {
+    "build": "deno run -A npm:rescript build",
+    "watch": "deno run -A npm:rescript build -w",
+    "start": "deno run --allow-all src/Main.res.js",
+    "dev": "deno run --watch --allow-all src/Main.res.js",
+    "test": "deno test tests/ --allow-read"
+  },
+  "nodeModulesDir": "none",
+  "imports": {
+    "@std/assert": "jsr:@std/assert@1",
+    "@std/testing": "jsr:@std/testing@1"
+  }
+}

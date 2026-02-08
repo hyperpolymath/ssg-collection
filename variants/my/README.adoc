@@ -1,0 +1,102 @@
+= My SSG
+
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/Philosophy-Palimpsest-indigo.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+
+:toc: auto
+:toclevels: 2
+
+Customizable static site generator template. Make it yours.
+
+== Overview
+
+A template for building your own static site generator with full customization support.
+Designed for the link:https://github.com/hyperpolymath[Hyperpolymath] ecosystem with strict language policy compliance.
+
+== Features
+
+* Fully customizable SSG adapter system
+* Poly-SSG compatible (28 adapters planned)
+* Template-based architecture
+* Type-safe with ReScript
+* Deno runtime (no Node.js)
+* Container-ready (Podman/OCI)
+
+== Technology Stack
+
+[cols="1,2"]
+|===
+| Component | Technology
+
+| Language
+| ReScript (compiles to JavaScript)
+
+| Runtime
+| Deno 2.1+
+
+| Task Runner
+| Just (justfile)
+
+| Deployment
+| Must (Mustfile.epx)
+
+| Configuration
+| Nickel (type-safe configs)
+
+| Container
+| Podman (OCI-compliant)
+|===
+
+== Quick Start
+
+[source,bash]
+----
+# Install dependencies
+just deps
+
+# Run tests
+just test
+
+# Check policy compliance
+just policy-check
+
+# List available commands
+just help
+----
+
+== Language Policy
+
+This project follows the **Hyperpolymath Standard** language policy:
+
+=== Allowed
+* ReScript (primary application code)
+* Deno (runtime)
+* Rust (performance-critical, WASM)
+* JavaScript (MCP glue only)
+* Nickel (configuration)
+* Bash/POSIX Shell (automation)
+
+=== Banned
+* TypeScript (use ReScript)
+* Node.js/npm/Bun (use Deno)
+* Go (use Rust)
+* Makefile (use just/must)
+
+See link:.claude/CLAUDE.md[CLAUDE.md] for the complete policy.
+
+== Repository Topics
+
+Recommended GitHub topics for this repository:
+
+----
+static-site-generator, ssg, rescript, deno, template,
+poly-ssg, adapters, hyperpolymath, agpl, foss,
+type-safe, nickel, just, containerized, podman
+----
+
+== License
+
+PMPL-1.0-or-later
+
+See link:LICENSE.txt[LICENSE.txt] for full text.

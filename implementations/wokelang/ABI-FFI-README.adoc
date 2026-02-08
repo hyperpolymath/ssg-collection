@@ -1,0 +1,75 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= WokeLang SSG ABI/FFI Documentation
+
+== Overview
+
+WokeLang SSG follows the **ABI/FFI Universal Standard**:
+
+- **ABI** (Idris2): Interface definitions with formal proofs
+- **FFI** (Zig): C-compatible implementation
+- **Bindings**: Language-specific wrappers
+
+== Architecture
+
+```
+WokeLang SSG (WokeLang)
+        ↓
+WokeLang Interpreter (Rust)
+        ↓
+   Rust Bindings
+        ↓
+   Zig FFI Bridge
+        ↓
+Idris2 ABI ← MATHEMATICAL PROOFS
+```
+
+== Directory Structure
+
+```
+wokelang-ssg/
+├── src/
+│   └── abi/              # Idris2 ABI definitions (REQUIRED)
+│       ├── Types.idr     # Type definitions with proofs
+│       ├── Layout.idr    # Memory layout verification
+│       └── Foreign.idr   # FFI declarations
+│
+├── ffi/
+│   └── zig/              # Zig FFI implementation (REQUIRED)
+│       ├── build.zig
+│       ├── src/
+│       │   └── main.zig
+│       └── test/
+│           └── integration_test.zig
+│
+└── ssg/                  # WokeLang SSG engine
+    └── main.woke
+```
+
+== Current Status
+
+**Not yet implemented** - WokeLang SSG is currently a pure WokeLang application.
+
+FFI/ABI layers will be added if/when needed for:
+- Performance-critical operations
+- System integration
+- Binary data processing
+
+For now, all functionality is in WokeLang itself (`ssg/main.woke`).
+
+== Future Integration
+
+If performance or system integration requires FFI:
+
+1. Add `src/abi/` with Idris2 type definitions
+2. Add `ffi/zig/` with C-compatible implementation
+3. Generate C headers from Idris2 ABI
+4. Create Rust bindings for WokeLang interpreter
+
+See `docs/PROVEN.md` for proven library integration (if safety-critical operations needed).
+
+== References
+
+- ABI/FFI Universal Standard: https://github.com/hyperpolymath/rsr-template-repo/blob/main/ABI-FFI-README.md
+- proven library: https://github.com/hyperpolymath/proven
+- Idris2 docs: https://idris2.readthedocs.io
+- Zig FFI guide: https://ziglang.org/documentation/master/#C

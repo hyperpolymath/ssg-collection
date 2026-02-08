@@ -1,0 +1,188 @@
+= Division One SSG
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+
+
+:author: Jonathan D.A. Jewell
+:email: jonathan@hyperpolymath.org
+:revnumber: v0.1.0
+:revdate: 2025-12-17
+:toc: left
+:toclevels: 3
+:icons: font
+:source-highlighter: highlight.js
+:experimental:
+
+image:https://img.shields.io/badge/RSR-compliant-blue[RSR compliant]
+image:https://img.shields.io/badge/poly--ssg-integrated-purple[poly-ssg integrated]
+image:https://img.shields.io/badge/status-experimental-orange[Status: experimental]
+
+*Self-documenting static site generator in COBOL.*
+
+_Let divisions organize. Let records structure. Let pages compile._
+
+== Who Is This For?
+
+* **COBOL practitioners** seeking modern build tooling that speaks their language
+* **Enterprise developers** wanting bank-grade reliability for content pipelines
+* **Language preservationists** exploring COBOL beyond transaction processing
+* **Polyglot SSG explorers** via https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp] integration
+
+== Why Division One?
+
+=== 1. Self-Documenting Structure
+
+COBOL's English-like syntax makes site configuration readable without comments:
+
+[source,cobol]
+----
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. SITE-CONFIG.
+
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 SITE-METADATA.
+          05 SITE-TITLE      PIC X(80) VALUE "My Technical Blog".
+          05 SITE-AUTHOR     PIC X(40) VALUE "J. Developer".
+          05 BASE-URL        PIC X(120) VALUE "https://blog.example.com".
+          05 BUILD-DRAFTS    PIC 9 VALUE 0.
+----
+
+=== 2. Record-Oriented Content Processing
+
+COBOL's native record handling maps perfectly to front matter and structured content:
+
+[source,cobol]
+----
+       01 POST-RECORD.
+          05 POST-TITLE      PIC X(200).
+          05 POST-DATE       PIC 9(8).
+          05 POST-TAGS.
+             10 TAG-ENTRY    PIC X(30) OCCURS 10 TIMES.
+          05 POST-BODY       PIC X(65535).
+----
+
+=== 3. Division Architecture
+
+Site structure mirrors COBOL's four-division model:
+
+[cols="1,2"]
+|===
+|COBOL Division |Site Component
+
+|IDENTIFICATION
+|Site metadata, author, version
+
+|ENVIRONMENT
+|Input/output paths, build targets
+
+|DATA
+|Content records, templates, assets
+
+|PROCEDURE
+|Build logic, transformations, rendering
+|===
+
+=== 4. Enterprise-Grade Reliability
+
+The same precision that processes billions in daily transactions ensures your content pipeline never loses a byte. *No truncation. No encoding errors. No silent failures.*
+
+== Quick Start
+
+=== Prerequisites
+
+* GnuCOBOL 3.2+ (`cobc`)
+* POSIX shell environment
+
+=== Build & Run
+
+[source,bash]
+----
+# Compile the generator
+cobc -x -o divisionone src/divisionone.cob
+
+# Initialize a new site
+./divisionone --init my-site
+
+# Build the site
+./divisionone --build my-site
+----
+
+== Architecture
+
+----
+                    ┌─────────────────────────────────────────┐
+                    │           COBOL Runtime                 │
+                    └─────────────────────────────────────────┘
+                                      │
+          ┌───────────────────────────┼───────────────────────────┐
+          ▼                           ▼                           ▼
+   ┌─────────────┐            ┌─────────────┐            ┌─────────────┐
+   │   CONFIG    │            │   CONTENT   │            │  TEMPLATE   │
+   │   READER    │            │   PARSER    │            │   ENGINE    │
+   │  (ENVIRON)  │            │   (DATA)    │            │  (PROCED)   │
+   └──────┬──────┘            └──────┬──────┘            └──────┬──────┘
+          │                          │                          │
+          └──────────────────────────┼──────────────────────────┘
+                                     ▼
+                            ┌─────────────┐
+                            │    FILE     │
+                            │   WRITER    │
+                            └─────────────┘
+----
+
+== Features
+
+* **Incremental builds** — only recompile changed content records
+* **Parallel section processing** — leverage COBOL's section-based execution
+* **Fixed-width field validation** — catch content length issues at build time
+* **COPY statement templating** — reusable content structures via copybooks
+* **EBCDIC/ASCII agnostic** — works with any character encoding
+
+== COBOL Division Primer
+
+[cols="1,1,3"]
+|===
+|Division |Purpose |Division One Usage
+
+|`IDENTIFICATION`
+|Program metadata
+|Site name, version, author attribution
+
+|`ENVIRONMENT`
+|I/O configuration
+|Source paths, output directories, asset locations
+
+|`DATA`
+|Variable declarations
+|Content records, template variables, configuration
+
+|`PROCEDURE`
+|Executable logic
+|Build steps, content transformation, file generation
+|===
+
+== Requirements
+
+* **GnuCOBOL 3.2+** — open-source COBOL compiler
+* Optional: **cobc-debug** for development builds
+
+== Part of poly-ssg
+
+Division One integrates with the polyglot SSG ecosystem through the Model Context Protocol:
+
+[source,bash]
+----
+# Via poly-ssg-mcp
+mcp call poly-ssg divisionone:build --path ./my-site
+----
+
+See https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp] for unified access to 28+ static site generators across 17 languages.
+
+== License
+
+SPDX-License-Identifier: PMPL-1.0-or-later-or-later
+
+---
+
+Copyright (C) 2025 Jonathan D.A. Jewell

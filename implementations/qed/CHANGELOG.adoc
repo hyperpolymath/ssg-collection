@@ -1,0 +1,144 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+== [Unreleased]
+
+=== Added
+- Performance benchmarks for adapter operations
+
+=== Changed
+- Improved test coverage to meet 70% RSR target
+
+== [0.2.0] - 2025-12-22
+
+=== Added
+
+==== Build System
+- **Justfile** with 25 task runner commands
+  - `just setup` - Set up development environment
+  - `just test`, `just test-e2e`, `just test-all` - Testing commands
+  - `just lint`, `just fmt` - Code quality commands
+  - `just audit` - Security audit
+  - `just build`, `just clean` - Build commands
+  - `just ci`, `just validate` - CI/CD commands
+  - `just install-hooks` - Git hook installation
+
+- **Mustfile** with 20 requirement checks
+  - MUST requirements (blocking)
+  - SHOULD requirements (recommended)
+  - MUST-NOT requirements (forbidden patterns)
+
+- **Nickel formulae** for configuration
+  - `config.ncl` - Project configuration schema
+  - `formulae/adapters.ncl` - Adapter generation templates
+  - `formulae/cli.ncl` - CLI combinatorics and completions
+
+==== CI/CD
+- **ci.yml** - Full CI pipeline
+  - Lint job (format check, deno lint, SPDX headers)
+  - Test job (unit tests with coverage)
+  - Security job (eval check, exec check, secrets check)
+  - Build job (type checking, export verification)
+  - E2E job (on main branch only)
+
+- **release.yml** - Automated release workflow
+  - Changelog generation from commits
+  - GitHub Release creation
+
+==== Git Hooks
+- **pre-commit** - Format, lint, test, security checks
+- **pre-push** - Full test suite, security audit
+- **commit-msg** - Conventional commits enforcement
+
+==== SCM Files
+- **PLAYBOOK.scm** - Operational workflows and recipes
+- **AGENTIC.scm** - AI agent capabilities and permissions
+- **NEUROSYM.scm** - Type system, invariants, formal specs
+
+==== Documentation
+- **README.adoc** - Comprehensive documentation
+  - All 28 adapters documented
+  - Usage examples
+  - Project structure
+  - Security design principles
+
+- **cookbook.adoc** - Usage recipes
+  - CLI command reference
+  - Justfile recipes
+  - Mustfile requirements
+  - Nickel formulae examples
+  - Workflow compositions
+
+==== Testing
+- Unit test framework with adapter structure tests
+- E2E test placeholder with infrastructure
+
+==== Configuration
+- **.tool-versions** - asdf version management
+- **Containerfile** - Podman/Docker multi-stage build
+- **.env.example** - Environment configuration template
+
+=== Changed
+- Updated STATE.scm with 44/44 component tracking
+- Updated META.scm with ADR-002 for MCP architecture
+- Updated ECOSYSTEM.scm with proper project description
+- Version bumped to 0.2.0
+
+=== Security
+- All GitHub Actions SHA-pinned
+- Security audit in CI pipeline
+- No eval() usage verified
+- No hardcoded secrets verified
+- Parameterized command execution verified
+
+== [0.1.0] - 2025-12-17
+
+=== Added
+- Initial project structure
+- 28 SSG adapters integrated from poly-ssg-mcp hub
+- RSR-compliant configuration files
+- SECURITY.md with vulnerability reporting policy
+- CONTRIBUTING.md with perimeter model
+- CODE_OF_CONDUCT.md
+- GitHub issue templates
+- Dependabot configuration
+- CodeQL security scanning
+
+=== Adapters
+- **Rust**: Zola, Cobalt, mdBook
+- **Haskell**: Hakyll, Ema
+- **Elixir**: Serum, Tableau, NimblePublisher
+- **Clojure**: Babashka, Cryogen, Perun
+- **Julia**: Franklin.jl, Documenter.jl, StaticWebPages.jl
+- **Scala**: Laika, ScalaTex
+- **Racket**: Frog, Pollen
+- **F#**: Fornax
+- **Kotlin**: Orchid
+- **Crystal**: Marmot
+- **Common Lisp**: Coleslaw
+- **Nim**: Nimrod
+- **D**: Reggae
+- **Swift**: Publish
+- **Tcl**: Wub
+- **OCaml**: YOCaml
+- **Erlang**: Zotonic
+
+== [0.0.1] - 2025-12-15
+
+=== Added
+- Initial commit
+- Basic repository structure
+- SCM files (ECOSYSTEM.scm, META.scm, STATE.scm)
+- License (MIT OR AGPL-3.0-or-later)
+
+---
+
+[Unreleased]: https://github.com/hyperpolymath/qed-ssg/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/hyperpolymath/qed-ssg/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/hyperpolymath/qed-ssg/compare/v0.0.1...v0.1.0
+[0.0.1]: https://github.com/hyperpolymath/qed-ssg/releases/tag/v0.0.1

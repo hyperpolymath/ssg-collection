@@ -1,0 +1,340 @@
+= NoteG SSG User Guide
+:author: hyperpolymath
+:revdate: 2025-12-17
+:toc: left
+:toclevels: 3
+:icons: font
+:source-highlighter: rouge
+
+== Introduction
+
+NoteG SSG is a mill-based static site generator with first-class accessibility support. It combines Ada/SPARK's safety guarantees with ReScript's modern syntax for building accessible, verifiable static sites.
+
+=== Key Features
+
+* *Mill-Based Synthesis* - Deterministic build process using operation cards
+* *SPARK Verification* - Core engine formally verified for safety properties
+* *Accessibility First* - Built-in support for BSL, GSL, ASL, and Makaton
+* *NoteG Language* - Domain-specific language for content and templates
+* *MCP Integration* - Works with 28 SSG adapters via poly-ssg-mcp
+
+== Quick Start
+
+=== Installation
+
+[source,bash]
+----
+# Clone the repository
+git clone https://github.com/hyperpolymath/pharos-ssg.git
+cd pharos-ssg
+
+# Install dependencies
+just deps
+
+# Build everything
+just build
+----
+
+=== Creating a Site
+
+[source,bash]
+----
+# Initialize a new site
+just generate
+
+# Start development server
+just serve
+----
+
+=== Project Structure
+
+[source]
+----
+my-site/
+├── content/           # Markdown content files
+│   ├── index.md
+│   └── posts/
+├── templates/         # NoteG templates
+│   ├── base.noteg
+│   └── post.noteg
+├── public/           # Generated output
+├── noteg.config.json # Site configuration
+└── a11y/            # Accessibility assets
+----
+
+== Configuration
+
+=== Site Configuration
+
+Create `noteg.config.json`:
+
+[source,json]
+----
+{
+  "name": "My Site",
+  "baseUrl": "https://example.com",
+  "language": "en",
+  "outputDir": "public",
+  "contentDir": "content",
+  "templateDir": "templates",
+  "a11y": {
+    "enableBsl": true,
+    "enableGsl": false,
+    "enableAsl": true,
+    "enableMakaton": true,
+    "wcagLevel": "AA"
+  }
+}
+----
+
+=== Environment Variables
+
+[cols="1,2,1"]
+|===
+|Variable |Description |Default
+
+|`NOTEG_CONFIG`
+|Path to configuration file
+|`noteg.config.json`
+
+|`NOTEG_OUTPUT_DIR`
+|Output directory
+|`public`
+
+|`NOTEG_CONTENT_DIR`
+|Content directory
+|`content`
+
+|`NOTEG_DEBUG`
+|Enable debug mode
+|`false`
+|===
+
+== Content Authoring
+
+=== Frontmatter
+
+[source,yaml]
+----
+---
+title: My Post
+date: 2025-01-01
+author: Your Name
+tags:
+  - accessibility
+  - web
+a11y:
+  bsl:
+    videoUrl: https://example.com/bsl-video.mp4
+    glosses: ["HELLO", "WORLD"]
+  altText: A descriptive image caption
+  readingLevel: simple
+---
+
+Your content here...
+----
+
+=== NoteG Templates
+
+[source,noteg]
+----
+template page {
+  let title = meta.title
+  let content = body
+
+  <html>
+    <head>
+      <title>{{ title }}</title>
+    </head>
+    <body>
+      {{ content }}
+    </body>
+  </html>
+}
+----
+
+== Accessibility
+
+=== Sign Language Support
+
+NoteG supports multiple sign languages:
+
+* *BSL* - British Sign Language
+* *GSL/DGS* - German Sign Language
+* *ASL* - American Sign Language
+
+[source,yaml]
+----
+a11y:
+  bsl:
+    videoUrl: https://cdn.example.com/bsl/greeting.mp4
+    glosses: ["HELLO", "HOW", "YOU"]
+    interpreter: Jane Smith
+    dialect: standard
+----
+
+=== Makaton Support
+
+[source,yaml]
+----
+a11y:
+  makaton:
+    symbols:
+      - id: "hello"
+        meaning: "Greeting"
+        imageUrl: /symbols/hello.svg
+    signs: ["HELLO", "THANK-YOU"]
+    resourceLevel: stage1
+----
+
+=== WCAG Compliance
+
+NoteG generates WCAG 2.1 compliant output:
+
+[source,json]
+----
+{
+  "wcag": {
+    "level": "AA",
+    "version": "2.1"
+  }
+}
+----
+
+== The NoteG Language
+
+=== Basic Syntax
+
+[source,noteg]
+----
+// Variables
+let name = "World"
+const pi = 3.14159
+
+// Functions
+fn greet(name) {
+  return "Hello, " + name + "!"
+}
+
+// Control flow
+if condition {
+  doSomething()
+} else {
+  doOther()
+}
+
+// Loops
+for item in items {
+  print(item)
+}
+
+// Pipe operator
+data |> transform |> output
+----
+
+=== Templates
+
+[source,noteg]
+----
+template article {
+  content meta {
+    title: "My Article"
+    a11y {
+      bsl: { videoUrl: "/bsl/article.mp4" }
+    }
+  }
+
+  <article>
+    <h1>{{ meta.title }}</h1>
+    {{ body }}
+  </article>
+}
+----
+
+== Build Commands
+
+[source,bash]
+----
+# Build everything
+just build
+
+# Run tests
+just test
+
+# Run e2e tests
+just test-e2e
+
+# Start LSP
+just lsp
+
+# Compile .noteg file
+just compile myfile.noteg
+
+# All tests
+just test-all
+
+# Generate site
+just generate
+
+# Serve site
+just serve
+----
+
+== API Reference
+
+=== Built-in Functions
+
+[cols="1,2"]
+|===
+|Function |Description
+
+|`print(...args)`
+|Print values to console
+
+|`len(x)`
+|Get length of string, array, or object
+
+|`type(x)`
+|Get type of value
+|===
+
+=== Template Variables
+
+[cols="1,2"]
+|===
+|Variable |Description
+
+|`site.name`
+|Site name from config
+
+|`site.baseUrl`
+|Base URL from config
+
+|`page.title`
+|Current page title
+
+|`page.date`
+|Page publication date
+
+|`page.a11y`
+|Page accessibility metadata
+|===
+
+== Troubleshooting
+
+=== Common Issues
+
+*Build fails with "Module not found"*::
+Run `just deps` to install dependencies.
+
+*SPARK verification fails*::
+Ensure GNAT/SPARK 2022 or later is installed.
+
+*LSP not connecting*::
+Check that the language server is running with `just lsp`.
+
+== License
+
+SPDX-License-Identifier: PMPL-1.0-or-later-or-later
+
+Copyright 2025 hyperpolymath

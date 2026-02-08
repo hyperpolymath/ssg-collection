@@ -1,0 +1,79 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= WokeLang SSG Roadmap
+
+== Current Status
+
+**Phase:** Early Development (v0.1.0-alpha)
+
+**Working:**
+- ✅ ReScript frontend structure (rescript-tea + cadre-tea-router + a2ml)
+- ✅ WokeLang SSG engine skeleton (ssg/main.woke)
+- ✅ Cloudflare Pages deployment workflow
+- ✅ Build system (scripts/build.sh)
+- ✅ RSR compliance (contractiles/, .machine_readable/, .bot_directives/)
+
+**Blocked by:**
+- ⏳ WokeLang interpreter completion (wokelang repo Phase 1)
+- ⏳ Parser implementation (to execute ssg/main.woke)
+
+== Milestones
+
+=== v0.1.0 - Foundation (1-2 weeks)
+* [x] Project structure
+* [x] Cloudflare Pages setup
+* [x] ReScript frontend skeleton
+* [ ] Basic static page rendering (placeholder HTML)
+* [ ] Deploy to wokelang.org
+
+=== v0.2.0 - WokeLang SSG Engine (3-4 weeks)
+_Depends on: wokelang interpreter completion_
+
+* [ ] Markdown parsing in WokeLang
+* [ ] Frontmatter extraction
+* [ ] Template rendering (Tera-like in WokeLang)
+* [ ] Site generation from content/
+* [ ] Content hot-reloading
+
+=== v0.3.0 - Frontend Integration (2 weeks)
+* [ ] Connect ReScript frontend to generated content
+* [ ] TEA architecture for navigation
+* [ ] a2ml layouts for positioning
+* [ ] Responsive design
+* [ ] Dark mode support
+
+=== v0.4.0 - Consent System Integration (1 week)
+* [ ] Demonstrate `only if okay` for analytics
+* [ ] User consent UI components
+* [ ] Privacy-first analytics opt-in
+* [ ] Gratitude blocks for contributors
+
+=== v1.0.0 - Stable Release (1 week)
+* [ ] Full documentation
+* [ ] Example site templates
+* [ ] Performance optimization
+* [ ] Comprehensive tests
+* [ ] Production deployment
+
+== Future Directions
+
+=== Post-1.0 Features
+* **Plugin System** - Extend SSG with WokeLang plugins
+* **Live Preview** - Dev server with hot reload
+* **Incremental Builds** - Only rebuild changed pages
+* **Image Optimization** - Automatic image processing
+* **Search Integration** - Built-in search with consent
+* **i18n Support** - Multi-language sites
+* **RSS/Sitemap** - Auto-generation
+
+=== Integration Goals
+* **poly-ssg-mcp** - MCP server for SSG operations
+* **wokelang.org** - Official WokeLang website
+* **playground.wokelang.org** - Interactive WokeLang playground
+* **Hyperpolymath sites** - Use for project documentation
+
+== Timeline Estimate
+
+**To v0.1.0:** 1-2 weeks (waiting on wokelang interpreter)
+**To v1.0.0:** 2-3 months (including wokelang Phase 1 completion)
+
+See `STATE.scm` for current blockers and progress.

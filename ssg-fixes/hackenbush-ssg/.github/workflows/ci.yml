@@ -1,0 +1,64 @@
+# SPDX-License-Identifier: MPL-2.0-or-later
+name: Game of Life CI
+
+permissions: read-all
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v4
+
+      - name: Validate RLE pattern file exists
+        run: |
+          if [ -f src/hackenbush.rle ]; then
+            echo "OK: Life pattern file found"
+            head -20 src/hackenbush.rle
+          else
+            echo "ERROR: src/hackenbush.rle not found!"
+            exit 1
+          fi
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Validate host runtime syntax
+        run: deno check runtime/host.ts
+
+  language-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v4
+
+      - name: Verify Life patterns only in src/
+        run: |
+          echo "Checking for FORBIDDEN languages in src/..."
+          forbidden=$(find src/ -type f \( -name "*.js" -o -name "*.ts" -o -name "*.py" \) 2>/dev/null || true)
+          if [ -n "$forbidden" ]; then
+            echo "ERROR: Found FORBIDDEN language files in src/:"
+            echo "$forbidden"
+            echo ""
+            echo "hackenbush-ssg MUST use Life patterns (.rle files) as the program!"
+            echo "JavaScript/TypeScript/Python are FORBIDDEN for SSG logic!"
+            exit 1
+          fi
+          echo "OK: Only Life pattern files in src/"
+
+      - name: Verify host runtime is I/O only
+        run: |
+          echo "Checking host runtime doesn't contain SSG logic..."
+          if grep -E 'generateHtml|parseMarkdown|template|routing' runtime/host.ts; then
+            echo "WARNING: Host runtime may contain SSG logic!"
+            echo "The host should ONLY provide simulation + I/O."
+            exit 1
+          fi
+          echo "OK: Host runtime appears to be I/O only"

@@ -1,0 +1,85 @@
+{
+  "$schema": "https://claude.ai/schemas/hooks.json",
+  "version": "1.0.0",
+  "description": "Claude Code hooks for terrapin-ssg",
+
+  "hooks": {
+    "pre-edit": {
+      "description": "Validate before editing files",
+      "patterns": ["src/**/*.logo"],
+      "command": "just validate",
+      "failOnError": false
+    },
+
+    "post-edit": {
+      "description": "Lint after editing Logo files",
+      "patterns": ["src/**/*.logo"],
+      "command": "just lint",
+      "failOnError": false
+    },
+
+    "pre-commit": {
+      "description": "Run full pre-commit checks",
+      "command": "just pre-commit",
+      "failOnError": true
+    },
+
+    "on-file-change": {
+      "description": "Auto-actions on file changes",
+      "rules": [
+        {
+          "pattern": "src/**/*.logo",
+          "command": "just lint"
+        },
+        {
+          "pattern": "adapters/**/*.res",
+          "command": "cd adapters && npm run build 2>/dev/null || true"
+        },
+        {
+          "pattern": "**/*.scm",
+          "command": "echo 'SCM file updated'"
+        }
+      ]
+    },
+
+    "pre-build": {
+      "description": "Validate before building",
+      "command": "just check-languages && just validate",
+      "failOnError": true
+    },
+
+    "post-build": {
+      "description": "Verify build output",
+      "command": "test -d _site && echo 'Build successful' || echo 'No output directory'",
+      "failOnError": false
+    }
+  },
+
+  "security": {
+    "blocked-patterns": [
+      "**/*.py",
+      "**/*.pyc",
+      "**/node_modules/**",
+      "**/.env",
+      "**/secrets.*"
+    ],
+    "warn-patterns": [
+      "**/password*",
+      "**/secret*",
+      "**/token*"
+    ]
+  },
+
+  "language-enforcement": {
+    "src-directory": {
+      "allowed": [".logo"],
+      "forbidden": [".py", ".js", ".ts", ".rb", ".go", ".rs"],
+      "action": "block"
+    },
+    "adapters-directory": {
+      "allowed": [".res", ".json", ".md"],
+      "forbidden": [".py", ".logo"],
+      "action": "warn"
+    }
+  }
+}

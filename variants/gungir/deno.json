@@ -1,0 +1,61 @@
+{
+  "$schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
+  "name": "@hyperpolymath/gungir-ssg",
+  "version": "0.3.0",
+  "exports": "./src/Main.res.js",
+  "tasks": {
+    "build": "deno run -A npm:rescript build",
+    "watch": "deno run -A npm:rescript build -w",
+    "start": "deno run --allow-all src/Main.res.js",
+    "dev": "deno run --watch --allow-all src/Main.res.js",
+    "test": "deno test --allow-run --allow-read tests/",
+    "ci": "deno task build && deno task test"
+  },
+  "nodeModulesDir": "none",
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 100,
+    "indentWidth": 2,
+    "semiColons": true,
+    "singleQuote": false,
+    "proseWrap": "preserve",
+    "include": ["adapters/", "tests/", "scripts/"],
+    "exclude": ["coverage/", ".git/"]
+  },
+  "lint": {
+    "include": ["adapters/", "tests/", "scripts/"],
+    "exclude": ["coverage/", ".git/"],
+    "rules": {
+      "tags": ["recommended"],
+      "include": [
+        "ban-untagged-todo",
+        "camelcase",
+        "default-param-last",
+        "eqeqeq",
+        "explicit-function-return-type",
+        "no-await-in-loop",
+        "no-console",
+        "no-const-assign",
+        "no-eval",
+        "no-throw-literal",
+        "prefer-const"
+      ],
+      "exclude": ["no-console"]
+    }
+  },
+  "test": {
+    "include": ["tests/"],
+    "exclude": ["tests/fixtures/"]
+  },
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+  },
+  "imports": {
+    "@std/assert": "jsr:@std/assert@^1.0.0",
+    "@std/testing": "jsr:@std/testing@^1.0.0"
+  }
+}

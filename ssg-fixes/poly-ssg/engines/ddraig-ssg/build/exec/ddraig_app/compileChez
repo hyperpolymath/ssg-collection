@@ -1,0 +1,1 @@
+(parameterize ([optimize-level 3] [compile-file-message #f]) (compile-program "/var/home/hyper/repos/poly-ssg/engines/ddraig-ssg/build/exec/ddraig_app/ddraig.ss"))

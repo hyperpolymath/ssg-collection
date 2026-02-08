@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-FileCopyrightText: 2025 hyperpolymath
+
+[package]
+name = "consensus-ssg"
+version = "0.1.0"
+edition = "2021"
+description = "Consensus-driven static site generation using Raft"
+license = "AGPL-3.0-or-later"
+authors = ["hyperpolymath"]
+
+[dependencies]
+# Raft consensus implementation
+raft = "0.7"
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Markdown processing
+pulldown-cmark = "0.9"
+
+# File handling
+walkdir = "2"
+
+[dev-dependencies]
+tempfile = "3"

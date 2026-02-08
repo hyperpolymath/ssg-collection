@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/hyperpolymath/odd-ssg/a11y/schema.json",
+  "title": "Accessibility Schema",
+  "description": "Schema for accessibility metadata in odd-ssg content",
+  "type": "object",
+  "properties": {
+    "signLanguage": {
+      "type": "object",
+      "description": "Sign language video resources",
+      "properties": {
+        "bsl": {
+          "type": "object",
+          "description": "British Sign Language (BSL)",
+          "properties": {
+            "videoUrl": { "type": "string", "format": "uri" },
+            "transcript": { "type": "string" },
+            "duration": { "type": "integer", "minimum": 0 },
+            "interpreter": { "type": "string" },
+            "dialect": {
+              "type": "string",
+              "enum": ["standard", "scottish", "northern-irish"]
+            }
+          },
+          "required": ["videoUrl"]
+        },
+        "asl": {
+          "type": "object",
+          "description": "American Sign Language (ASL)",
+          "properties": {
+            "videoUrl": { "type": "string", "format": "uri" },
+            "transcript": { "type": "string" },
+            "duration": { "type": "integer", "minimum": 0 },
+            "interpreter": { "type": "string" }
+          },
+          "required": ["videoUrl"]
+        },
+        "gsl": {
+          "type": "object",
+          "description": "German Sign Language (DGS/GSL)",
+          "properties": {
+            "videoUrl": { "type": "string", "format": "uri" },
+            "transcript": { "type": "string" },
+            "duration": { "type": "integer", "minimum": 0 },
+            "interpreter": { "type": "string" }
+          },
+          "required": ["videoUrl"]
+        },
+        "isl": {
+          "type": "object",
+          "description": "International Sign Language",
+          "properties": {
+            "videoUrl": { "type": "string", "format": "uri" },
+            "transcript": { "type": "string" }
+          }
+        }
+      }
+    },
+    "makaton": {
+      "type": "object",
+      "description": "Makaton symbol-based communication",
+      "properties": {
+        "symbols": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "word": { "type": "string" },
+              "symbolUrl": { "type": "string", "format": "uri" },
+              "signUrl": { "type": "string", "format": "uri" }
+            },
+            "required": ["word"]
+          }
+        },
+        "storyboard": { "type": "string", "format": "uri" },
+        "vocabularyLevel": {
+          "type": "string",
+          "enum": ["core", "additional", "topic"]
+        }
+      }
+    },
+    "easyRead": {
+      "type": "object",
+      "description": "Easy Read version metadata",
+      "properties": {
+        "url": { "type": "string", "format": "uri" },
+        "format": {
+          "type": "string",
+          "enum": ["html", "pdf", "docx"]
+        },
+        "images": { "type": "boolean" },
+        "readingAge": {
+          "type": "integer",
+          "minimum": 5,
+          "maximum": 18
+        }
+      }
+    },
+    "audioDescription": {
+      "type": "object",
+      "description": "Audio description for visual content",
+      "properties": {
+        "url": { "type": "string", "format": "uri" },
+        "format": {
+          "type": "string",
+          "enum": ["mp3", "ogg", "wav"]
+        },
+        "duration": { "type": "integer", "minimum": 0 },
+        "voice": {
+          "type": "string",
+          "enum": ["human", "synthetic"]
+        },
+        "language": { "type": "string" }
+      }
+    },
+    "readability": {
+      "type": "object",
+      "description": "Readability metrics",
+      "properties": {
+        "fleschKincaid": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "fleschReadingEase": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "gunningFog": { "type": "number", "minimum": 0 },
+        "smogIndex": { "type": "number", "minimum": 0 },
+        "automatedReadabilityIndex": { "type": "number" }
+      }
+    },
+    "wcag": {
+      "type": "object",
+      "description": "WCAG compliance information",
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": ["A", "AA", "AAA"]
+        },
+        "version": {
+          "type": "string",
+          "enum": ["2.0", "2.1", "2.2"]
+        },
+        "exceptions": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "alternatives": {
+      "type": "object",
+      "description": "Alternative format availability",
+      "properties": {
+        "braille": { "type": "string", "format": "uri" },
+        "largePrint": { "type": "string", "format": "uri" },
+        "plainText": { "type": "string", "format": "uri" },
+        "audioBook": { "type": "string", "format": "uri" }
+      }
+    }
+  },
+  "additionalProperties": false
+}

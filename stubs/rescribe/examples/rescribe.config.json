@@ -1,0 +1,34 @@
+{
+  "$schema": "./config-schema.json",
+  "site": {
+    "title": "My Rescribe Site",
+    "description": "A static site built with rescribe-ssg",
+    "url": "https://example.com",
+    "author": "Your Name",
+    "language": "en"
+  },
+  "build": {
+    "contentDir": "content",
+    "outputDir": "_site",
+    "templateDir": "templates",
+    "cleanUrls": true,
+    "minify": false
+  },
+  "accessibility": {
+    "wcag": {
+      "level": "AA",
+      "version": "2.1"
+    },
+    "signLanguages": {
+      "bsl": { "enabled": false },
+      "asl": { "enabled": false },
+      "gsl": { "enabled": false },
+      "makaton": { "enabled": false }
+    }
+  },
+  "markdown": {
+    "highlightCode": true,
+    "smartypants": true,
+    "footnotes": true
+  }
+}

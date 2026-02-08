@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://eclipse-ssg.hyperpolymath.org/schemas/bsl.json",
+  "title": "British Sign Language (BSL) Metadata Schema",
+  "description": "Schema for BSL accessibility content in eclipse-ssg",
+  "type": "object",
+  "properties": {
+    "bslVideo": {
+      "type": "object",
+      "description": "BSL video translation",
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to BSL video"
+        },
+        "duration": {
+          "type": "string",
+          "pattern": "^PT\\d+M\\d+S$",
+          "description": "Video duration in ISO 8601 format"
+        },
+        "interpreter": {
+          "type": "string",
+          "description": "Name of BSL interpreter"
+        },
+        "nrcpd": {
+          "type": "string",
+          "description": "NRCPD registration number (if registered)"
+        },
+        "format": {
+          "type": "string",
+          "enum": ["mp4", "webm", "mov"],
+          "description": "Video format"
+        },
+        "resolution": {
+          "type": "string",
+          "enum": ["720p", "1080p", "4k"],
+          "description": "Video resolution"
+        }
+      },
+      "required": ["url"]
+    },
+    "bslGlossary": {
+      "type": "array",
+      "description": "BSL sign glossary for technical terms",
+      "items": {
+        "type": "object",
+        "properties": {
+          "term": {
+            "type": "string",
+            "description": "English term"
+          },
+          "signVideo": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to individual sign video"
+          },
+          "signDescription": {
+            "type": "string",
+            "description": "Text description of how to form the sign"
+          },
+          "regional": {
+            "type": "string",
+            "description": "Regional variation notes"
+          }
+        },
+        "required": ["term"]
+      }
+    },
+    "bslTranscript": {
+      "type": "string",
+      "description": "English transcript of BSL content"
+    },
+    "contentEquivalence": {
+      "type": "string",
+      "enum": ["full", "summary", "key-points"],
+      "description": "Level of content equivalence"
+    }
+  }
+}

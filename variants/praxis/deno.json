@@ -1,0 +1,51 @@
+{
+  "$schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
+  "name": "@hyperpolymath/praxis-ssg",
+  "version": "0.2.0",
+  "exports": "./src/Main.res.js",
+  "tasks": {
+    "build": "deno run -A npm:rescript build",
+    "watch": "deno run -A npm:rescript build -w",
+    "start": "deno run --allow-all src/Main.res.js",
+    "dev": "deno run --watch --allow-all src/Main.res.js",
+    "test": "deno test tests/ --allow-read"
+  },
+  "nodeModulesDir": "none",
+  "lint": {
+    "include": ["adapters/", "tests/"],
+    "rules": {
+      "tags": ["recommended"],
+      "include": [
+        "ban-untagged-todo",
+        "camelcase",
+        "default-param-last",
+        "eqeqeq",
+        "explicit-function-return-type",
+        "no-await-in-loop",
+        "no-const-assign",
+        "no-eval",
+        "no-throw-literal",
+        "prefer-const"
+      ]
+    }
+  },
+  "fmt": {
+    "include": ["adapters/", "tests/"],
+    "useTabs": false,
+    "lineWidth": 100,
+    "indentWidth": 2,
+    "singleQuote": false,
+    "proseWrap": "preserve"
+  },
+  "test": {
+    "include": ["tests/"]
+  },
+  "compilerOptions": {
+    "strict": true,
+    "allowJs": true,
+    "lib": ["deno.window"]
+  },
+  "imports": {
+    "std/": "https://deno.land/std@0.208.0/"
+  }
+}

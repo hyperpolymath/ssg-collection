@@ -1,0 +1,6 @@
+; SPDX-License-Identifier: AGPL-3.0-or-later
+
+(library
+  (name macrauchenia_ssg)
+  (public_name macrauchenia_ssg)
+  (libraries unix str))

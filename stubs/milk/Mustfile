@@ -1,0 +1,145 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+#
+# milk-ssg Mustfile - Required checks and validations
+# These are non-negotiable requirements that MUST pass
+# Usage: must <recipe>
+
+set shell := ["bash", "-uc"]
+
+# Default - run all must checks
+default: all
+
+# ============================================================================
+# MANDATORY CHECKS - These MUST pass for any operation
+# ============================================================================
+
+# All mandatory checks
+all: language spdx security no-secrets
+    @echo "✓ All MUST checks passed"
+
+# MUST: Only COW in src/
+language:
+    @echo "MUST: Verify COW-only in src/..."
+    @forbidden=$$(find src/ -type f ! -name "*.cow" 2>/dev/null || true); \
+    if [ -n "$$forbidden" ]; then \
+        echo "✗ VIOLATION: Non-COW files in src/:"; \
+        echo "$$forbidden"; \
+        echo ""; \
+        echo "milk-ssg MUST be written in COW. No exceptions."; \
+        exit 1; \
+    fi
+    @echo "✓ MUST: Only COW files in src/"
+
+# MUST: SPDX headers present
+spdx:
+    @echo "MUST: Verify SPDX headers..."
+    @missing=0; \
+    for f in src/*.cow adapters/src/*.res; do \
+        if [ -f "$$f" ]; then \
+            if ! head -5 "$$f" | grep -q "SPDX-License-Identifier"; then \
+                echo "✗ Missing SPDX header: $$f"; \
+                missing=1; \
+            fi \
+        fi \
+    done; \
+    if [ $$missing -eq 1 ]; then exit 1; fi
+    @echo "✓ MUST: SPDX headers present"
+
+# MUST: No command injection vulnerabilities
+security:
+    @echo "MUST: Verify adapter security..."
+    @# Check that sanitizePath is used before command execution
+    @if grep -q "sanitizePath" adapters/src/MilkAdapter.res; then \
+        echo "✓ MUST: Input sanitization present"; \
+    else \
+        echo "✗ VIOLATION: No input sanitization in adapter"; \
+        echo "  All user inputs MUST be validated before shell execution"; \
+        exit 1; \
+    fi
+
+# MUST: No secrets in code
+no-secrets:
+    @echo "MUST: Verify no secrets..."
+    @if grep -rE "(password|api_key|secret_key|private_key)\s*=\s*['\"][^'\"]+['\"]" \
+        --include="*.res" --include="*.cow" --include="*.json" . 2>/dev/null | \
+        grep -v "example" | grep -v "placeholder"; then \
+        echo "✗ VIOLATION: Potential hardcoded secrets found"; \
+        exit 1; \
+    fi
+    @echo "✓ MUST: No hardcoded secrets"
+
+# ============================================================================
+# PRE-OPERATION CHECKS
+# ============================================================================
+
+# MUST pass before commit
+before-commit: all
+    @echo "✓ Ready to commit"
+
+# MUST pass before push
+before-push: all
+    @# Also verify tests pass
+    @just test-syntax
+    @just test-language
+    @echo "✓ Ready to push"
+
+# MUST pass before release
+before-release: all
+    @just test-all
+    @# Verify version is updated
+    @if grep -q "2025-12-17" STATE.scm; then \
+        echo "✓ STATE.scm date current"; \
+    else \
+        echo "⚠ Consider updating STATE.scm date"; \
+    fi
+    @echo "✓ Ready to release"
+
+# ============================================================================
+# ENFORCEMENT MESSAGES
+# ============================================================================
+
+# Show language rules
+language-rules:
+    @echo "========================================"
+    @echo "milk-ssg Language Enforcement Rules"
+    @echo "========================================"
+    @echo ""
+    @echo "MANDATORY: COW"
+    @echo "  - All SSG logic MUST be in src/*.cow"
+    @echo "  - COW is the esoteric language by Sean Heber"
+    @echo "  - All commands are variations of 'moo'"
+    @echo ""
+    @echo "EXCEPTION: ReScript (adapters only)"
+    @echo "  - adapters/src/*.res may use ReScript"
+    @echo "  - Adapters are for MCP hub connection ONLY"
+    @echo "  - NO SSG logic allowed in adapters"
+    @echo ""
+    @echo "FORBIDDEN:"
+    @echo "  - Python"
+    @echo "  - JavaScript/TypeScript (except compiled ReScript)"
+    @echo "  - Ruby, Go, Rust, Java"
+    @echo "  - Any other language"
+    @echo ""
+    @echo "This is NON-NEGOTIABLE."
+
+# Show security rules
+security-rules:
+    @echo "========================================"
+    @echo "milk-ssg Security Rules"
+    @echo "========================================"
+    @echo ""
+    @echo "1. Input Validation"
+    @echo "   - All user inputs MUST be sanitized"
+    @echo "   - Use sanitizePath() for path/file inputs"
+    @echo "   - Block: .. (path traversal)"
+    @echo "   - Block: shell metacharacters (; | & \` $ etc.)"
+    @echo ""
+    @echo "2. Command Execution"
+    @echo "   - Never interpolate raw user input into commands"
+    @echo "   - Always validate before execSync/spawn"
+    @echo ""
+    @echo "3. Secrets"
+    @echo "   - Never commit secrets to repo"
+    @echo "   - Use environment variables for sensitive data"
+    @echo "   - Check: must no-secrets"

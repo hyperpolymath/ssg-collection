@@ -1,0 +1,15 @@
+# Security Policy for hackenbush-ssg
+# https://securitytxt.org/
+
+Contact: security@hyperpolymath.org
+Expires: 2026-12-31T23:59:59.000Z
+Encryption: https://hyperpolymath.org/gpg/security.asc
+Preferred-Languages: en, nl
+Canonical: https://github.com/hyperpolymath/hackenbush-ssg/.well-known/security.txt
+Policy: https://github.com/hyperpolymath/hackenbush-ssg/blob/main/SECURITY.md
+
+# Acknowledgments
+Acknowledgments: https://hyperpolymath.org/security/acknowledgments
+
+# Hiring
+Hiring: https://hyperpolymath.org/careers

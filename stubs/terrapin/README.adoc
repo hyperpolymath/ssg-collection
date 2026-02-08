@@ -1,0 +1,85 @@
+= terrapin-ssg
+
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/Philosophy-Palimpsest-indigo.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+
+:toc: auto
+:toclevels: 2
+
+image:https://img.shields.io/badge/RSR-compliant-gold[RSR Compliant,link=https://github.com/hyperpolymath/rhodium-standard-repositories]
+image:https://img.shields.io/badge/poly--ssg-satellite-blue[poly-ssg,link=https://github.com/hyperpolymath/poly-ssg]
+
+**Educational static site generator in Logo.**
+
+Learn programming while building websites. The turtle draws your layouts.
+
+== Who Is This For?
+
+* **Logo programmers** returning to a beloved language
+* **Educators** teaching programming concepts visually
+* **Anyone learning to code** who wants practical projects
+* **Nostalgic developers** from the Apple II era
+
+== Why terrapin-ssg?
+
+=== Visual Programming
+
+Watch the turtle draw your site layouts. Abstract concepts become tangible patterns.
+
+=== Beginner-Friendly Syntax
+
+Commands read like instructions: FORWARD 100, RIGHT 90. No cryptic syntax to decode.
+
+=== Recursive Design
+
+Logo's recursive procedures naturally create complex, beautiful patterns from simple rules.
+
+=== Generative Art
+
+Every page can include unique turtle-generated SVG artwork. Your site literally draws itself.
+
+== Quick Start
+
+[source,logo]
+----
+; terrapin-ssg example
+TO BUILD.SITE
+  SITE "My First Site
+  OUTDIR "_site
+
+  PAGE "index "Welcome [
+    REPEAT 4 [FORWARD 100 RIGHT 90]
+  ]
+
+  BUILD
+END
+
+BUILD.SITE
+----
+
+[source,bash]
+----
+# Run with UCBLogo
+logo src/terrapin-ssg.logo
+----
+
+== Features
+
+* **Turtle graphics to SVG** - procedural art in every page
+* **Interactive REPL** - experiment with designs
+* **Recursive patterns** - L-systems and fractals
+* **Simple syntax** - accessible to beginners
+* **Visual feedback** - see what you're building
+
+== Requirements
+
+* UCBLogo (Berkeley Logo) or compatible interpreter
+
+== Part of poly-ssg
+
+terrapin-ssg is part of the https://github.com/hyperpolymath/poly-ssg[poly-ssg] family, unified through https://github.com/hyperpolymath/poly-ssg-mcp[MCP integration].
+
+== License
+
+PMPL-1.0-or-later

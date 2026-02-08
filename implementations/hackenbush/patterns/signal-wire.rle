@@ -1,0 +1,9 @@
+#N Signal Wire Pattern
+#C Glider stream propagation for data transmission
+#C Used to connect computational components
+#O hackenbush-ssg project
+x = 100, y = 10, rule = B3/S23
+# Glider moves diagonally at c/4 speed
+# Wire = empty space with periodic gliders
+# Standard spacing: 30 cells between gliders
+bo$2bo$3o!

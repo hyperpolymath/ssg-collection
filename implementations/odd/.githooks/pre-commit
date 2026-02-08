@@ -1,0 +1,47 @@
+#!/bin/sh
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+# Pre-commit hook for odd-ssg language policy enforcement
+
+set -e
+
+echo "Running pre-commit checks..."
+
+# Check for banned file types in staged files
+BANNED_EXTENSIONS=".ts .tsx .mts .cts .go .mk"
+BANNED_FILES="Makefile makefile GNUmakefile package.json package-lock.json bun.lockb npm-shrinkwrap.json go.mod go.sum"
+
+# Get list of staged files
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM)
+
+for file in $STAGED_FILES; do
+    filename=$(basename "$file")
+
+    # Check banned extensions
+    for ext in $BANNED_EXTENSIONS; do
+        if echo "$filename" | grep -q "${ext}$"; then
+            echo "❌ BLOCKED: $file"
+            echo "   Files with extension '$ext' are not allowed."
+            echo "   See CLAUDE.md for language policy."
+            exit 1
+        fi
+    done
+
+    # Check banned files
+    for banned in $BANNED_FILES; do
+        if [ "$filename" = "$banned" ]; then
+            echo "❌ BLOCKED: $file"
+            echo "   File '$banned' is not allowed."
+            echo "   See CLAUDE.md for language policy."
+            exit 1
+        fi
+    done
+done
+
+# Run policy check if deno is available
+if command -v deno >/dev/null 2>&1; then
+    echo "Running full policy check..."
+    deno run --allow-read scripts/check-policy.js
+fi
+
+echo "✅ Pre-commit checks passed!"

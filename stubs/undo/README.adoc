@@ -1,0 +1,54 @@
+= undo-ssg
+
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+:toc:
+:toc-title: Table of Contents
+:icons: font
+
+**Reversible static site generation in the Arrow language.**
+"undo" — The trajectory of reversible logic. A generator that moves forward to build and backwards to un-build.
+
+== Who Is This For?
+* **Reversible computing researchers** seeking zero-entropy site synthesis.
+* **Systems Engineers** targeting **ASICs** where thermal efficiency is the primary constraint.
+* **Verification Purists** requiring isomorphic mappings between source and output.
+
+== Why undo-ssg?
+=== Information Preservation
+Unlike traditional SSGs that "lose" source data during rendering, `undo-ssg` is built in a reversible language. Every build step is an isomorphism; the HTML output contains the mathematical potential to reconstruct the source markdown exactly.
+
+=== Zero-Entropy Logic
+Reversible operations avoid the energy cost of erasing information. `undo-ssg` is designed for high-efficiency hardware and **Edge tech** deployments where heat dissipation is a failure state.
+
+=== Deterministic Inversion
+"Un-call" a procedure to revert a site build to its previous state with mathematical certainty. No more partial state corruption during failed deployments.
+
+== Quick Start
+[source,oil]
+----
+# Bootstrap the Arrow/Janus environment via asdf
+just setup
+
+# Build the site forward
+just build-forward
+
+# Reverse the build to verify source integrity
+just build-backward
+----
+
+== Features
+* **Isomorphic Synthesis** - 1:1 mapping between source and rendered state.
+* **Thermodynamic Efficiency** - Near-zero energy dissipation for Edge hardware.
+* **Podman-First** - Isolated, reversible build environments.
+* **Accessibility** - Integrated support for **BSL**, **GSL**, **ASL**, and **Makaton**.
+
+== Requirements
+* **Arrow/Janus Interpreter**
+* **Just** (Orchestrator)
+* **Podman** (Container Engine)
+
+== Part of poly-ssg
+`undo-ssg` is the reversible, zero-entropy member of the **poly-ssg** family.
+
+== License
+PMPL-1.0-or-later

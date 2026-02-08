@@ -1,0 +1,177 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/hyperpolymath/prodigy-ssg/a11y/schema/accessibility.json",
+  "title": "Prodigy SSG Accessibility Schema",
+  "description": "Schema for accessibility metadata in prodigy-ssg generated sites",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Schema version",
+      "const": "1.0.0"
+    },
+    "wcag_level": {
+      "type": "string",
+      "enum": ["A", "AA", "AAA"],
+      "description": "Target WCAG 2.1 conformance level"
+    },
+    "language": {
+      "type": "string",
+      "description": "Primary language (BCP 47 tag)",
+      "pattern": "^[a-z]{2,3}(-[A-Z]{2})?$"
+    },
+    "alternative_formats": {
+      "type": "object",
+      "description": "Alternative format availability",
+      "properties": {
+        "bsl": {
+          "type": "object",
+          "description": "British Sign Language support",
+          "properties": {
+            "available": { "type": "boolean" },
+            "video_url": { "type": "string", "format": "uri" },
+            "transcript_url": { "type": "string", "format": "uri" }
+          }
+        },
+        "gsl": {
+          "type": "object",
+          "description": "German Sign Language (DGS) support",
+          "properties": {
+            "available": { "type": "boolean" },
+            "video_url": { "type": "string", "format": "uri" }
+          }
+        },
+        "asl": {
+          "type": "object",
+          "description": "American Sign Language support",
+          "properties": {
+            "available": { "type": "boolean" },
+            "video_url": { "type": "string", "format": "uri" }
+          }
+        },
+        "makaton": {
+          "type": "object",
+          "description": "Makaton symbol support",
+          "properties": {
+            "available": { "type": "boolean" },
+            "symbols_url": { "type": "string", "format": "uri" }
+          }
+        },
+        "easy_read": {
+          "type": "object",
+          "description": "Easy Read version availability",
+          "properties": {
+            "available": { "type": "boolean" },
+            "url": { "type": "string", "format": "uri" }
+          }
+        },
+        "audio_description": {
+          "type": "object",
+          "description": "Audio description availability",
+          "properties": {
+            "available": { "type": "boolean" },
+            "audio_url": { "type": "string", "format": "uri" }
+          }
+        },
+        "braille": {
+          "type": "object",
+          "description": "Braille version availability",
+          "properties": {
+            "available": { "type": "boolean" },
+            "brf_url": { "type": "string", "format": "uri" }
+          }
+        },
+        "large_print": {
+          "type": "object",
+          "description": "Large print version",
+          "properties": {
+            "available": { "type": "boolean" },
+            "pdf_url": { "type": "string", "format": "uri" }
+          }
+        }
+      }
+    },
+    "cognitive_accessibility": {
+      "type": "object",
+      "properties": {
+        "reading_level": {
+          "type": "string",
+          "description": "Target reading level (e.g., 'Grade 6', 'B1 CEFR')"
+        },
+        "clear_language": {
+          "type": "boolean",
+          "description": "Uses plain/clear language principles"
+        },
+        "consistent_navigation": {
+          "type": "boolean",
+          "description": "Navigation is consistent across pages"
+        },
+        "error_prevention": {
+          "type": "boolean",
+          "description": "Forms include error prevention mechanisms"
+        }
+      }
+    },
+    "motor_accessibility": {
+      "type": "object",
+      "properties": {
+        "keyboard_navigable": {
+          "type": "boolean",
+          "description": "All functionality available via keyboard"
+        },
+        "skip_links": {
+          "type": "boolean",
+          "description": "Skip navigation links provided"
+        },
+        "focus_visible": {
+          "type": "boolean",
+          "description": "Focus indicators are clearly visible"
+        },
+        "touch_targets": {
+          "type": "string",
+          "enum": ["standard", "enhanced"],
+          "description": "Touch target size compliance"
+        }
+      }
+    },
+    "visual_accessibility": {
+      "type": "object",
+      "properties": {
+        "color_contrast": {
+          "type": "string",
+          "enum": ["AA", "AAA"],
+          "description": "Color contrast compliance level"
+        },
+        "text_resizable": {
+          "type": "boolean",
+          "description": "Text can be resized up to 200%"
+        },
+        "images_have_alt": {
+          "type": "boolean",
+          "description": "All images have alt text"
+        },
+        "no_color_only": {
+          "type": "boolean",
+          "description": "Information not conveyed by color alone"
+        }
+      }
+    },
+    "assistive_technology": {
+      "type": "object",
+      "properties": {
+        "screen_reader_tested": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Screen readers tested with (e.g., NVDA, JAWS, VoiceOver)"
+        },
+        "voice_control_compatible": {
+          "type": "boolean"
+        },
+        "switch_accessible": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  "required": ["version", "wcag_level", "language"]
+}

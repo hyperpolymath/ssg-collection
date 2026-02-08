@@ -1,0 +1,4 @@
+# asdf tool versions for labnote-ssg
+# Install: asdf install
+
+deno 1.40.0

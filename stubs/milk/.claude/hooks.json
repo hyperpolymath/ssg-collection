@@ -1,0 +1,81 @@
+{
+  "$schema": "https://raw.githubusercontent.com/anthropics/claude-code/main/schemas/hooks.json",
+  "version": "1.0.0",
+  "description": "Claude Code hooks for milk-ssg development",
+
+  "hooks": {
+    "pre-edit": {
+      "enabled": true,
+      "description": "Validate before file edits",
+      "commands": [
+        {
+          "match": "src/*.cow",
+          "run": "echo 'Editing COW source - remember: only moo-based commands allowed'"
+        },
+        {
+          "match": "adapters/src/*.res",
+          "run": "echo 'Editing ReScript adapter - verify input sanitization'"
+        }
+      ]
+    },
+
+    "post-edit": {
+      "enabled": true,
+      "description": "Validate after file edits",
+      "commands": [
+        {
+          "match": "src/*.cow",
+          "run": "bash -c 'if grep -E \"[^mMoO \\t\\n;]\" \"$FILE\" | grep -v \"^;\" | head -1; then echo \"Warning: Non-COW characters detected\"; fi'"
+        },
+        {
+          "match": "adapters/src/*.res",
+          "run": "bash -c 'if ! grep -q \"sanitizePath\" \"$FILE\"; then echo \"ERROR: Input sanitization required\"; exit 1; fi'"
+        }
+      ]
+    },
+
+    "pre-commit": {
+      "enabled": true,
+      "description": "Run must checks before commit",
+      "commands": [
+        {
+          "run": "must all 2>/dev/null || echo 'Run: must all'"
+        }
+      ]
+    },
+
+    "session-start": {
+      "enabled": true,
+      "description": "Setup on session start",
+      "commands": [
+        {
+          "run": "echo '🐄 milk-ssg: COW Static Site Generator'"
+        },
+        {
+          "run": "echo 'Language: COW (moo-based esoteric language)'"
+        },
+        {
+          "run": "echo 'Commands: just --list'"
+        }
+      ]
+    }
+  },
+
+  "rules": {
+    "language-enforcement": {
+      "description": "Enforce COW-only in src/",
+      "pattern": "src/**",
+      "allowed_extensions": [".cow"],
+      "action": "reject",
+      "message": "Only COW files allowed in src/. milk-ssg MUST be written in COW."
+    },
+
+    "adapter-security": {
+      "description": "Require input sanitization in adapter",
+      "pattern": "adapters/src/*.res",
+      "required_patterns": ["sanitizePath"],
+      "action": "warn",
+      "message": "Adapter must include input sanitization for security."
+    }
+  }
+}

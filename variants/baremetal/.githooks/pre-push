@@ -1,0 +1,32 @@
+#!/bin/bash
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+# Pre-push hook for baremetal-ssg
+
+set -e
+
+echo "Running pre-push checks..."
+
+# Run tests if deno is available
+if command -v deno &> /dev/null; then
+    echo "Running tests..."
+    deno test --allow-read --allow-run tests/ 2>/dev/null || {
+        echo "Tests failed!"
+        exit 1
+    }
+fi
+
+# RSR compliance check
+echo "Checking RSR compliance..."
+test -f README.adoc || { echo "Missing README.adoc"; exit 1; }
+test -f LICENSE.txt || { echo "Missing LICENSE.txt"; exit 1; }
+test -f SECURITY.md || { echo "Missing SECURITY.md"; exit 1; }
+
+# Check adapter count
+count=$(ls -1 adapters/*.js 2>/dev/null | wc -l)
+if [ "$count" -lt 28 ]; then
+    echo "Adapter count dropped below 28!"
+    exit 1
+fi
+
+echo "Pre-push checks passed!"

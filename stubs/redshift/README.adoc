@@ -1,0 +1,57 @@
+= shift-ssg
+
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+:toc:
+:toc-title: Table of Contents
+:icons: font
+
+**Full-stack, reactive static site generation in RED.**
+"Shift" — Shifting paradigms between high-level logic and low-level performance. A generator built on the "Red" philosophy of total freedom and dialecting.
+
+== Who Is This For?
+* **Full-stack developers** who want a single language to handle both build logic and reactive TUIs.
+* **Systems Engineers** targeting **Minix**, **Android**, or **PC** who need tiny, single-file binaries.
+* **Minimalists** who value the "Rebol-style" dialecting power for custom site schemas.
+
+== Why shift-ssg?
+
+=== Dialected Site Logic
+RED’s greatest power is its ability to create Domain Specific Languages (DSLs). `shift-ssg` uses a custom "Site-Dialect" that allows you to describe site architecture in a way that is readable to humans and executable by the machine.
+
+=== Red/System Performance
+While the high-level logic is handled in RED, the heavy lifting (file I/O, string processing) is shifted to **Red/System**—a C-level dialect—ensuring near-native performance without external dependencies.
+
+=== Reactive Build Engine
+`shift-ssg` includes a built-in reactive TUI for monitoring builds. As you edit content, the engine "shifts" the delta into the rendered output in real-time, providing instant feedback.
+
+=== Single-File Portability
+The entire generator compiles into a tiny, standalone binary (approx. 1MB). This makes it the most portable engine in the fleet, easily deployed to constrained **Edge tech** or **Minix** environments.
+
+== Quick Start
+[source,oil]
+----
+# Download the RED toolchain
+just setup
+
+# Compile the SSG core to a native binary
+just compile
+
+# Run the reactive build process
+just build
+----
+
+== Features
+* **Dialect-Driven Templates** - Custom SSG grammar for content synthesis.
+* **Zero Dependencies** - Single-file binaries for all major platforms.
+* **Podman-First** - Standard containerised build environments.
+* **Accessibility** - Integrated support for **BSL**, **GSL**, and **Makaton**.
+
+== Requirements
+* **RED Toolchain (Latest Stable)**
+* **Just** (Orchestrator)
+
+== Part of poly-ssg
+`shift-ssg` is the full-stack, paradigm-shifting member of the **poly-ssg** family.
+
+== License
+PMPL-1.0-or-later

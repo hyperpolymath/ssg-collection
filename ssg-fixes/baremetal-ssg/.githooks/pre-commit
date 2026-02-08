@@ -1,0 +1,44 @@
+#!/bin/bash
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+# Pre-commit hook for baremetal-ssg
+
+set -e
+
+echo "Running pre-commit checks..."
+
+# Format check
+echo "Checking format..."
+if command -v deno &> /dev/null; then
+    deno fmt --check adapters/ || {
+        echo "Format check failed. Run 'just fmt' to fix."
+        exit 1
+    }
+fi
+
+# Lint check
+echo "Checking lint..."
+if command -v deno &> /dev/null; then
+    deno lint adapters/ || {
+        echo "Lint check failed."
+        exit 1
+    }
+fi
+
+# Check for secrets
+echo "Checking for secrets..."
+if grep -rE '(password|secret|api_key|token)\s*=' adapters/ 2>/dev/null; then
+    echo "Potential secrets detected!"
+    exit 1
+fi
+
+# Check SPDX headers
+echo "Checking SPDX headers..."
+for f in adapters/*.js; do
+    if ! grep -q "SPDX-License-Identifier" "$f"; then
+        echo "Missing SPDX header: $f"
+        exit 1
+    fi
+done
+
+echo "Pre-commit checks passed!"

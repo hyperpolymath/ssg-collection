@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Dependabot configuration for terrapin-ssg
+# Logo SSG with ReScript MCP adapter
+
+version: 2
+updates:
+  # GitHub Actions - always include for SHA-pinned action updates
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      actions:
+        patterns:
+          - "*"
+
+  # Node.js/npm - for ReScript adapter dependencies
+  - package-ecosystem: "npm"
+    directory: "/adapters"
+    schedule:
+      interval: "weekly"

@@ -1,0 +1,89 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-FileCopyrightText: 2025 hyperpolymath
+#
+# easel-ssg: Piet static site generator
+# "Paint your website into existence"
+#
+# This file describes the Piet program structure.
+# The actual program is encoded as an image in patterns/generator.png
+#
+# Piet is an esoteric programming language where programs are images.
+# Colors represent stack operations:
+#
+# === COLOR TRANSITIONS (Hue × Lightness changes) ===
+#
+# Hue steps (0-5): red → yellow → green → cyan → blue → magenta → red
+# Lightness steps (0-2): light → normal → dark → light
+#
+# Operations by transition:
+#   Hue +0, Light +1: push
+#   Hue +0, Light +2: pop
+#   Hue +1, Light +0: add
+#   Hue +1, Light +1: subtract
+#   Hue +1, Light +2: multiply
+#   Hue +2, Light +0: divide
+#   Hue +2, Light +1: mod
+#   Hue +2, Light +2: not
+#   Hue +3, Light +0: greater
+#   Hue +3, Light +1: pointer
+#   Hue +3, Light +2: switch
+#   Hue +4, Light +0: duplicate
+#   Hue +4, Light +1: roll
+#   Hue +4, Light +2: in(number)
+#   Hue +5, Light +0: in(char)
+#   Hue +5, Light +1: out(number)
+#   Hue +5, Light +2: out(char)
+#
+# === PROGRAM STRUCTURE ===
+#
+# The easel-ssg Piet program works as follows:
+#
+# 1. INITIALIZATION
+#    - Push ASCII values for "<!DOCTYPE html>" onto stack
+#    - Output each character
+#
+# 2. HTML GENERATION
+#    - Push values for <html>, <head>, <body> tags
+#    - Interleave content and output operations
+#
+# 3. CONTENT LOOP
+#    - Read input (page content)
+#    - Escape special characters (< > & " ')
+#    - Output escaped content
+#
+# 4. TERMINATION
+#    - Push closing tags
+#    - Output and halt
+#
+# === ASCII VALUES USED ===
+#
+# Space: 32    !: 33     ": 34     #: 35     &: 38     ': 39
+# (: 40        ): 41     <: 60     =: 61     >: 62
+# A: 65        B: 66     C: 67     D: 68     E: 69     F: 70
+# a: 97        b: 98     c: 99     d: 100    e: 101    f: 102
+# g: 103       h: 104    i: 105    l: 108    m: 109    n: 110
+# o: 111       p: 112    r: 114    s: 115    t: 116    u: 117
+# y: 121
+#
+# === EXAMPLE OUTPUT ===
+#
+# <!DOCTYPE html>
+# <html lang="en">
+# <head>
+#     <meta charset="UTF-8">
+#     <title>easel-ssg</title>
+# </head>
+# <body>
+#     <h1>Welcome</h1>
+#     <p>Painted by Piet</p>
+# </body>
+# </html>
+#
+# === PROGRAM IMAGE ===
+#
+# The actual Piet program is encoded in patterns/generator.png
+# Use npiet or rpiet to execute:
+#   npiet patterns/generator.png
+#
+# To generate pages:
+#   echo "Content" | npiet patterns/generator.png > output.html

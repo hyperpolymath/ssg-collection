@@ -1,0 +1,14 @@
+{
+  "name": "websocket-chat-rescript",
+  "version": "1.0.0",
+  "tasks": {
+    "build": "rescript build",
+    "clean": "rescript clean",
+    "start": "deno run --allow-net src/Server.res.js",
+    "dev": "deno run --allow-net --watch src/Server.res.js"
+  },
+  "imports": {
+    "@rescript/core": "npm:@rescript/core@^1.0.0",
+    "rescript": "npm:rescript@^11.0.0"
+  }
+}

@@ -1,0 +1,136 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://hyperpolymath.org/schemas/hackenbush-ssg/a11y/v1",
+  "title": "hackenbush-ssg Accessibility Schema",
+  "description": "Accessibility metadata schema for Game of Life SSG outputs",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Schema version"
+    },
+    "pattern": {
+      "type": "object",
+      "description": "Life pattern accessibility metadata",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Human-readable pattern name"
+        },
+        "description": {
+          "type": "string",
+          "description": "Plain text description of pattern purpose"
+        },
+        "complexity": {
+          "type": "string",
+          "enum": ["simple", "moderate", "complex", "extreme"],
+          "description": "Pattern complexity level"
+        },
+        "cellCount": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of active cells in initial configuration"
+        },
+        "boundingBox": {
+          "type": "object",
+          "properties": {
+            "width": { "type": "integer" },
+            "height": { "type": "integer" }
+          },
+          "required": ["width", "height"]
+        }
+      },
+      "required": ["name", "description"]
+    },
+    "output": {
+      "type": "object",
+      "description": "Generated output accessibility",
+      "properties": {
+        "format": {
+          "type": "string",
+          "enum": ["html", "text", "json"],
+          "description": "Output format"
+        },
+        "encoding": {
+          "type": "string",
+          "default": "utf-8",
+          "description": "Character encoding"
+        },
+        "language": {
+          "type": "string",
+          "pattern": "^[a-z]{2}(-[A-Z]{2})?$",
+          "description": "BCP 47 language tag"
+        },
+        "wcag": {
+          "type": "object",
+          "description": "WCAG compliance level",
+          "properties": {
+            "level": {
+              "type": "string",
+              "enum": ["A", "AA", "AAA"],
+              "description": "WCAG conformance level"
+            },
+            "version": {
+              "type": "string",
+              "enum": ["2.0", "2.1", "2.2"],
+              "description": "WCAG version"
+            }
+          }
+        }
+      }
+    },
+    "alternativeFormats": {
+      "type": "array",
+      "description": "Available alternative formats for accessibility",
+      "items": {
+        "type": "object",
+        "properties": {
+          "format": { "type": "string" },
+          "description": { "type": "string" },
+          "uri": { "type": "string", "format": "uri" }
+        },
+        "required": ["format", "description"]
+      }
+    },
+    "assistiveTechnology": {
+      "type": "object",
+      "description": "Assistive technology compatibility",
+      "properties": {
+        "screenReader": {
+          "type": "boolean",
+          "default": true,
+          "description": "Compatible with screen readers"
+        },
+        "brailleDisplay": {
+          "type": "boolean",
+          "description": "Compatible with braille displays"
+        },
+        "voiceControl": {
+          "type": "boolean",
+          "description": "Compatible with voice control"
+        }
+      }
+    },
+    "cognitiveAccessibility": {
+      "type": "object",
+      "description": "Cognitive accessibility considerations",
+      "properties": {
+        "readingLevel": {
+          "type": "string",
+          "description": "Flesch-Kincaid grade level"
+        },
+        "plainLanguage": {
+          "type": "boolean",
+          "description": "Uses plain language principles"
+        },
+        "visualComplexity": {
+          "type": "string",
+          "enum": ["low", "medium", "high"],
+          "description": "Visual complexity level"
+        }
+      }
+    }
+  },
+  "required": ["version", "pattern"]
+}

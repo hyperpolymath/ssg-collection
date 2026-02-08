@@ -1,0 +1,13 @@
+{
+  "tasks": {
+    "build": "rescript build",
+    "watch": "rescript build -w",
+    "clean": "rescript clean"
+  },
+  "imports": {
+    "@rescript/core": "npm:@rescript/core@^1.0.0",
+    "rescript-tea": "npm:rescript-tea@^0.2.0",
+    "cadre-tea-router": "npm:cadre-tea-router@^0.1.0",
+    "a2ml": "npm:a2ml@^0.1.0"
+  }
+}

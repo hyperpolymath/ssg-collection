@@ -1,0 +1,58 @@
+= anvil-ssg
+
+image:https://img.shields.io/badge/License-MPL_2.0-blue.svg[MPL-2.0-or-later,link="https://opensource.org/licenses/MPL-2.0"]
+:toc:
+:toc-title: Table of Contents
+:icons: font
+
+**High-integrity, safety-critical site generation in Ada/SPARK.**
+"Anvil" — The iron-clad forge of correctness. A generator built for systems where a build failure is not just an error, but a safety risk.
+
+== Who Is This For?
+* **High-Integrity Systems Engineers** who demand mathematical proof of software correctness.
+* **Aerospace and Medical Architects** requiring documentation tools that meet DO-178C or ISO 26262 standards.
+* **Security Purists** who want to eliminate all categories of runtime errors through formal verification.
+
+== Why anvil-ssg?
+
+=== Formal Verification with SPARK
+By using the **SPARK** subset of Ada, `anvil-ssg` provides mathematical proof that the generator is free from buffer overflows, division by zero, and uninitialised variables. It is the "Hardened Shield" of the **poly-ssg** family.
+
+=== Design by Contract
+Templates and content-loaders use strict preconditions and postconditions. The engine proves that if the input satisfies the contract, the output is guaranteed to be valid HTML/CSS, leaving no room for "heisenbugs."
+
+=== Deterministic Resource Management
+Ada's disciplined approach to memory ensures that `anvil-ssg` operates with a predictable footprint. This makes it the premier choice for **ASICs** and **Minix**-based systems where memory leaks are unacceptable.
+
+=== Real-Time Build Monitoring
+Leveraging Ada's tasking model, the generator provides real-time, deterministic feedback on the build state, allowing for high-integrity monitoring in safety-critical environments.
+
+== Quick Start
+[source,oil]
+----
+# Setup GNAT and SPARK tools via asdf
+just setup
+
+# Run the SPARK prover to verify the site logic
+just prove
+
+# Compile the verified SSG core
+just build
+----
+
+== Features
+* **Formally Proven Core** - Zero runtime errors via GNATprove.
+* **Strong Typing Discipline** - Total separation of content and presentation types.
+* **Podman-First** - Hardened build containers for high-integrity environments.
+* **Multi-Arch** - Verified for **RISC-V**, **x86_64**, and **ARM**.
+
+== Requirements
+* **GNAT (Ada 2022)**
+* **SPARK Prover**
+* **Just** (Orchestrator)
+
+== Part of poly-ssg
+`anvil-ssg` is the high-integrity safety member of the **poly-ssg** family.
+
+== License
+AGPL-3.0-or-later

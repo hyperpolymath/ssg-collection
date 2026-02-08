@@ -1,0 +1,79 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+# terrapin-ssg Mustfile - Required operations manifest
+#
+# Mustfile defines operations that MUST succeed for the project to be valid.
+# Unlike Justfile recipes which are convenience commands, Mustfile entries
+# are mandatory validations and invariants.
+#
+# Format: must <name> <command>
+# All commands must exit 0 for the project to be considered valid.
+
+# === Language Invariants ===
+# These MUST always be true
+
+must logo-only "test -z \"$(find src/ -type f \\( -name '*.py' -o -name '*.js' -o -name '*.ts' \\) 2>/dev/null)\""
+must logo-exists "test -f src/terrapin-ssg.logo"
+must no-python "! find . -name '*.py' -path './src/*' 2>/dev/null | grep -q ."
+
+# === Structure Invariants ===
+
+must has-src "test -d src"
+must has-adapters "test -d adapters"
+must has-license "test -f LICENSE.txt"
+must has-readme "test -f README.adoc"
+
+# === SCM Files ===
+
+must has-state "test -f STATE.scm"
+must has-meta "test -f META.scm"
+must has-ecosystem "test -f ECOSYSTEM.scm"
+
+# === Security Invariants ===
+
+must no-secrets "! grep -r 'password.*=' src/ 2>/dev/null | grep -v '^Binary'"
+must has-security-policy "test -f SECURITY.md"
+must security-txt "test -f .well-known/security.txt"
+
+# === Build Invariants ===
+
+must logo-syntax "grep -q 'TO\\|to' src/terrapin-ssg.logo"
+must has-build-proc "grep -q 'build\\|BUILD' src/terrapin-ssg.logo"
+
+# === CI/CD Invariants ===
+
+must has-ci "test -f .github/workflows/ci.yml"
+must sha-pinned "grep -q '@[a-f0-9]\\{40\\}' .github/workflows/ci.yml"
+
+# === Documentation Invariants ===
+
+must claude-md "test -f .claude/CLAUDE.md"
+must contributing "test -f CONTRIBUTING.md"
+
+# === Adapter Invariants ===
+
+must adapter-rescript "test -f adapters/src/TerrapinAdapter.res"
+must adapter-package "test -f adapters/package.json"
+
+# === Run All Musts ===
+# Usage: must-check (validates all invariants)
+
+check-all:
+	@echo "Checking all must invariants..."
+	@failed=0; \
+	for must in logo-only logo-exists no-python has-src has-adapters has-license has-readme \
+	            has-state has-meta has-ecosystem no-secrets has-security-policy security-txt \
+	            logo-syntax has-build-proc has-ci sha-pinned claude-md contributing \
+	            adapter-rescript adapter-package; do \
+		if ! just _must-$$must 2>/dev/null; then \
+			echo "FAIL: $$must"; \
+			failed=$$((failed + 1)); \
+		else \
+			echo "PASS: $$must"; \
+		fi; \
+	done; \
+	if [ $$failed -gt 0 ]; then \
+		echo "$$failed invariants failed"; \
+		exit 1; \
+	fi; \
+	echo "All invariants passed"

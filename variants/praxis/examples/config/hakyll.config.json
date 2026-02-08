@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/ssg-config.schema.json",
+  "ssg": "hakyll",
+  "site": {
+    "title": "My Hakyll Site",
+    "baseUrl": "https://example.com",
+    "description": "A static site built with Hakyll"
+  },
+  "build": {
+    "outputDir": "_site",
+    "clean": true
+  },
+  "serve": {
+    "port": 8000,
+    "host": "127.0.0.1"
+  }
+}

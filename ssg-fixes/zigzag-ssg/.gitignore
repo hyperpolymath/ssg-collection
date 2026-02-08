@@ -1,0 +1,49 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# .gitignore for zigzag-ssg (Zig SSG)
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Zig
+zig-cache/
+zig-out/
+*.o
+*.a
+
+# Build
+/build/
+/dist/
+/out/
+
+# ReScript (MCP adapter only)
+/adapters/lib/bs/
+/adapters/.bsb.lock
+/adapters/node_modules/
+
+# Dependencies
+/node_modules/
+
+# Secrets
+.env
+.env.*
+*.pem
+*.key
+secrets/
+
+# Test/Coverage
+/coverage/
+
+# Logs
+*.log
+/logs/
+
+# Temp
+/tmp/
+*.tmp
+*.bak

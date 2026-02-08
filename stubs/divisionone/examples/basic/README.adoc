@@ -1,0 +1,61 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= Division One Basic Example
+:toc:
+
+A minimal example site demonstrating Division One SSG features.
+
+== Prerequisites
+
+- GnuCOBOL (`cobc`) compiler installed
+- Division One built from source
+
+== Building
+
+```bash
+# From the repository root
+cobc -x -o divisionone src/divisionone.cob
+
+# Build this example site
+cd examples/basic
+../../divisionone build
+```
+
+== Structure
+
+```
+basic/
+├── content/
+│   └── index.md    # Source markdown content
+├── _site/          # Generated HTML output (after build)
+└── README.adoc     # This file
+```
+
+== Output
+
+After building, `_site/index.html` contains the rendered HTML page with:
+
+- Frontmatter metadata (title, date)
+- Markdown converted to HTML
+- Code blocks with syntax highlighting
+- Division One footer
+
+== Features Demonstrated
+
+|===
+| Feature | Description
+
+| Frontmatter
+| YAML-like metadata parsing
+
+| Headers
+| H1-H6 heading support
+
+| Code blocks
+| Fenced code blocks with language hints
+
+| Lists
+| Unordered list rendering
+
+| Paragraphs
+| Standard text paragraphs
+|===

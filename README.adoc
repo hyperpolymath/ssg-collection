@@ -1,0 +1,62 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// Copyright (c) 2024-2026 Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
+
+= SSG Collection
+:toc: auto
+:toclevels: 2
+
+A consolidated monorepo of static site generator experiments and implementations from the hyperpolymath ecosystem.
+
+*poly-ssg* (the main SSG framework) and *casket-ssg* (a distinct SSG framework) remain as separate repositories and are NOT included here.
+
+== Structure
+
+----
+ssg-collection/
+  implementations/   # Substantial SSGs (7+ source files)
+    rats/            # 17 files
+    odd/             # 15 files
+    eclipse/         # 15 files
+    wokelang/        # 13 files (Rust)
+    hackenbush/      # 11 files
+    pharos/          # 11 files
+    qed/             #  8 files
+  variants/          # Small SSGs (2-7 source files)
+    baremetal/ befunge/ consensus/ gungir/ labnote/
+    macrauchenia/ my/ orbital/ praxis/ saur/
+    sparkle/ wagasm/ zigzag/
+  stubs/             # Template stubs (0-1 source files)
+    (32 stubs)
+  ssg-fixes/         # Absorbed from ssg-fixes repo
+----
+
+== Categories
+
+=== Implementations (7)
+
+Full SSG implementations with meaningful source code: rats (17 files), odd (15), eclipse (15), wokelang (13, Rust), hackenbush (11), pharos (11), qed (8).
+
+=== Variants (13)
+
+Smaller SSG experiments with 2-7 source files: baremetal, befunge, consensus, gungir, labnote, macrauchenia, my, orbital, praxis, saur, sparkle (Gleam), wagasm, zigzag.
+
+=== Stubs (32)
+
+Template/RSR stubs with 0-1 source files: 60, canon, chicxulub, cloudanvil, cpt, ddraig, dei, divisionone, easel, ephapax, estate, iota, jura, liminal, milk, noteg, parallax, prodigy, redshift, region, reliquary, rescribe, shift, terrapin, tiamat, tripos, tyrano, ultimatum, undo, vindaloo, vladik, warp.
+
+== Excluded Repositories
+
+These SSG repos remain as separate repositories:
+
+* *poly-ssg* -- Main SSG framework (LSP/MCP already absorbed)
+* *casket-ssg* -- Distinct SSG framework
+
+== License
+
+SPDX-License-Identifier: PMPL-1.0-or-later
+
+Copyright (c) 2024-2026 Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
+
+== Origin
+
+This monorepo was consolidated from 52 individual *-ssg repositories plus ssg-fixes on 2026-02-08 to reduce repository sprawl.

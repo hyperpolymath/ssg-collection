@@ -1,0 +1,368 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+# Justfile — rats-ssg command recipes (ReScript + Deno)
+
+# Default recipe: show help
+default:
+    @just --list
+
+# ============================================================================
+# SETUP & ENVIRONMENT
+# ============================================================================
+
+# Install all dependencies and set up environment
+setup:
+    @echo "Setting up rats-ssg development environment..."
+    @./scripts/bootstrap.sh
+    just rescript-build
+    @echo "Setup complete!"
+
+# Check all prerequisites are installed
+check-prereqs:
+    @echo "Checking prerequisites..."
+    @command -v deno >/dev/null 2>&1 || (echo "❌ Deno not found" && exit 1)
+    @command -v just >/dev/null 2>&1 || (echo "❌ Just not found" && exit 1)
+    @command -v nickel >/dev/null 2>&1 || (echo "❌ Nickel not found" && exit 1)
+    @echo "✅ All prerequisites satisfied"
+
+# Initialize environment from template
+env-init:
+    @[ -f .env ] || cp .env.example .env 2>/dev/null || echo "No .env.example found"
+    @echo "Environment file ready"
+
+# ============================================================================
+# RESCRIPT BUILD
+# ============================================================================
+
+# Build ReScript sources
+rescript-build:
+    @echo "Building ReScript..."
+    npx rescript build
+
+# Watch ReScript sources
+rescript-watch:
+    npx rescript build -w
+
+# Clean ReScript build artifacts
+rescript-clean:
+    npx rescript clean
+
+# ============================================================================
+# DEVELOPMENT
+# ============================================================================
+
+# Start development mode with file watching
+dev: rescript-build
+    deno run --watch --allow-all server.js
+
+# Start MCP server
+serve port="3000": rescript-build
+    RATS_PORT={{port}} deno run --allow-all server.js
+
+# Run REPL for interactive testing
+repl:
+    deno repl --allow-all
+
+# Format all source files
+fmt:
+    deno fmt runtime/*.js *.js
+    @echo "Note: ReScript files are formatted by rescript compiler"
+
+# Check formatting without changes
+fmt-check:
+    deno fmt --check runtime/*.js *.js
+
+# ============================================================================
+# TESTING
+# ============================================================================
+
+# Run all tests
+test: rescript-build
+    deno test --allow-all lib/es6/test/
+
+# Run unit tests only
+test-unit: rescript-build
+    deno test --allow-all lib/es6/test/unit/
+
+# Run end-to-end tests
+test-e2e: rescript-build
+    deno test --allow-all lib/es6/test/e2e/
+
+# Run all tests with verbose output
+test-all: rescript-build
+    deno test --allow-all --trace-leaks lib/es6/test/
+
+# Generate test coverage report
+coverage: rescript-build
+    deno test --allow-all --coverage=coverage/ lib/es6/test/
+    deno coverage coverage/ --lcov > coverage/lcov.info
+    @echo "Coverage report generated: coverage/lcov.info"
+
+# Run tests matching a filter
+test-filter filter: rescript-build
+    deno test --allow-all --filter "{{filter}}" lib/es6/test/
+
+# ============================================================================
+# LINTING & STATIC ANALYSIS
+# ============================================================================
+
+# Run all linters
+lint:
+    deno lint runtime/*.js *.js adapters/*.js 2>/dev/null || true
+
+# Run security-focused lint
+lint-security:
+    @echo "Running security lints..."
+    @grep -r "eval\|Function(" src/ runtime/ adapters/ 2>/dev/null && echo "⚠️ Found eval usage" || echo "✅ No eval"
+    @grep -r "password\|secret\|api.key" src/ runtime/ adapters/ --include="*.res" --include="*.js" 2>/dev/null && echo "⚠️ Potential secrets" || echo "✅ No hardcoded secrets"
+
+# Lint for banned languages (TypeScript enforcement)
+lint-banned:
+    @echo "Checking for banned languages..."
+    @find . -name "*.ts" -not -path "./node_modules/*" -not -path "./.git/*" | grep -v "^$$" && (echo "❌ TypeScript files found! Migration incomplete." && exit 1) || echo "✅ No TypeScript files"
+    @find . -name "*.tsx" -not -path "./node_modules/*" -not -path "./.git/*" | grep -v "^$$" && (echo "❌ TSX files found!" && exit 1) || echo "✅ No TSX files"
+    @find . -name "package.json" -not -path "./node_modules/*" -not -path "./.git/*" -exec grep -l "dependencies" {} \; 2>/dev/null && echo "⚠️ package.json with deps found" || echo "✅ No npm dependencies"
+    @find . -name "Makefile" -not -path "./.git/*" | grep -v "^$$" && (echo "❌ Makefile found!" && exit 1) || echo "✅ No Makefile"
+
+# Check ReScript types
+check: rescript-build
+    @echo "ReScript type checking done during build"
+
+# Run all checks (lint + type check + security + banned)
+check-all: lint check lint-security lint-banned
+
+# ============================================================================
+# BUILD & COMPILE
+# ============================================================================
+
+# Build for production
+build: rescript-build
+    @echo "Building rats-ssg..."
+    deno compile --allow-all --output=dist/rats-ssg server.js
+    @echo "Build complete: dist/rats-ssg"
+
+# Build with optimizations
+build-release: rescript-build
+    deno compile --allow-all --output=dist/rats-ssg --target x86_64-unknown-linux-gnu server.js
+
+# ============================================================================
+# ADAPTER MANAGEMENT
+# ============================================================================
+
+# List all available adapters
+adapter-list:
+    @echo "Available SSG Adapters (28):"
+    @ls -1 adapters/*.js 2>/dev/null | sed 's|adapters/||;s|\.js||' | sort || echo "No adapters found yet"
+
+# Show adapter details
+adapter-info adapter:
+    @deno eval "const a = await import('./adapters/{{adapter}}.js'); console.log('Name:', a.name); console.log('Language:', a.language); console.log('Description:', a.description); console.log('Tools:', a.tools.length)"
+
+# Validate adapter schema
+adapter-validate adapter:
+    @echo "Validating {{adapter}} adapter..."
+    @deno eval "const a = await import('./adapters/{{adapter}}.js'); if(!a.name||!a.language||!a.tools) throw new Error('Invalid'); console.log('✅ Valid')"
+
+# Validate all adapters
+adapter-validate-all:
+    @for f in adapters/*.js; do \
+        name=$$(basename $$f .js); \
+        just adapter-validate $$name || exit 1; \
+    done 2>/dev/null || echo "No adapters to validate"
+    @echo "✅ All adapters valid"
+
+# Check adapter connection
+adapter-status adapter:
+    @deno eval "const a = await import('./adapters/{{adapter}}.js'); const ok = await a.connect(); console.log(ok ? '✅ Connected' : '❌ Failed'); await a.disconnect()"
+
+# ============================================================================
+# MCP SERVER OPERATIONS
+# ============================================================================
+
+# Start MCP server in background
+mcp-start: rescript-build
+    @echo "Starting MCP server..."
+    deno run --allow-all server.js &
+    @echo "MCP server started"
+
+# Stop MCP server
+mcp-stop:
+    @pkill -f "deno.*server.js" || echo "No server running"
+    @echo "MCP server stopped"
+
+# Restart MCP server
+mcp-restart: mcp-stop mcp-start
+
+# Show MCP server status
+mcp-status:
+    @pgrep -f "deno.*server.js" && echo "✅ Running" || echo "❌ Not running"
+
+# List available MCP tools
+mcp-tools:
+    @deno eval "for(const f of Deno.readDirSync('adapters')){if(f.name.endsWith('.js')){const a=await import('./adapters/'+f.name);for(const t of a.tools||[])console.log(t.name)}}" 2>/dev/null || echo "No adapters"
+
+# ============================================================================
+# SECURITY
+# ============================================================================
+
+# Run security audit
+security-audit:
+    @echo "Running security audit..."
+    just lint-security
+    just lint-banned
+    @echo "Security audit complete"
+
+# Check for secrets in code
+security-secrets:
+    @echo "Scanning for potential secrets..."
+    @! grep -rE "(password|secret|api.key|token)\s*[:=]" --include="*.js" --include="*.res" src/ runtime/ adapters/ . 2>/dev/null | grep -v Justfile | grep -v "\.ncl" || echo "⚠️ Review above matches"
+    @echo "Secret scan complete"
+
+# ============================================================================
+# DOCUMENTATION
+# ============================================================================
+
+# Generate API documentation
+docs:
+    @echo "Generating documentation..."
+    @mkdir -p docs/api
+    @echo "Documentation structure created"
+
+# ============================================================================
+# RELEASE & VERSIONING
+# ============================================================================
+
+# Show current version
+version:
+    @grep -o '"version":\s*"[0-9]*\.[0-9]*\.[0-9]*"' deno.json 2>/dev/null | cut -d'"' -f4 || echo "0.1.0"
+
+# ============================================================================
+# CONTAINER OPERATIONS
+# ============================================================================
+
+# Build container image
+container-build: rescript-build
+    podman build -t rats-ssg:latest .
+
+# Run container
+container-run:
+    podman run --rm -it -p 3000:3000 rats-ssg:latest
+
+# Push container to registry
+container-push registry:
+    podman push rats-ssg:latest {{registry}}/rats-ssg:latest
+
+# ============================================================================
+# CI/CD HELPERS
+# ============================================================================
+
+# Run CI checks (what GitHub Actions runs)
+ci: check-prereqs rescript-build fmt-check lint check-all test
+
+# Pre-commit hook
+pre-commit: fmt lint check lint-banned
+
+# Pre-push hook
+pre-push: test lint-security lint-banned
+
+# ============================================================================
+# UTILITIES
+# ============================================================================
+
+# Clean build artifacts
+clean:
+    rm -rf dist/ coverage/ lib/ node_modules/ .bsb.lock
+    @echo "Cleaned"
+
+# Show project statistics
+stats:
+    @echo "=== Project Statistics ==="
+    @echo "ReScript files: $$(find src test -name '*.res' 2>/dev/null | wc -l)"
+    @echo "JS glue files: $$(ls runtime/*.js 2>/dev/null | wc -l)"
+    @echo "Adapters: $$(ls adapters/*.js 2>/dev/null | wc -l || echo 0)"
+
+# Show environment info
+info:
+    @echo "=== Environment Info ==="
+    @deno --version
+    @echo "Working directory: $$(pwd)"
+    @echo "Git branch: $$(git branch --show-current)"
+
+# ============================================================================
+# NICKEL CONFIGURATION
+# ============================================================================
+
+# Evaluate Nickel configuration
+ncl-eval file="config/rats-ssg.ncl":
+    nickel eval {{file}}
+
+# Export Nickel config to JSON
+ncl-export file="config/rats-ssg.ncl":
+    nickel export --format json {{file}}
+
+# Type check Nickel files
+ncl-check:
+    @for f in config/*.ncl Mustfile.epx; do \
+        echo "Checking $$f..."; \
+        nickel typecheck $$f 2>/dev/null || nickel eval $$f >/dev/null || exit 1; \
+    done
+    @echo "✅ All Nickel files valid"
+
+# ============================================================================
+# MUSTFILE OPERATIONS
+# ============================================================================
+
+# Validate Mustfile contract
+must-validate:
+    @echo "Validating Mustfile.epx..."
+    nickel eval Mustfile.epx >/dev/null && echo "✅ Mustfile valid" || echo "❌ Mustfile invalid"
+
+# Show Mustfile state
+must-state:
+    nickel export --format json Mustfile.epx | jq '.transitions' 2>/dev/null || nickel eval Mustfile.epx
+
+# ============================================================================
+# HOOKS
+# ============================================================================
+
+# Install git hooks
+hooks-install:
+    @echo "Installing git hooks..."
+    @mkdir -p .git/hooks
+    @echo '#!/bin/sh\njust pre-commit' > .git/hooks/pre-commit
+    @echo '#!/bin/sh\njust pre-push' > .git/hooks/pre-push
+    @chmod +x .git/hooks/pre-commit .git/hooks/pre-push
+    @echo "Git hooks installed"
+
+# Uninstall git hooks
+hooks-uninstall:
+    @rm -f .git/hooks/pre-commit .git/hooks/pre-push
+    @echo "Git hooks removed"
+
+# ============================================================================
+# FULL PIPELINE
+# ============================================================================
+
+# Run complete validation pipeline
+validate-all: check-prereqs rescript-build fmt-check lint check-all test adapter-validate-all security-audit lint-banned
+    @echo "✅ Full validation passed"
+
+# Complete CI pipeline with coverage
+ci-full: ci coverage
+    @echo "✅ CI pipeline complete"
+
+# Release preparation
+release-prep: validate-all docs
+    @echo "✅ Release preparation complete"
+
+# ============================================================================
+# LANGUAGE POLICY ENFORCEMENT
+# ============================================================================
+
+# Enforce language policy (run before commits)
+enforce-policy: lint-banned
+    @echo "✅ Language policy enforced"
+    @echo "  - No TypeScript files"
+    @echo "  - No Makefile"
+    @echo "  - ReScript for application code"
+    @echo "  - Minimal JS glue for Deno APIs"

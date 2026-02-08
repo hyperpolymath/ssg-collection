@@ -1,0 +1,13 @@
+/* TEAM */
+Project: prodigy-ssg
+Maintainer: Jonathan D.A. Jewell
+Contact: jonathan@hyperpolymath.org
+Location: Netherlands
+
+/* SITE */
+Last update: 2025-12-16
+Software: prodigy-ssg (Prolog)
+Standards: Consent-Aware HTTP, RSR
+
+/* PHILOSOPHY */
+Language: Prolog (poly-ssg satellite)

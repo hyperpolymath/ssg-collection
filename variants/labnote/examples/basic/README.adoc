@@ -1,0 +1,75 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= Lab Notebook Basic Example
+:toc:
+
+A minimal example demonstrating Lab Notebook's scientific publishing features.
+
+== Prerequisites
+
+- SciLab installed (`scilab-cli` command available)
+- Lab Notebook source
+
+== Building
+
+```bash
+# From the repository root
+cd examples/basic
+
+# Build this example (executes embedded SciLab code)
+scilab-cli -f ../../src/labnote.sce -- build
+```
+
+== Structure
+
+```
+basic/
+├── content/
+│   └── index.md    # Markdown with embedded SciLab
+├── _site/          # Generated HTML output (after build)
+└── README.adoc     # This file
+```
+
+== Output
+
+After building, `_site/index.html` contains:
+
+- Frontmatter metadata (title, date)
+- Markdown converted to HTML
+- SciLab code blocks with syntax highlighting
+- Executed SciLab results inline
+
+== Features Demonstrated
+
+|===
+| Feature | Description
+
+| Embedded Execution
+| SciLab code blocks are executed during build
+
+| Matrix Math
+| Eigenvalue computation example
+
+| Signal Processing
+| Sinusoidal analysis demonstration
+
+| Linear Regression
+| Least squares fitting
+
+| Reproducibility
+| Same results on every build
+|===
+
+== How It Works
+
+1. Parser identifies ```scilab code blocks
+2. Code is executed via SciLab's `execstr()`
+3. Output captured via `diary()` mechanism
+4. Results rendered alongside the code
+5. HTML generated with both code and output
+
+== Scientific Applications
+
+- Lab notebooks with computed results
+- Teaching materials with live examples
+- Research documentation with verification
+- Experimental data analysis reports

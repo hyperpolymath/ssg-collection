@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# asdf tool versions for qed-ssg
+# Install with: asdf install
+
+deno 1.40.0
+just 1.25.0
+
+# Optional: SSG runtimes (uncomment as needed)
+# rust 1.75.0
+# haskell 9.4.8
+# elixir 1.16.0
+# julia 1.10.0
+# racket 8.11

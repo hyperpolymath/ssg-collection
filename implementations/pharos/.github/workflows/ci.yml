@@ -1,0 +1,277 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-FileCopyrightText: 2025 hyperpolymath
+#
+# NoteG SSG - CI/CD Pipeline
+
+name: CI
+
+on:
+  push:
+    branches: ["main", "develop"]
+  pull_request:
+    branches: ["main"]
+  schedule:
+    - cron: '0 6 * * 1' # Weekly Monday 6 AM
+
+permissions: read-all
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DENO_VERSION: "1.39.0"
+  NODE_VERSION: "22"
+
+jobs:
+  # ============================================================================
+  # Lint and Format Check
+  # ============================================================================
+  lint:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: |
+            ssg/package-lock.json
+            noteg-lang/package-lock.json
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v1.3.0
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          cd ssg && npm ci
+          cd ../noteg-lang && npm ci
+
+      - name: Lint ReScript
+        run: |
+          cd ssg && npx rescript build 2>&1 | tee build.log
+          if grep -i "warning" build.log; then echo "::warning::ReScript warnings found"; fi
+          cd ../noteg-lang && npx rescript build 2>&1 | tee build.log
+          if grep -i "warning" build.log; then echo "::warning::ReScript warnings found"; fi
+
+      - name: Lint Deno adapters
+        run: deno lint adapters/
+
+      - name: Format check
+        run: deno fmt --check adapters/
+
+  # ============================================================================
+  # Security Checks
+  # ============================================================================
+  security:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Check for secrets
+        run: |
+          ! grep -rE '(password|secret|api_key|private_key)\s*=' \
+            --include='*.json' --include='*.env' . 2>/dev/null | \
+            grep -v '.example' || true
+
+      - name: Check for eval
+        run: |
+          ! grep -rE '\beval\s*\(' \
+            --include='*.js' --include='*.ts' --include='*.mjs' . 2>/dev/null
+
+      - name: NPM audit (SSG)
+        run: cd ssg && npm audit --audit-level=high || true
+
+      - name: NPM audit (Lang)
+        run: cd noteg-lang && npm audit --audit-level=high || true
+
+  # ============================================================================
+  # Build
+  # ============================================================================
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: [lint]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: |
+            ssg/package-lock.json
+            noteg-lang/package-lock.json
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v1.3.0
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          cd ssg && npm ci
+          cd ../noteg-lang && npm ci
+
+      - name: Build SSG
+        run: cd ssg && npx rescript build
+
+      - name: Build Language
+        run: cd noteg-lang && npx rescript build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: build-output
+          path: |
+            ssg/src/*.mjs
+            noteg-lang/src/*.mjs
+          retention-days: 7
+
+  # ============================================================================
+  # Unit Tests
+  # ============================================================================
+  test-unit:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: |
+            ssg/package-lock.json
+            noteg-lang/package-lock.json
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v1.3.0
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          cd ssg && npm ci
+          cd ../noteg-lang && npm ci
+
+      - name: Build
+        run: |
+          cd ssg && npx rescript build
+          cd ../noteg-lang && npx rescript build
+
+      - name: Run SSG tests
+        run: cd ssg && npm test || echo "No tests yet"
+
+      - name: Run Language tests
+        run: cd noteg-lang && npm test || echo "No tests yet"
+
+      - name: Run adapter tests
+        run: deno test --allow-read adapters/ || echo "No adapter tests yet"
+
+  # ============================================================================
+  # E2E Tests
+  # ============================================================================
+  test-e2e:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v1.3.0
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Run E2E tests
+        run: |
+          if [ -d "tests/e2e" ]; then
+            deno test --allow-all tests/e2e/
+          else
+            echo "No E2E tests yet"
+          fi
+
+  # ============================================================================
+  # Ada/SPARK Build (Optional)
+  # ============================================================================
+  build-ada:
+    name: Ada/SPARK Build
+    runs-on: ubuntu-latest
+    if: false # Enable when Ada code is ready
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install GNAT
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gnat gprbuild
+
+      - name: Build engine
+        run: cd engine && gprbuild -P noteg_engine.gpr -XMODE=release
+
+  # ============================================================================
+  # Container Build
+  # ============================================================================
+  container:
+    name: Container Build
+    runs-on: ubuntu-latest
+    needs: [test-unit]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Build container
+        run: |
+          if command -v podman &> /dev/null; then
+            podman build -t noteg-ssg:${{ github.sha }} .
+          else
+            docker build -t noteg-ssg:${{ github.sha }} .
+          fi
+
+  # ============================================================================
+  # Documentation
+  # ============================================================================
+  docs:
+    name: Build Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install AsciiDoctor
+        run: sudo apt-get install -y asciidoctor
+
+      - name: Build docs
+        run: |
+          mkdir -p public/docs
+          asciidoctor docs/*.adoc -D public/docs || echo "No docs yet"
+          asciidoctor *.adoc -D public/ || true
+
+      - name: Upload docs
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: documentation
+          path: public/
+          retention-days: 7

@@ -1,0 +1,52 @@
+{
+  "$schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
+  "name": "@hyperpolymath/rats-ssg",
+  "version": "0.2.0",
+  "license": "AGPL-3.0-or-later",
+  "exports": {
+    ".": "./server.js",
+    "./adapters": "./adapters/mod.js"
+  },
+  "tasks": {
+    "dev": "deno run --watch --allow-all server.js",
+    "serve": "deno run --allow-all server.js",
+    "test": "deno test --allow-all lib/es6/test/",
+    "test:unit": "deno test --allow-all lib/es6/test/unit/",
+    "test:e2e": "deno test --allow-all lib/es6/test/e2e/",
+    "test:coverage": "deno test --allow-all --coverage=coverage/ lib/es6/test/",
+    "coverage": "deno coverage coverage/ --lcov > coverage/lcov.info",
+    "lint": "deno lint runtime/*.js *.js",
+    "fmt": "deno fmt runtime/*.js *.js",
+    "fmt:check": "deno fmt --check runtime/*.js *.js",
+    "compile": "deno compile --allow-all --output=dist/rats-ssg server.js",
+    "validate": "deno task lint && deno task fmt:check && deno task test"
+  },
+  "imports": {
+    "@std/assert": "jsr:@std/assert@^1.0.0",
+    "@std/testing": "jsr:@std/testing@^1.0.0",
+    "@std/path": "jsr:@std/path@^1.0.0",
+    "@std/fs": "jsr:@std/fs@^1.0.0"
+  },
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 100,
+    "indentWidth": 2,
+    "singleQuote": false,
+    "proseWrap": "preserve",
+    "include": ["runtime/", "*.js"]
+  },
+  "lint": {
+    "rules": {
+      "tags": ["recommended"],
+      "exclude": ["no-explicit-any"]
+    },
+    "include": ["runtime/", "*.js"]
+  },
+  "test": {
+    "include": ["lib/es6/test/"]
+  },
+  "publish": {
+    "include": ["adapters/", "runtime/", "lib/", "server.js", "LICENSE.txt", "README.adoc"],
+    "exclude": ["test/", "src/", "coverage/", "dist/", "node_modules/"]
+  }
+}

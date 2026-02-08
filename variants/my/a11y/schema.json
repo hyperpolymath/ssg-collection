@@ -1,0 +1,201 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/hyperpolymath/my-ssg/a11y/schema.json",
+  "title": "NoteG Accessibility Schema",
+  "description": "Schema for accessibility metadata in NoteG static sites",
+  "type": "object",
+  "definitions": {
+    "signLanguageMetadata": {
+      "type": "object",
+      "description": "Metadata for sign language content",
+      "properties": {
+        "videoUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to sign language video"
+        },
+        "transcriptUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to text transcript"
+        },
+        "interpreter": {
+          "type": "string",
+          "description": "Name of the sign language interpreter"
+        },
+        "duration": {
+          "type": "string",
+          "pattern": "^PT[0-9]+M[0-9]+S$",
+          "description": "Duration in ISO 8601 format (e.g., PT5M30S)"
+        },
+        "language": {
+          "type": "string",
+          "description": "Sign language code (e.g., bsl, gsl, asl)"
+        }
+      }
+    },
+    "bslMetadata": {
+      "allOf": [
+        { "$ref": "#/definitions/signLanguageMetadata" },
+        {
+          "properties": {
+            "language": { "const": "bsl" },
+            "region": {
+              "type": "string",
+              "enum": ["uk", "scotland", "wales", "ni"],
+              "description": "Regional BSL variant"
+            }
+          }
+        }
+      ],
+      "description": "British Sign Language (BSL) metadata"
+    },
+    "gslMetadata": {
+      "allOf": [
+        { "$ref": "#/definitions/signLanguageMetadata" },
+        {
+          "properties": {
+            "language": { "const": "gsl" },
+            "region": {
+              "type": "string",
+              "enum": ["de", "at", "ch"],
+              "description": "Regional German Sign Language variant"
+            }
+          }
+        }
+      ],
+      "description": "German Sign Language (DGS/GSL) metadata"
+    },
+    "aslMetadata": {
+      "allOf": [
+        { "$ref": "#/definitions/signLanguageMetadata" },
+        {
+          "properties": {
+            "language": { "const": "asl" },
+            "region": {
+              "type": "string",
+              "enum": ["us", "ca"],
+              "description": "Regional ASL variant"
+            }
+          }
+        }
+      ],
+      "description": "American Sign Language (ASL) metadata"
+    },
+    "makatonMetadata": {
+      "type": "object",
+      "description": "Makaton symbol-supported communication metadata",
+      "properties": {
+        "symbols": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Symbol identifier"
+              },
+              "imageUrl": {
+                "type": "string",
+                "format": "uri",
+                "description": "URL to symbol image"
+              },
+              "meaning": {
+                "type": "string",
+                "description": "Meaning of the symbol"
+              },
+              "stage": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9,
+                "description": "Makaton stage level (1-9)"
+              }
+            },
+            "required": ["id", "meaning"]
+          }
+        },
+        "simplifiedText": {
+          "type": "string",
+          "description": "Simplified text version for easier reading"
+        }
+      }
+    },
+    "accessibilityMeta": {
+      "type": "object",
+      "description": "Complete accessibility metadata for a content item",
+      "properties": {
+        "bsl": { "$ref": "#/definitions/bslMetadata" },
+        "gsl": { "$ref": "#/definitions/gslMetadata" },
+        "asl": { "$ref": "#/definitions/aslMetadata" },
+        "makaton": { "$ref": "#/definitions/makatonMetadata" },
+        "altText": {
+          "type": "string",
+          "description": "Alternative text for images"
+        },
+        "ariaLabel": {
+          "type": "string",
+          "description": "ARIA label for screen readers"
+        },
+        "ariaDescribedBy": {
+          "type": "string",
+          "description": "ID of element that describes this content"
+        },
+        "wcagLevel": {
+          "type": "string",
+          "enum": ["A", "AA", "AAA"],
+          "description": "WCAG compliance level"
+        },
+        "readingLevel": {
+          "type": "string",
+          "description": "Reading level (e.g., 'Grade 5', 'Easy Read')"
+        },
+        "audioDescription": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to audio description"
+        },
+        "captions": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to captions file (WebVTT)"
+        }
+      }
+    }
+  },
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1.0.0",
+      "description": "Schema version"
+    },
+    "content": {
+      "$ref": "#/definitions/accessibilityMeta"
+    },
+    "siteWide": {
+      "type": "object",
+      "description": "Site-wide accessibility settings",
+      "properties": {
+        "defaultLanguage": {
+          "type": "string",
+          "description": "Default language code (BCP 47)"
+        },
+        "supportedSignLanguages": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["bsl", "gsl", "asl"]
+          }
+        },
+        "makatonSupport": {
+          "type": "boolean",
+          "default": false
+        },
+        "wcagTarget": {
+          "type": "string",
+          "enum": ["A", "AA", "AAA"],
+          "default": "AA"
+        }
+      }
+    }
+  }
+}

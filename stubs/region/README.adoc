@@ -1,0 +1,49 @@
+= region-ssg
+
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+:toc:
+:toc-title: Table of Contents
+:icons: font
+
+**Parallel array-region site generation in ZPL.**
+"Region" — Site synthesis as a grid computation. Every page is a coordinate in a multi-processor grid.
+
+== Who Is This For?
+* **Scientific Computing** veterans who view site structure as a global index space.
+* **High-Performance Architects** requiring implicit data parallelism across distributed memory.
+* **Edge Tech Engineers** partitioning site data across heterogeneous hardware.
+
+== Why region-ssg?
+=== Region-Based Partitioning
+ZPL allows the definition of `regions` that govern how array operations apply. In `region-ssg`, your site is partitioned into these regions, allowing the compiler to automatically allot computations to different processors.
+
+=== Implicit Concurrency
+Because ZPL uses an array abstraction for a vector-oriented model, it achieves concurrency without parallel directives. Parallelism arises naturally from the semantics of your site transformations.
+
+=== Grid-Level Routing
+Manage complex taxonomies as spatial distributions. Perfect for massive-scale documentation where hierarchical relationships are represented as matrix offsets.
+
+== Quick Start
+[source,oil]
+----
+# Prepare the ZPL abstract parallel machine
+just setup
+
+# Define the global site region and build
+just build --region "[1..1000, 1..50]"
+----
+
+== Features
+* **Spatial Parallelism** - Implicitly multi-threaded build cycles.
+* **Podman-First** - Containerised parallel runtimes.
+* **Accessibility** - Native support for **BSL**, **GSL**, and **Makaton**.
+
+== Requirements
+* **ZPL Compiler (Advanced Array Logic)**
+* **Just** (Orchestrator)
+
+== Part of poly-ssg
+`region-ssg` provides the high-performance parallel array tier of the **poly-ssg** family.
+
+== License
+PMPL-1.0-or-later

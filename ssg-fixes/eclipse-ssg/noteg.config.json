@@ -1,0 +1,33 @@
+{
+  "$schema": "./.nickel/config.ncl",
+  "site": {
+    "title": "Eclipse SSG Demo",
+    "baseUrl": "https://example.com",
+    "language": "en",
+    "description": "A demonstration site built with eclipse-ssg",
+    "author": "hyperpolymath"
+  },
+  "build": {
+    "mode": "production",
+    "outputDir": "public",
+    "includeDrafts": false,
+    "minify": true,
+    "sourceMaps": false
+  },
+  "content": {
+    "directory": "content",
+    "extensions": ["md", "adoc", "org"]
+  },
+  "templates": {
+    "directory": "templates",
+    "engine": "operation-card"
+  },
+  "a11y": {
+    "enabled": true,
+    "signLanguages": []
+  },
+  "adapters": {
+    "default": "zola",
+    "enabled": ["zola", "hakyll", "cobalt"]
+  }
+}

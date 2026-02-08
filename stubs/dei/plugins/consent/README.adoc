@@ -1,0 +1,82 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= Consent Plugin
+:toc:
+
+**Extracted from dei-ssg for cross-SSG reuse in the poly-ssg family.**
+
+== Overview
+
+The Consent Plugin provides consent gates for static site generators, implementing the "only if okay" pattern from WokeLang. It enables:
+
+* External resource consent (fonts, scripts, iframes)
+* Analytics and tracking opt-in
+* Cookie/storage access control
+* GDPR/privacy compliance helpers
+
+== Installation
+
+[source,bash]
+----
+# Add to your deno.json imports
+"@poly-ssg/consent": "./plugins/consent/src/Consent.res.js"
+----
+
+== Usage
+
+[source,rescript]
+----
+open Consent
+
+// Create a consent store
+let store = createStore(~defaultPolicy=Denied)
+
+// Check consent before loading external resources
+onlyIfOkay(
+  store,
+  ExternalFonts,
+  ~onGranted=() => loadGoogleFonts(),
+  ~onDenied=() => useFallbackFonts(),
+  ~onPending=() => showConsentPrompt(),
+)
+
+// Grant consent
+setConsent(store, Analytics, Granted, ~expiresInMs=30. *. 24. *. 60. *. 60. *. 1000.) // 30 days
+
+// Generate consent banner
+let bannerHtml = generateBannerHtml(essentialCategories)
+----
+
+== Consent Categories
+
+|===
+|Category |Description
+
+|`ExternalFonts`
+|Google Fonts, Adobe Fonts, etc.
+
+|`Analytics`
+|Google Analytics, Plausible, etc.
+
+|`ThirdPartyEmbeds`
+|YouTube, Twitter, etc.
+
+|`ExternalScripts`
+|CDN-hosted scripts
+
+|`Cookies`
+|Cookie storage
+
+|`LocalStorage`
+|Browser local storage
+
+|`Custom(name)`
+|Custom consent categories
+|===
+
+== Integration with poly-ssg
+
+This plugin is designed for use across all poly-ssg satellites. Import it via the MCP adapter layer or directly in ReScript-based SSGs.
+
+== License
+
+AGPL-3.0-or-later

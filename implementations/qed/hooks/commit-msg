@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+# Commit message hook for qed-ssg - enforces conventional commits
+
+set -euo pipefail
+
+COMMIT_MSG_FILE="$1"
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+# Conventional commit regex
+# type(scope): description
+# Types: feat, fix, docs, style, refactor, test, chore, perf, ci, build, revert
+CONVENTIONAL_REGEX='^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\([a-z0-9-]+\))?: .{1,72}$'
+
+# Allow merge commits
+if echo "$COMMIT_MSG" | head -1 | grep -qE '^Merge '; then
+    exit 0
+fi
+
+# Allow revert commits
+if echo "$COMMIT_MSG" | head -1 | grep -qE '^Revert '; then
+    exit 0
+fi
+
+# Check first line
+FIRST_LINE=$(echo "$COMMIT_MSG" | head -1)
+
+if ! echo "$FIRST_LINE" | grep -qE "$CONVENTIONAL_REGEX"; then
+    echo -e "${RED}ERROR: Commit message does not follow conventional commits format.${NC}"
+    echo ""
+    echo "Expected format: type(scope): description"
+    echo ""
+    echo "Types:"
+    echo "  feat     - A new feature"
+    echo "  fix      - A bug fix"
+    echo "  docs     - Documentation only changes"
+    echo "  style    - Code style changes (formatting, etc)"
+    echo "  refactor - Code refactoring"
+    echo "  test     - Adding or modifying tests"
+    echo "  chore    - Maintenance tasks"
+    echo "  perf     - Performance improvements"
+    echo "  ci       - CI/CD changes"
+    echo "  build    - Build system changes"
+    echo "  revert   - Reverting a previous commit"
+    echo ""
+    echo "Examples:"
+    echo "  feat(adapters): add support for new SSG"
+    echo "  fix(zola): handle missing config file"
+    echo "  docs: update README with usage examples"
+    echo "  test(hakyll): add integration tests"
+    echo ""
+    echo "Your message: $FIRST_LINE"
+    exit 1
+fi
+
+# Check line length
+if [ ${#FIRST_LINE} -gt 72 ]; then
+    echo -e "${YELLOW}WARNING: First line exceeds 72 characters (${#FIRST_LINE} chars)${NC}"
+    echo "Consider shortening: $FIRST_LINE"
+fi
+
+echo -e "${GREEN}✓ Commit message follows conventional commits format${NC}"
+exit 0

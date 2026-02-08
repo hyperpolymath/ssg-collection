@@ -1,0 +1,84 @@
+= hackenbush-ssg
+
+image:https://img.shields.io/badge/License-MPL_2.0-blue.svg[MPL-2.0-or-later,link="https://opensource.org/licenses/MPL-2.0"]
+:toc: auto
+:toclevels: 3
+
+**Cellular automaton static site generator in Conway's Game of Life.**
+
+_Let patterns evolve. Let cells compute. Let pages emerge._
+
+== The Language
+
+https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life[Conway's Game of Life] is a zero-player cellular automaton where simple rules produce unbounded complexity. In 1970, John Conway proved that four rules governing cell birth and death could simulate any computation—including building websites.
+
+hackenbush-ssg takes this to its logical extreme: an SSG where the "source code" is a Life pattern. The pattern evolves. HTML emerges.
+
+== Why Life?
+
+=== Emergent Computation
+
+No instructions exist. No control flow. Only cells following four rules:
+
+* A live cell with 2-3 neighbors survives
+* A dead cell with exactly 3 neighbors becomes alive
+* All other cells die or stay dead
+
+From these rules, Turing-complete computation emerges. Glider guns become clocks. Eaters become memory. Collisions become logic gates.
+
+=== Radical Minimalism
+
+Most languages add features. Life has exactly one operation: the generation step. Every SSG behavior—parsing, templating, routing—must be encoded in cell configurations. There is no escape hatch.
+
+=== Deterministic Purity
+
+Given an initial pattern, the output is mathematically determined. No side effects. No randomness. No I/O during computation. The universe ticks forward; pages crystallize.
+
+== For Whom?
+
+* **Cellular automata researchers** exploring practical applications of Life
+* **Theoretical computer scientists** interested in unconventional computation models
+* **Mathematicians** drawn to Conway's legacy and combinatorial game theory
+* **Adventurous engineers** who find "Turing-complete" an invitation, not a warning
+
+== Architecture
+
+[source]
+----
+hackenbush-ssg/
+├── src/hackenbush.rle      # THE SSG - Life pattern (the actual program)
+├── patterns/               # Reusable components
+│   ├── glider-gun.rle      # Clock/signal generators
+│   ├── logic-gates.rle     # AND, OR, NOT via glider collisions
+│   ├── memory-cell.rle     # Stable state storage
+│   └── signal-wire.rle     # Data transmission paths
+├── life-lang/              # ReScript tooling for Life patterns
+│   └── src/                # Lexer, parser, compiler, interpreter
+├── runtime/                # Minimal Deno host (simulation + I/O only)
+└── adapters/               # ReScript MCP adapter
+----
+
+The host runtime provides _only_ simulation and I/O. All SSG logic lives in the pattern.
+
+== Usage
+
+[source,bash]
+----
+# Evolve the pattern, emit HTML
+deno run --allow-read --allow-write runtime/host.ts
+
+# Custom pattern, generations, output
+deno run --allow-read --allow-write runtime/host.ts src/hackenbush.rle 10000 _site/index.html
+----
+
+== Ecosystem
+
+hackenbush-ssg integrates with https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp], which provides unified MCP tooling across 28 static site generators in 19 languages. The poly-mcp portfolio also includes https://github.com/hyperpolymath/poly-container-mcp[poly-container-mcp] and https://github.com/hyperpolymath/poly-iac-mcp[poly-iac-mcp].
+
+== Namesake
+
+Named for https://en.wikipedia.org/wiki/Hackenbush[Hackenbush], another combinatorial game analyzed by John Conway. Both games share an elegant truth: simple rules yield infinite depth.
+
+== License
+
+AGPL-3.0-or-later

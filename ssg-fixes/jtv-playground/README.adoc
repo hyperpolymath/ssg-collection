@@ -1,0 +1,122 @@
+= JTV Playground
+
+image:https://img.shields.io/badge/License-MPL_2.0-blue.svg[MPL-2.0-or-later,link="https://opensource.org/licenses/MPL-2.0"]
+
+A comprehensive development playground for experimenting with various technologies, frameworks, and architectural patterns.
+
+== Project Structure
+
+```
+jtv-playground/
+├── experiments/           # Individual experiments and demos
+│   ├── api-demos/        # REST, GraphQL, WebSocket APIs
+│   ├── python-demos/     # Python utilities and demos
+│   ├── frontend-demos/   # React, Vue, vanilla JS demos
+│   ├── database-demos/   # Database experiments
+│   ├── microservices/    # Microservices architecture
+│   ├── testing/          # Testing frameworks and examples
+│   ├── infrastructure/   # Docker, CI/CD, deployment
+│   ├── algorithms/       # Algorithm implementations
+│   ├── design-patterns/  # Design pattern examples
+│   └── utilities/        # Utility tools and scripts
+├── docs/                 # Documentation
+├── scripts/              # Build and utility scripts
+├── src/                  # Main source code
+│   ├── backend/          # Backend implementations
+│   ├── frontend/         # Frontend implementations
+│   └── shared/           # Shared utilities
+└── CLAUDE.md            # AI assistant guidelines
+
+```
+
+== Experiments
+
+=== API Demos
+- REST API with Express.js
+- GraphQL server
+- WebSocket real-time communication
+- Authentication systems (JWT, sessions)
+- API rate limiting and caching
+
+=== Python Demos
+- Data processing pipelines
+- CLI tools
+- Web scraping utilities
+- Automation scripts
+
+=== Frontend Demos
+- React applications
+- State management patterns
+- Custom hooks library
+- CSS frameworks and component libraries
+- Data visualization dashboards
+
+=== Database Demos
+- SQLite experiments
+- Migration systems
+- ORM patterns
+
+=== Infrastructure
+- Docker containerization
+- CI/CD pipelines
+- Logging and monitoring
+- Serverless functions
+
+=== Testing
+- Unit testing (Jest, pytest)
+- Integration testing
+- E2E testing (Playwright, Cypress)
+- Performance benchmarking
+
+=== Algorithms & Patterns
+- Classic algorithms (sorting, searching, DP)
+- Design patterns implementation
+- Data structures
+
+== Getting Started
+
+Each experiment has its own README with specific setup instructions.
+
+=== Prerequisites
+
+- Node.js 18+
+- Python 3.9+
+- Docker (optional)
+
+=== Quick Start
+
+```bash
+= Clone the repository
+
+image:https://img.shields.io/badge/License-MPL_2.0-blue.svg[MPL-2.0-or-later,link="https://opensource.org/licenses/MPL-2.0"]
+git clone <repository-url>
+cd jtv-playground
+
+= Choose an experiment
+
+image:https://img.shields.io/badge/License-MPL_2.0-blue.svg[MPL-2.0-or-later,link="https://opensource.org/licenses/MPL-2.0"]
+cd experiments/<experiment-name>
+
+= Follow the experiment's README
+
+image:https://img.shields.io/badge/License-MPL_2.0-blue.svg[MPL-2.0-or-later,link="https://opensource.org/licenses/MPL-2.0"]
+```
+
+== Contributing
+
+This is a playground repository. Feel free to:
+- Add new experiments
+- Improve existing code
+- Document learnings
+- Suggest new directions
+
+See CLAUDE.md for AI assistant guidelines.
+
+== License
+
+MIT License - This is an experimental playground project.
+
+---
+
+*Status*: Active Development
+*Last Updated*: 2025-11-21

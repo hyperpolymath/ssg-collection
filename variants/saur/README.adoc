@@ -1,0 +1,44 @@
+= saur-ssg
+
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/Philosophy-Palimpsest-indigo.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+
+:toc:
+:toc-title: Table of Contents
+:icons: font
+
+**Modern, secure site generation in Deno.**
+"Saur" — A resilient survivor. Leveraging the V8 sandbox for safe, high-speed site synthesis without the legacy of Node.js.
+
+== Who Is This For?
+* **Security-conscious developers** requiring "Zero-Trust" build environments where the engine is sandboxed by default.
+* **ReScript/WASM practitioners** needing a native, modern runtime for functional adapters and orchestration.
+* **Teams** looking for a built-in toolchain that includes testing, linting, and formatting without external dependencies.
+
+== Why saur-ssg?
+
+=== Permissions-First Security
+`saur-ssg` leverages Deno’s security model. The generator has zero access to your file system or environment variables unless you explicitly grant it via the **Justfile**. This makes it the safest "glue" engine in the **poly-ssg** fleet.
+
+=== First-Class WASM/ReScript
+Designed to run your **ReScript**-generated logic and **WASM** modules natively on the V8 engine. It acts as the primary orchestrator for the **poly-ssg-mcp** hub, handling the complexity of network-based content fetching with modern `fetch` APIs.
+
+=== Zero-Config Toolchain
+No `package.json` or `node_modules` rot. `saur-ssg` is self-contained and prioritises **asdf** for version management, ensuring that your build pipeline is as "clean" as the sites it produces.
+
+== Quick Start
+[source,oil]
+----
+# Setup Deno via asdf
+just setup
+
+# Build the site with explicit permissions
+just build --allow-read --allow-write
+
+# Run the ReScript adapter tests
+just test
+----
+
+== License
+PMPL-1.0-or-later

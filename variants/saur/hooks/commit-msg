@@ -1,0 +1,46 @@
+#!/bin/bash
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 hyperpolymath
+#
+# Commit message hook for saur-ssg
+# Enforces Conventional Commits format
+# Install: cp hooks/commit-msg .git/hooks/ && chmod +x .git/hooks/commit-msg
+
+set -euo pipefail
+
+commit_msg_file=$1
+commit_msg=$(cat "$commit_msg_file")
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CONVENTIONAL COMMITS PATTERN
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Pattern: type(scope): description
+# Types: feat, fix, docs, style, refactor, test, chore, perf, ci, build, security
+pattern="^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|security)(\([a-z-]+\))?: .{3,}"
+
+# Also allow merge commits and revert commits
+merge_pattern="^Merge "
+revert_pattern="^Revert "
+
+if [[ $commit_msg =~ $pattern ]] || [[ $commit_msg =~ $merge_pattern ]] || [[ $commit_msg =~ $revert_pattern ]]; then
+    exit 0
+fi
+
+echo ""
+echo "❌ Invalid commit message format!"
+echo ""
+echo "Expected: <type>(<scope>): <description>"
+echo ""
+echo "Types: feat, fix, docs, style, refactor, test, chore, perf, ci, build, security"
+echo ""
+echo "Examples:"
+echo "  feat(adapters): add new-ssg adapter"
+echo "  fix(zola): correct build command arguments"
+echo "  docs: update README with installation steps"
+echo "  chore(ci): add security scanning job"
+echo "  security: fix input validation vulnerability"
+echo ""
+echo "Your message: $commit_msg"
+echo ""
+exit 1

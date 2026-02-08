@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# asdf version management for gungir-ssg
+# Install: asdf install
+
+deno 2.1.4
+just 1.38.0

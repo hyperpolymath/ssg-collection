@@ -1,0 +1,192 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+# Mustfile.epx — Contract of Physical State for eclipse-ssg
+#
+# This file governs deployment transitions and package management.
+# Every operation is a state transition where resources are consumed
+# to produce outputs, ensuring no orphaned state or unvalidated side effects.
+#
+# Version: 0.1.0-Alpha (Hyperpolymath Standard)
+
+# ============================================================
+# PROJECT METADATA
+# ============================================================
+
+[project]
+name = "eclipse-ssg"
+version = "0.2.0"
+description = "Actor-model static site generator in Pony with poly-ssg-mcp satellite integration"
+license = "AGPL-3.0-or-later"
+repository = "https://github.com/hyperpolymath/eclipse-ssg"
+
+# ============================================================
+# LANGUAGE POLICY ENFORCEMENT
+# ============================================================
+
+[policy]
+# Allowed languages and tools
+allowed = [
+  "rescript",     # Primary application code
+  "deno",         # Runtime & package management
+  "rust",         # Performance-critical, WASM
+  "pony",         # Core SSG engine
+  "bash",         # Scripts, automation
+  "nickel",       # Configuration language
+  "guile",        # State/meta files
+  "ada",          # Safety-critical components
+]
+
+# Banned - automatic rejection
+banned = [
+  "typescript",   # Use ReScript instead
+  "nodejs",       # Use Deno instead
+  "npm",          # Use Deno instead
+  "bun",          # Use Deno instead
+  "go",           # Use Rust instead
+  "python",       # Except SaltStack
+  "makefile",     # Use Justfile instead
+]
+
+# Security requirements
+[policy.security]
+no_md5_sha1 = true
+https_only = true
+no_hardcoded_secrets = true
+sha_pinned_deps = true
+spdx_headers_required = true
+
+# ============================================================
+# PACKAGE MANAGEMENT
+# ============================================================
+
+[packages.guix]
+# Primary package manager
+priority = 1
+manifest = "guix.scm"
+
+[packages.nix]
+# Fallback package manager
+priority = 2
+manifest = "flake.nix"
+
+[packages.deno]
+# JavaScript dependencies
+manifest = "deno.json"
+lock = "deno.lock"
+
+[packages.rescript]
+# ReScript compiler
+manifest = "rescript.json"
+
+# ============================================================
+# BUILD DEPENDENCIES
+# ============================================================
+
+[dependencies.runtime]
+deno = ">=1.40.0"
+ponyc = ">=0.58.0"
+nickel = ">=1.0.0"
+
+[dependencies.build]
+rescript = ">=11.0.0"
+
+[dependencies.development]
+just = ">=1.0.0"
+
+# ============================================================
+# STATE TRANSITIONS
+# ============================================================
+
+[transitions.init]
+description = "Initialize development environment"
+preconditions = ["deno", "just"]
+postconditions = ["node_modules", "lib"]
+command = "just deps"
+
+[transitions.build]
+description = "Build ReScript to JavaScript"
+preconditions = ["rescript.json", "ssg/src/*.res"]
+postconditions = ["**/*.res.js"]
+command = "deno task build"
+
+[transitions.test]
+description = "Run test suite"
+preconditions = ["**/*.res.js"]
+postconditions = []
+command = "deno task test:all"
+
+[transitions.check]
+description = "Run linting and formatting checks"
+preconditions = ["**/*.res.js"]
+postconditions = []
+command = "just check"
+
+[transitions.deploy]
+description = "Deploy to production"
+preconditions = ["**/*.res.js", "tests.passed"]
+postconditions = ["deployed"]
+command = "just deploy"
+
+# ============================================================
+# PLATFORM-SPECIFIC PACKAGES
+# ============================================================
+
+[platform.linux]
+packages = ["ponyc", "deno", "nickel", "just"]
+manager = "guix"
+
+[platform.macos]
+packages = ["ponyc", "deno", "nickel", "just"]
+manager = "brew"
+
+[platform.windows]
+packages = ["deno", "just"]
+manager = "winget"
+notes = "Pony and Nickel require manual installation on Windows"
+
+# ============================================================
+# NICKEL CONFIGURATION INTEGRATION
+# ============================================================
+
+[nickel]
+config_dir = ".nickel"
+main_config = ".nickel/config.ncl"
+build_config = ".nickel/build.ncl"
+adapters_config = ".nickel/adapters.ncl"
+
+# Export configuration to JSON for tooling
+[nickel.exports]
+config = "nickel export .nickel/config.ncl --format json"
+build = "nickel export .nickel/build.ncl --format json"
+
+# ============================================================
+# VALIDATION RULES
+# ============================================================
+
+[validation]
+# Files that must not exist
+forbidden_files = [
+  "Makefile",
+  "package.json",
+  "bun.lockb",
+  "yarn.lock",
+  "pnpm-lock.yaml",
+  "go.mod",
+  "go.sum",
+  "requirements.txt",
+  "Pipfile",
+]
+
+# File patterns that must not exist
+forbidden_patterns = [
+  "*.ts",           # No TypeScript (except type declarations)
+  "*.tsx",          # No TypeScript React
+  "*.go",           # No Go
+  "*.py",           # No Python (except SaltStack)
+]
+
+# Exceptions
+allowed_exceptions = [
+  "*.d.ts",         # Type declarations are allowed
+  "salt/**/*.py",   # SaltStack is allowed
+]

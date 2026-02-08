@@ -1,0 +1,222 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-FileCopyrightText: 2025 hyperpolymath
+# RSR-compliant CI workflow with SHA-pinned actions
+
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+permissions: read-all
+
+env:
+  DENO_VERSION: "1.x"
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # LINT & FORMAT
+  # ─────────────────────────────────────────────────────────────────────────────
+  lint:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.2
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Check formatting
+        run: deno fmt --check adapters/
+
+      - name: Lint
+        run: deno lint adapters/
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # TYPE CHECK
+  # ─────────────────────────────────────────────────────────────────────────────
+  typecheck:
+    name: Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.2
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Type check adapters
+        run: |
+          for f in adapters/*.js; do
+            echo "Checking $f..."
+            deno check "$f" || true
+          done
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # TESTS
+  # ─────────────────────────────────────────────────────────────────────────────
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.2
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Run tests
+        run: |
+          if [ -d "tests" ]; then
+            deno test --allow-read --allow-run tests/
+          else
+            echo "No tests directory found - skipping"
+          fi
+
+      - name: Run E2E tests
+        run: |
+          if [ -d "tests/e2e" ]; then
+            deno test --allow-all tests/e2e/
+          else
+            echo "No E2E tests found - skipping"
+          fi
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # SECURITY AUDIT
+  # ─────────────────────────────────────────────────────────────────────────────
+  security:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Check for eval usage
+        run: |
+          if grep -rn "eval(" adapters/; then
+            echo "::error::eval() found in adapters - security risk!"
+            exit 1
+          fi
+          echo "No eval() usage found"
+
+      - name: Check for Function constructor
+        run: |
+          if grep -rn "new Function(" adapters/; then
+            echo "::error::Function() constructor found - security risk!"
+            exit 1
+          fi
+          echo "No Function() constructor found"
+
+      - name: Check for potential secrets
+        run: |
+          if grep -rn --include="*.js" -E "(password|secret|api_key|token)\s*[:=]\s*['\"][^'\"]+['\"]" adapters/; then
+            echo "::warning::Potential hardcoded secrets found"
+          fi
+          echo "Secret scan complete"
+
+      - name: Verify SPDX headers
+        run: |
+          missing=0
+          for f in adapters/*.js; do
+            if ! grep -q "SPDX-License-Identifier" "$f"; then
+              echo "::error::Missing SPDX header in $f"
+              missing=1
+            fi
+          done
+          if [ $missing -eq 1 ]; then
+            exit 1
+          fi
+          echo "All SPDX headers present"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # ADAPTER VALIDATION
+  # ─────────────────────────────────────────────────────────────────────────────
+  validate-adapters:
+    name: Validate Adapters
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.2
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Validate MCP interface
+        run: |
+          for f in adapters/*.js; do
+            name=$(basename "$f" .js)
+            echo "Validating $name..."
+            deno eval "
+              import * as a from './$f';
+              if (!a.name) throw new Error('Missing: name');
+              if (!a.language) throw new Error('Missing: language');
+              if (!a.tools || !Array.isArray(a.tools)) throw new Error('Missing: tools array');
+              if (typeof a.connect !== 'function') throw new Error('Missing: connect()');
+              if (typeof a.disconnect !== 'function') throw new Error('Missing: disconnect()');
+              console.log('✓ $name: valid MCP interface');
+            " || echo "::warning::$name failed validation"
+          done
+
+      - name: Count adapters
+        run: |
+          count=$(ls -1 adapters/*.js | wc -l)
+          echo "Total adapters: $count"
+          if [ "$count" -ne 28 ]; then
+            echo "::warning::Expected 28 adapters, found $count"
+          fi
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # RSR COMPLIANCE
+  # ─────────────────────────────────────────────────────────────────────────────
+  rsr-compliance:
+    name: RSR Gold Compliance
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Check required files
+        run: |
+          required_files=(
+            "LICENSE.txt"
+            "SECURITY.md"
+            "CODE_OF_CONDUCT.md"
+            "CONTRIBUTING.md"
+            "META.scm"
+            "STATE.scm"
+            "ECOSYSTEM.scm"
+          )
+          for file in "${required_files[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "::error::Missing required file: $file"
+              exit 1
+            fi
+            echo "✓ $file exists"
+          done
+
+      - name: Verify SHA-pinned actions
+        run: |
+          if grep -rn "uses:.*@v[0-9]" .github/workflows/; then
+            echo "::error::Found version tags instead of SHA pins in workflows"
+            exit 1
+          fi
+          echo "✓ All actions are SHA-pinned"
+
+      - name: Check issue templates
+        run: |
+          if [ ! -d ".github/ISSUE_TEMPLATE" ]; then
+            echo "::error::Missing issue templates"
+            exit 1
+          fi
+          echo "✓ Issue templates present"

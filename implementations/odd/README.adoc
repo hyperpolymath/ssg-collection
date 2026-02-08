@@ -1,0 +1,141 @@
+= odd-ssg
+
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/Philosophy-Palimpsest-indigo.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+
+:toc: auto
+:toclevels: 2
+:icons: font
+
+Static site generator in betlang.
+
+image:https://img.shields.io/badge/RSR-Gold-gold[RSR Compliance]
+image:https://img.shields.io/badge/poly--ssg--mcp-integrated-purple[poly-ssg-mcp]
+image:https://img.shields.io/badge/status-experimental-orange[Status]
+
+_Let odds favor. Let ternaries decide. Let pages emerge._
+
+== Who Is This For?
+
+* **Probabilistic programming enthusiasts** seeking a practical application of ternary reasoning
+* **Data-driven content strategists** wanting native A/B/C testing without external tools
+* **Racket developers** building sites with functional elegance
+* **Uncertainty modelers** who see content as weighted outcomes, not fixed artifacts
+
+== Why odd-ssg?
+
+Static sites are traditionally deterministic—same input, same output. But content decisions are rarely binary. Should this hero image appear? Which call-to-action converts best? What tone suits this audience segment?
+
+odd-ssg embraces uncertainty. Built on https://github.com/hyperpolymath/betlang[betlang], a ternary probabilistic DSL for Racket, it treats content selection as a three-valued bet:
+
+[source,racket]
+----
+;; Content varies by weighted probability
+(define hero-variant
+  (bet 0.5 "hero-bold.html"      ; 50% - bold messaging
+       0.3 "hero-subtle.html"    ; 30% - subtle approach
+       0.2 "hero-minimal.html")) ; 20% - minimal design
+
+;; Conditional content based on audience signals
+(define cta
+  (bet/when high-intent?
+    0.6 "buy-now"
+    0.3 "learn-more"
+    0.1 "subscribe"))
+----
+
+Where traditional SSGs hardcode choices, odd-ssg lets probability guide them. Each build can explore the decision space, producing statistically varied outputs for testing, personalization, or creative exploration.
+
+== Getting Started
+
+[source,bash]
+----
+# Requires Racket 8.0+ with betlang installed
+raco pkg install betlang
+
+# Clone and build
+git clone https://github.com/hyperpolymath/odd-ssg
+cd odd-ssg
+just build
+----
+
+== How It Works
+
+----
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│   Source    │────▶│   Parser    │────▶│  Bet Engine │────▶│   Emitter   │
+│  (.noteg)   │     │  (Racket)   │     │  (betlang)  │     │  (HTML/etc) │
+└─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘
+                                              │
+                                              ▼
+                                    ┌─────────────────────┐
+                                    │  Probability Store  │
+                                    │  (reproducible via  │
+                                    │   seed or sample)   │
+                                    └─────────────────────┘
+----
+
+=== Core Concepts
+
+|===
+|Concept |Description |Example
+
+|**Ternary Bet**
+|Three-way weighted choice
+|`(bet 0.5 a 0.3 b 0.2 c)`
+
+|**Conditional Bet**
+|Probability shifts based on predicate
+|`(bet/when condition ...)`
+
+|**Lazy Evaluation**
+|Only selected branch computes
+|Efficient for heavy templates
+
+|**Seed Reproducibility**
+|Same seed = same choices
+|`--seed 42` for deterministic builds
+|===
+
+== Features
+
+* **Native A/B/C testing** — Generate variant pages from single source
+* **Weighted template selection** — Probability-driven layouts
+* **Ternary content states** — Beyond draft/published: draft/review/live
+* **Statistical sampling** — Monte Carlo builds for coverage analysis
+* **Seed-locked reproducibility** — Deterministic output when needed
+* **NoteG language support** — Custom notation with LSP integration
+
+== poly-ssg-mcp Integration
+
+odd-ssg is a satellite of the https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp] ecosystem, which provides unified MCP tooling across static site generators. Related projects:
+
+* https://github.com/hyperpolymath/poly-container-mcp[poly-container-mcp] — Container management (nerdctl, podman, docker)
+* https://github.com/hyperpolymath/poly-iac-mcp[poly-iac-mcp] — Infrastructure as Code (OpenTofu, Terraform, Pulumi)
+* https://github.com/hyperpolymath/poly-k8s-mcp[poly-k8s-mcp] — Kubernetes orchestration
+
+The ReScript adapter exposes odd-ssg to AI assistants via Model Context Protocol:
+
+[source,json]
+----
+{
+  "tools": [
+    { "name": "odd_build", "description": "Build with probability sampling" },
+    { "name": "odd_variants", "description": "Generate N variant builds" },
+    { "name": "odd_lock", "description": "Lock choices with seed" }
+  ]
+}
+----
+
+== Requirements
+
+* **Racket** 8.0 or later
+* **betlang** — `raco pkg install betlang`
+* **Deno** — For adapter and MCP server
+
+== License
+
+PMPL-1.0-or-later
+
+Copyright 2025 Jonathan D.A. Jewell

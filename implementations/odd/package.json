@@ -1,0 +1,14 @@
+{
+  "name": "@hyperpolymath/odd-ssg-build",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ReScript build dependencies only - runtime uses Deno",
+  "devDependencies": {
+    "rescript": "^11.1.0"
+  },
+  "scripts": {
+    "build": "rescript build",
+    "clean": "rescript clean",
+    "watch": "rescript build -w"
+  }
+}

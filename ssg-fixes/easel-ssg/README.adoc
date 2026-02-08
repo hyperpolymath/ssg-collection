@@ -1,0 +1,61 @@
+= easel-ssg
+
+image:https://img.shields.io/badge/License-MPL_2.0-blue.svg[MPL-2.0-or-later,link="https://opensource.org/licenses/MPL-2.0"]
+:toc:
+:toc-title: Table of Contents
+:icons: font
+
+**Esoteric bitmap-based static site generation in Piet.**
+"Easel" — Where the source code is a masterpiece. A generator where the execution path is painted, not typed.
+
+== Who Is This For?
+* **Esoteric Language Researchers** exploring non-textual programming paradigms.
+* **Visual Thinkers** who want to refactor their SSG logic using a paintbrush or image editor.
+* **Security Engineers** interested in visually-obfuscated build toolchains and steganographic logic.
+* **Architects** needing to prove that any Turing-complete medium can support the **poly-ssg** standard.
+
+== Why easel-ssg?
+
+=== Chromatic Synthesis
+Your generator logic is defined by the transition of hue and lightness between adjacent colour blocks (codels). In `easel-ssg`, site transformations are not lines of code, but gradients of intent.
+
+=== Visual Immutability
+The source code is a `.png` bitmap. Unlike text-based scripts that can suffer from character-encoding rot, `easel-ssg` remains static and visually auditable. If the pixel hasn't changed, the logic hasn't changed.
+
+=== Steganographic Metadata
+By leveraging the Piet paradigm, frontmatter and site schemas can be embedded directly into the visual noise of the generator's "background", blending site logic with site aesthetics.
+
+=== Deterministic Colour-Cycles
+Piet’s execution relies on a Colour Pointer (CP) and a Direction Pointer (DP). `easel-ssg` maps these cycles to your site’s hierarchy, ensuring a predictable, cyclical build process that is mathematically sound.
+
+== Quick Start
+[source,oil]
+----
+# Load the Piet VM environment via asdf
+just setup
+
+# Process the source bitmap to synthesise the site
+# This executes the .png as a functional SSG core
+just build-from-art ./core/logic.png
+
+# Preview the visual source code
+just gallery
+----
+
+== Features
+* **Bitmap-Logic Core** - Execution path determined by colour-cycle transitions.
+* **Non-Textual Debugging** - Use standard image manipulation tools to refactor site logic.
+* **Podman-First** - Standard containerised toolchain for visual logic execution.
+* **Accessibility** - Native metadata support for **BSL**, **GSL**, **ASL**, and **Makaton**.
+* **Edge-Ready** - Highly portable VM core suitable for **Minix**, **Android**, and **ASICs**.
+
+== Requirements
+* **Piet Interpreter** (npiet or equivalent)
+* **Just** (Orchestrator)
+* **ImageMagick** (For automated bitmap-to-logic verification)
+
+== Part of poly-ssg
+`easel-ssg` is the visual, esoteric member of the **poly-ssg** family, unified through **MCP** integration.
+
+== License
+AGPL-3.0-or-later

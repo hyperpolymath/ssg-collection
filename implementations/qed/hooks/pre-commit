@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+# Pre-commit hook for qed-ssg
+
+set -euo pipefail
+
+echo "Running pre-commit checks..."
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Check if just is available
+if command -v just &> /dev/null; then
+    just pre-commit
+    exit $?
+fi
+
+# Fallback to direct commands if just not available
+echo -e "${YELLOW}Just not found, running checks directly...${NC}"
+
+# 1. Format check
+echo "Checking formatting..."
+if command -v deno &> /dev/null; then
+    if ! deno fmt --check adapters/ 2>/dev/null; then
+        echo -e "${RED}Format check failed. Run 'deno fmt adapters/' to fix.${NC}"
+        exit 1
+    fi
+    echo -e "${GREEN}✓ Formatting OK${NC}"
+else
+    echo -e "${YELLOW}⚠ Deno not found, skipping format check${NC}"
+fi
+
+# 2. Lint
+echo "Running linter..."
+if command -v deno &> /dev/null; then
+    if ! deno lint adapters/ 2>/dev/null; then
+        echo -e "${RED}Lint check failed.${NC}"
+        exit 1
+    fi
+    echo -e "${GREEN}✓ Linting OK${NC}"
+fi
+
+# 3. Security checks
+echo "Running security checks..."
+
+# Check for eval()
+if grep -rn 'eval(' adapters/ 2>/dev/null; then
+    echo -e "${RED}ERROR: eval() usage detected!${NC}"
+    exit 1
+fi
+echo -e "${GREEN}✓ No eval() usage${NC}"
+
+# Check for hardcoded secrets
+if grep -rn 'password\s*=\s*["\x27][^"\x27]*["\x27]' adapters/ --include="*.js" 2>/dev/null | grep -v description; then
+    echo -e "${RED}ERROR: Possible hardcoded secrets!${NC}"
+    exit 1
+fi
+echo -e "${GREEN}✓ No hardcoded secrets${NC}"
+
+# 4. SPDX headers
+echo "Checking SPDX headers..."
+for f in adapters/*.js; do
+    if [ -f "$f" ]; then
+        if ! head -1 "$f" | grep -q 'SPDX-License-Identifier'; then
+            echo -e "${RED}Missing SPDX header: $f${NC}"
+            exit 1
+        fi
+    fi
+done
+echo -e "${GREEN}✓ SPDX headers present${NC}"
+
+# 5. Run tests
+echo "Running tests..."
+if command -v deno &> /dev/null; then
+    if ! deno test --allow-read --allow-run adapters/ 2>/dev/null; then
+        echo -e "${RED}Tests failed.${NC}"
+        exit 1
+    fi
+    echo -e "${GREEN}✓ Tests passed${NC}"
+fi
+
+echo -e "${GREEN}All pre-commit checks passed!${NC}"
+exit 0

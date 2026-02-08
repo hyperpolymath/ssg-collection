@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# asdf tool versions for iota-ssg
+
+deno 1.40.0
+nodejs 20.10.0

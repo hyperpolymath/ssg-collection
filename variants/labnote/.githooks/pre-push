@@ -1,0 +1,38 @@
+#!/bin/bash
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Pre-push hook for labnote-ssg
+
+set -e
+
+echo "🚀 Running pre-push checks..."
+
+# Check if deno is available
+if ! command -v deno &> /dev/null; then
+    echo "⚠️  Deno not found, skipping checks"
+    exit 0
+fi
+
+# Type check
+echo "  Type checking adapters..."
+if ! deno check adapters/*.js 2>/dev/null; then
+    echo "❌ Type errors found"
+    exit 1
+fi
+
+# Run tests if they exist
+if [ -d "tests" ] && [ "$(ls -A tests/*.js 2>/dev/null)" ]; then
+    echo "  Running tests..."
+    if ! deno test --allow-run --allow-read tests/; then
+        echo "❌ Tests failed"
+        exit 1
+    fi
+fi
+
+# Security check
+echo "  Running security check..."
+if grep -rn 'eval\s*(' adapters/ 2>/dev/null; then
+    echo "❌ Found eval() usage - potential security risk"
+    exit 1
+fi
+
+echo "✅ Pre-push checks passed"

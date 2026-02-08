@@ -1,0 +1,82 @@
+= zigzag-ssg
+:toc: auto
+:toclevels: 2
+
+image:https://img.shields.io/badge/RSR-compliant-gold[RSR Compliant,link=https://github.com/hyperpolymath/rhodium-standard-repositories]
+image:https://img.shields.io/badge/poly--ssg-satellite-blue[poly-ssg,link=https://github.com/hyperpolymath/poly-ssg]
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+**High-performance static site generator in Zig.**
+
+Zero-overhead abstractions and compile-time templates for maximum speed.
+
+== Who Is This For?
+
+* **Zig developers** seeking native tooling
+* **Systems programmers** who need web content
+* **Performance obsessives** who count every byte
+* **Anyone wanting** comptime template validation
+
+== Why zigzag-ssg?
+
+=== Comptime Templates
+
+Templates are evaluated at compile time. Invalid templates don't compile. Zero runtime overhead.
+
+[source,zig]
+----
+const page = comptime template("base.html", .{
+    .title = "My Site",
+    .content = @embedFile("content.md"),
+});
+----
+
+=== Zero Allocations
+
+Hot paths allocate nothing. Content streams directly from disk to output. Memory usage stays flat.
+
+=== Cross-Compilation
+
+Build your site generator for any target from any host. ARM, x86, WASM - your SSG goes everywhere.
+
+=== C Library Integration
+
+Need ImageMagick for thumbnails? libxml for XML sitemaps? Zig's C interop makes it seamless.
+
+== Quick Start
+
+[source,bash]
+----
+# Build
+zig build
+
+# Create a site
+./zig-out/bin/zigzag-ssg init my-site
+cd my-site
+
+# Build the site
+./zig-out/bin/zigzag-ssg build
+
+# Watch mode
+./zig-out/bin/zigzag-ssg watch
+----
+
+== Features
+
+* **Comptime validation** - broken templates won't compile
+* **Allocation-free hot paths** - predictable memory usage
+* **Native binaries** - small, fast executables
+* **C library access** - use existing image/XML libraries
+* **Cross-compilation** - build for any platform
+
+== Requirements
+
+* Zig 0.11 or later
+
+== Part of poly-ssg
+
+zigzag-ssg is part of the https://github.com/hyperpolymath/poly-ssg[poly-ssg] family, unified through https://github.com/hyperpolymath/poly-ssg-mcp[MCP integration].
+
+== License
+
+PMPL-1.0-or-later

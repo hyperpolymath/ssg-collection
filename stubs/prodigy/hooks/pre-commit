@@ -1,0 +1,69 @@
+#!/bin/bash
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# prodigy-ssg pre-commit hook
+# Install: cp hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+
+set -e
+
+echo "🔍 Running pre-commit checks..."
+
+# Check for forbidden languages in src/
+echo "  Checking language enforcement..."
+forbidden=$(find src/ engine/src/ -type f \( -name "*.py" -o -name "*.js" -o -name "*.ts" \) 2>/dev/null || true)
+if [ -n "$forbidden" ]; then
+    echo "❌ ERROR: Forbidden language files detected:"
+    echo "$forbidden"
+    echo ""
+    echo "prodigy-ssg must be written in Prolog only."
+    echo "See META.scm for language rules."
+    exit 1
+fi
+
+# Syntax check Prolog files
+echo "  Checking Prolog syntax..."
+if command -v swipl >/dev/null 2>&1; then
+    for f in src/*.pl engine/src/*.pl; do
+        if [ -f "$f" ]; then
+            if ! swipl -g 'halt' "$f" 2>/dev/null; then
+                echo "❌ Syntax error in $f"
+                exit 1
+            fi
+        fi
+    done
+    echo "  ✓ Prolog syntax OK"
+else
+    echo "  ⚠ swipl not found, skipping syntax check"
+fi
+
+# Check for secrets
+echo "  Checking for secrets..."
+if grep -rE "(password|secret|api_key|token)\s*=\s*['\"]" --include="*.pl" --include="*.res" . 2>/dev/null; then
+    echo "❌ ERROR: Potential secrets found in code"
+    exit 1
+fi
+
+# Check SPDX headers on staged Prolog files
+echo "  Checking SPDX headers..."
+staged_pl=$(git diff --cached --name-only --diff-filter=ACM | grep '\.pl$' || true)
+if [ -n "$staged_pl" ]; then
+    for f in $staged_pl; do
+        if ! head -5 "$f" | grep -q "SPDX-License-Identifier"; then
+            echo "❌ Missing SPDX header: $f"
+            exit 1
+        fi
+    done
+fi
+
+# Trim trailing whitespace
+echo "  Trimming trailing whitespace..."
+staged_files=$(git diff --cached --name-only --diff-filter=ACM)
+if [ -n "$staged_files" ]; then
+    for f in $staged_files; do
+        if [ -f "$f" ]; then
+            sed -i 's/[[:space:]]*$//' "$f"
+            git add "$f"
+        fi
+    done
+fi
+
+echo "✅ Pre-commit checks passed!"

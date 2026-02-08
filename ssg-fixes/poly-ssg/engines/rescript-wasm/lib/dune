@@ -1,0 +1,4 @@
+(library
+ (name rescript_wasm)
+ (public_name rescript_wasm)
+ (modules lambda_ir wasm_types wasm_env wasm_emit wasm_compile wasm_binary wasm_optimize wasm_sourcemap))

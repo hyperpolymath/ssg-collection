@@ -1,0 +1,270 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+= labnote-ssg API Reference
+:toc: macro
+:toclevels: 3
+:source-highlighter: rouge
+
+API documentation for labnote-ssg MCP adapters.
+
+toc::[]
+
+== Adapter Interface
+
+All adapters export the following interface:
+
+=== Exports
+
+[source,javascript]
+----
+export const name: string;        // SSG display name
+export const language: string;    // Implementation language
+export const description: string; // Brief description
+
+export async function connect(): Promise<boolean>;
+export async function disconnect(): Promise<void>;
+export function isConnected(): boolean;
+
+export const tools: Tool[];
+----
+
+=== Types
+
+==== Tool
+
+[source,typescript]
+----
+interface Tool {
+  name: string;           // Tool identifier (format: {ssg}_{action})
+  description: string;    // Human-readable description
+  inputSchema: JSONSchema; // JSON Schema for input validation
+  execute: (params: object) => Promise<CommandResult>;
+}
+----
+
+==== CommandResult
+
+[source,typescript]
+----
+interface CommandResult {
+  success: boolean;  // true if exit code was 0
+  stdout: string;    // Captured stdout output
+  stderr: string;    // Captured stderr output
+  code: number;      // Process exit code
+}
+----
+
+==== JSONSchema
+
+Standard JSON Schema object for input validation.
+
+== Adapter Lifecycle
+
+=== Connection
+
+[source,javascript]
+----
+import * as zola from './adapters/zola.js';
+
+// Connect to the adapter (checks binary availability)
+const connected = await zola.connect();
+if (!connected) {
+  console.error('Zola not installed');
+}
+
+// Check connection status
+console.log(zola.isConnected()); // true
+
+// Disconnect when done
+await zola.disconnect();
+----
+
+=== Tool Execution
+
+[source,javascript]
+----
+// Find and execute a tool
+const buildTool = zola.tools.find(t => t.name === 'zola_build');
+
+const result = await buildTool.execute({
+  path: './my-site',
+  outputDir: './public',
+  drafts: false
+});
+
+if (result.success) {
+  console.log('Build succeeded:', result.stdout);
+} else {
+  console.error('Build failed:', result.stderr);
+}
+----
+
+== Common Tools
+
+Each adapter typically provides these tools:
+
+=== init
+
+Initialize a new project.
+
+[source,javascript]
+----
+{
+  name: '{ssg}_init',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      path: { type: 'string', description: 'Path for new project' },
+      force: { type: 'boolean', description: 'Overwrite existing' }
+    },
+    required: ['path']
+  }
+}
+----
+
+=== build
+
+Build the site.
+
+[source,javascript]
+----
+{
+  name: '{ssg}_build',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      path: { type: 'string', description: 'Project root' },
+      outputDir: { type: 'string', description: 'Output directory' },
+      drafts: { type: 'boolean', description: 'Include drafts' }
+    }
+  }
+}
+----
+
+=== serve
+
+Start development server.
+
+[source,javascript]
+----
+{
+  name: '{ssg}_serve',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      path: { type: 'string', description: 'Project root' },
+      port: { type: 'number', description: 'Port number' },
+      open: { type: 'boolean', description: 'Open browser' }
+    }
+  }
+}
+----
+
+=== version
+
+Get SSG version.
+
+[source,javascript]
+----
+{
+  name: '{ssg}_version',
+  inputSchema: { type: 'object', properties: {} }
+}
+----
+
+== Adapter-Specific Tools
+
+Some adapters have additional tools:
+
+=== Zola
+
+* `zola_check` - Validate site for errors
+
+=== mdBook
+
+* `mdbook_watch` - Watch for changes and rebuild
+* `mdbook_clean` - Clean build directory
+* `mdbook_test` - Test code samples in book
+
+=== Hakyll
+
+* `hakyll_clean` - Clean build artifacts
+* `hakyll_rebuild` - Clean and rebuild
+* `hakyll_watch` - Watch mode
+
+== Security
+
+=== Command Execution
+
+All adapters use `Deno.Command` with array-based arguments to prevent shell injection:
+
+[source,javascript]
+----
+// SAFE: Arguments as array
+const cmd = new Deno.Command(binaryPath, {
+  args: ['build', '--output', outputDir],
+  cwd: projectPath,
+  stdout: 'piped',
+  stderr: 'piped'
+});
+----
+
+=== Permissions
+
+Adapters require:
+
+* `--allow-run` - Execute SSG binaries
+* `--allow-read` - Read project files
+
+Example:
+[source,bash]
+----
+deno run --allow-run --allow-read adapter.js
+----
+
+== Error Handling
+
+=== Connection Errors
+
+[source,javascript]
+----
+const connected = await adapter.connect();
+if (!connected) {
+  // Binary not found or not executable
+  console.error(`${adapter.name} is not installed`);
+}
+----
+
+=== Execution Errors
+
+[source,javascript]
+----
+const result = await tool.execute(params);
+if (!result.success) {
+  console.error(`Exit code: ${result.code}`);
+  console.error(`Error: ${result.stderr}`);
+}
+----
+
+== MCP Integration
+
+Adapters are designed for use with Model Context Protocol servers.
+
+=== Server Registration
+
+[source,javascript]
+----
+import { Server } from '@modelcontextprotocol/sdk/server';
+import * as zola from './adapters/zola.js';
+
+const server = new Server({ name: 'ssg-server' });
+
+// Register tools
+for (const tool of zola.tools) {
+  server.registerTool(tool.name, tool.inputSchema, tool.execute);
+}
+----
+
+=== Protocol Version
+
+Compatible with MCP protocol version `2024-11-05`.

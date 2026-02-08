@@ -1,0 +1,150 @@
+[submodule "satellites/60-ssg"]
+	path = satellites/60-ssg
+	url = git@github.com:hyperpolymath/60-ssg.git
+[submodule "satellites/anvil-ssg"]
+	path = satellites/anvil-ssg
+	url = git@github.com:hyperpolymath/anvil-ssg.git
+[submodule "satellites/baremetal-ssg"]
+	path = satellites/baremetal-ssg
+	url = git@github.com:hyperpolymath/baremetal-ssg.git
+[submodule "satellites/canon-ssg"]
+	path = satellites/canon-ssg
+	url = git@github.com:hyperpolymath/canon-ssg.git
+[submodule "satellites/casket-ssg"]
+	path = satellites/casket-ssg
+	url = git@github.com:hyperpolymath/casket-ssg.git
+[submodule "satellites/chicxulub-ssg"]
+	path = satellites/chicxulub-ssg
+	url = git@github.com:hyperpolymath/chicxulub-ssg.git
+[submodule "satellites/consensus-ssg"]
+	path = satellites/consensus-ssg
+	url = git@github.com:hyperpolymath/consensus-ssg.git
+[submodule "satellites/cpt-ssg"]
+	path = satellites/cpt-ssg
+	url = git@github.com:hyperpolymath/cpt-ssg.git
+[submodule "satellites/ddraig-ssg"]
+	path = satellites/ddraig-ssg
+	url = git@github.com:hyperpolymath/ddraig-ssg.git
+[submodule "satellites/dei-ssg"]
+	path = satellites/dei-ssg
+	url = git@github.com:hyperpolymath/dei-ssg.git
+[submodule "satellites/divisionone-ssg"]
+	path = satellites/divisionone-ssg
+	url = git@github.com:hyperpolymath/divisionone-ssg.git
+[submodule "satellites/easel-ssg"]
+	path = satellites/easel-ssg
+	url = git@github.com:hyperpolymath/easel-ssg.git
+[submodule "satellites/eclipse-ssg"]
+	path = satellites/eclipse-ssg
+	url = git@github.com:hyperpolymath/eclipse-ssg.git
+[submodule "satellites/estate-ssg"]
+	path = satellites/estate-ssg
+	url = git@github.com:hyperpolymath/estate-ssg.git
+[submodule "satellites/gungir-ssg"]
+	path = satellites/gungir-ssg
+	url = git@github.com:hyperpolymath/gungir-ssg.git
+[submodule "satellites/hackenbush-ssg"]
+	path = satellites/hackenbush-ssg
+	url = git@github.com:hyperpolymath/hackenbush-ssg.git
+[submodule "satellites/iota-ssg"]
+	path = satellites/iota-ssg
+	url = git@github.com:hyperpolymath/iota-ssg.git
+[submodule "satellites/jura-ssg"]
+	path = satellites/jura-ssg
+	url = git@github.com:hyperpolymath/jura-ssg.git
+[submodule "satellites/labnote-ssg"]
+	path = satellites/labnote-ssg
+	url = git@github.com:hyperpolymath/labnote-ssg.git
+[submodule "satellites/liminal-ssg"]
+	path = satellites/liminal-ssg
+	url = git@github.com:hyperpolymath/liminal-ssg.git
+[submodule "satellites/macrauchenia-ssg"]
+	path = satellites/macrauchenia-ssg
+	url = git@github.com:hyperpolymath/macrauchenia-ssg.git
+[submodule "satellites/milk-ssg"]
+	path = satellites/milk-ssg
+	url = git@github.com:hyperpolymath/milk-ssg.git
+[submodule "satellites/my-ssg"]
+	path = satellites/my-ssg
+	url = git@github.com:hyperpolymath/my-ssg.git
+[submodule "satellites/noteg-ssg"]
+	path = satellites/noteg-ssg
+	url = git@github.com:hyperpolymath/noteg-ssg.git
+[submodule "satellites/obli-ssg"]
+	path = satellites/obli-ssg
+	url = git@github.com:hyperpolymath/obli-ssg.git
+[submodule "satellites/odd-ssg"]
+	path = satellites/odd-ssg
+	url = git@github.com:hyperpolymath/odd-ssg.git
+[submodule "satellites/orbital-ssg"]
+	path = satellites/orbital-ssg
+	url = git@github.com:hyperpolymath/orbital-ssg.git
+[submodule "satellites/parallax-ssg"]
+	path = satellites/parallax-ssg
+	url = git@github.com:hyperpolymath/parallax-ssg.git
+[submodule "satellites/pharos-ssg"]
+	path = satellites/pharos-ssg
+	url = git@github.com:hyperpolymath/pharos-ssg.git
+[submodule "satellites/praxis-ssg"]
+	path = satellites/praxis-ssg
+	url = git@github.com:hyperpolymath/praxis-ssg.git
+[submodule "satellites/prodigy-ssg"]
+	path = satellites/prodigy-ssg
+	url = git@github.com:hyperpolymath/prodigy-ssg.git
+[submodule "satellites/qed-ssg"]
+	path = satellites/qed-ssg
+	url = git@github.com:hyperpolymath/qed-ssg.git
+[submodule "satellites/rats-ssg"]
+	path = satellites/rats-ssg
+	url = git@github.com:hyperpolymath/rats-ssg.git
+[submodule "satellites/redshift-ssg"]
+	path = satellites/redshift-ssg
+	url = git@github.com:hyperpolymath/redshift-ssg.git
+[submodule "satellites/region-ssg"]
+	path = satellites/region-ssg
+	url = git@github.com:hyperpolymath/region-ssg.git
+[submodule "satellites/reliquary-ssg"]
+	path = satellites/reliquary-ssg
+	url = git@github.com:hyperpolymath/reliquary-ssg.git
+[submodule "satellites/rescribe-ssg"]
+	path = satellites/rescribe-ssg
+	url = git@github.com:hyperpolymath/rescribe-ssg.git
+[submodule "satellites/saur-ssg"]
+	path = satellites/saur-ssg
+	url = git@github.com:hyperpolymath/saur-ssg.git
+[submodule "satellites/sparkle-ssg"]
+	path = satellites/sparkle-ssg
+	url = git@github.com:hyperpolymath/sparkle-ssg.git
+[submodule "satellites/terrapin-ssg"]
+	path = satellites/terrapin-ssg
+	url = git@github.com:hyperpolymath/terrapin-ssg.git
+[submodule "satellites/tiamat-ssg"]
+	path = satellites/tiamat-ssg
+	url = git@github.com:hyperpolymath/tiamat-ssg.git
+[submodule "satellites/tripos-ssg"]
+	path = satellites/tripos-ssg
+	url = git@github.com:hyperpolymath/tripos-ssg.git
+[submodule "satellites/tyrano-ssg"]
+	path = satellites/tyrano-ssg
+	url = git@github.com:hyperpolymath/tyrano-ssg.git
+[submodule "satellites/ultimatum-ssg"]
+	path = satellites/ultimatum-ssg
+	url = git@github.com:hyperpolymath/ultimatum-ssg.git
+[submodule "satellites/undo-ssg"]
+	path = satellites/undo-ssg
+	url = git@github.com:hyperpolymath/undo-ssg.git
+[submodule "satellites/vindaloo-ssg"]
+	path = satellites/vindaloo-ssg
+	url = git@github.com:hyperpolymath/vindaloo-ssg.git
+[submodule "satellites/vladik-ssg"]
+	path = satellites/vladik-ssg
+	url = git@github.com:hyperpolymath/vladik-ssg.git
+[submodule "satellites/wagasm-ssg"]
+	path = satellites/wagasm-ssg
+	url = git@github.com:hyperpolymath/wagasm-ssg.git
+[submodule "satellites/warp-ssg"]
+	path = satellites/warp-ssg
+	url = git@github.com:hyperpolymath/warp-ssg.git
+[submodule "satellites/zigzag-ssg"]
+	path = satellites/zigzag-ssg
+	url = git@github.com:hyperpolymath/zigzag-ssg.git

@@ -1,0 +1,34 @@
+{
+  "$schema": "https://raw.githubusercontent.com/rescript-lang/rescript-compiler/master/docs/docson/build-schema.json",
+  "name": "qed-ssg",
+  "version": "0.1.0",
+  "sources": [
+    {
+      "dir": "src",
+      "subdirs": true
+    },
+    {
+      "dir": "tests",
+      "subdirs": true,
+      "type": "dev"
+    }
+  ],
+  "package-specs": {
+    "module": "esmodule",
+    "in-source": true
+  },
+  "suffix": ".res.js",
+  "bs-dependencies": [],
+  "bs-dev-dependencies": [],
+  "warnings": {
+    "error": "+101"
+  },
+  "reason": {
+    "react-jsx": 3
+  },
+  "jsx": {
+    "version": 4,
+    "mode": "automatic"
+  },
+  "uncurried": true
+}

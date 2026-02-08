@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# asdf tool versions for orbital-ssg
+
+deno 2.1.4
+just 1.36.0

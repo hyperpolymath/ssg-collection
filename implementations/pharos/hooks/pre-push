@@ -1,0 +1,43 @@
+#!/bin/bash
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 hyperpolymath
+#
+# NoteG SSG - Pre-push Hook
+
+set -euo pipefail
+
+echo "Running pre-push checks..."
+
+# Run full test suite
+if command -v just &> /dev/null; then
+    echo "Running tests..."
+    just test || {
+        echo "ERROR: Tests failed - push aborted"
+        exit 1
+    }
+fi
+
+# Security audit
+if [ -f "ssg/package.json" ]; then
+    echo "Running npm audit on SSG..."
+    (cd ssg && npm audit --audit-level=high) || {
+        echo "WARNING: High severity vulnerabilities found"
+    }
+fi
+
+if [ -f "noteg-lang/package.json" ]; then
+    echo "Running npm audit on language..."
+    (cd noteg-lang && npm audit --audit-level=high) || {
+        echo "WARNING: High severity vulnerabilities found"
+    }
+fi
+
+# Check for large files
+echo "Checking for large files..."
+large_files=$(git diff --cached --name-only --diff-filter=A | xargs -I{} du -k {} 2>/dev/null | awk '$1 > 1024 {print $2}')
+if [ -n "$large_files" ]; then
+    echo "WARNING: Large files detected:"
+    echo "$large_files"
+fi
+
+echo "Pre-push checks passed!"

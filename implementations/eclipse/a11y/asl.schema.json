@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://eclipse-ssg.hyperpolymath.org/schemas/asl.json",
+  "title": "American Sign Language (ASL) Metadata Schema",
+  "description": "Schema for ASL accessibility content in eclipse-ssg",
+  "type": "object",
+  "properties": {
+    "aslVideo": {
+      "type": "object",
+      "description": "ASL video translation",
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to ASL video"
+        },
+        "duration": {
+          "type": "string",
+          "pattern": "^PT\\d+M\\d+S$",
+          "description": "Video duration in ISO 8601 format"
+        },
+        "interpreter": {
+          "type": "string",
+          "description": "Name of ASL interpreter"
+        },
+        "ridCertification": {
+          "type": "string",
+          "description": "RID certification number"
+        },
+        "format": {
+          "type": "string",
+          "enum": ["mp4", "webm", "mov"],
+          "description": "Video format"
+        }
+      },
+      "required": ["url"]
+    },
+    "aslGlossary": {
+      "type": "array",
+      "description": "ASL sign glossary for technical terms",
+      "items": {
+        "type": "object",
+        "properties": {
+          "term": {
+            "type": "string",
+            "description": "English term"
+          },
+          "signVideo": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to individual sign video"
+          },
+          "signDescription": {
+            "type": "string",
+            "description": "Text description of how to form the sign"
+          }
+        },
+        "required": ["term"]
+      }
+    },
+    "aslTranscript": {
+      "type": "string",
+      "description": "English transcript of ASL content"
+    }
+  }
+}

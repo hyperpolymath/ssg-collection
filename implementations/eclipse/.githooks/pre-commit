@@ -1,0 +1,66 @@
+#!/bin/sh
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+# pre-commit — Git hook for policy enforcement
+#
+# This hook runs before each commit to ensure language policy compliance.
+# Install with: just hooks-install
+
+set -e
+
+echo "Running pre-commit checks..."
+
+# ============================================================
+# POLICY ENFORCEMENT
+# ============================================================
+
+echo "Checking language policy..."
+
+# No TypeScript files (except .d.ts)
+if find . -name "*.ts" -not -name "*.d.ts" -not -path "./node_modules/*" -not -path "./.git/*" | grep -q .; then
+    echo "ERROR: TypeScript files found. Use ReScript instead."
+    find . -name "*.ts" -not -name "*.d.ts" -not -path "./node_modules/*" -not -path "./.git/*"
+    exit 1
+fi
+
+# No Makefile
+if [ -f Makefile ] || [ -f GNUmakefile ] || [ -f makefile ]; then
+    echo "ERROR: Makefile found. Use Justfile instead."
+    exit 1
+fi
+
+# No npm/bun/yarn lock files
+if [ -f package-lock.json ] || [ -f bun.lockb ] || [ -f yarn.lock ] || [ -f pnpm-lock.yaml ]; then
+    echo "ERROR: Node package manager lock files found. Use Deno."
+    exit 1
+fi
+
+# No Go files
+if find . -name "*.go" -not -path "./node_modules/*" -not -path "./.git/*" | grep -q .; then
+    echo "ERROR: Go files found. Use Rust instead."
+    exit 1
+fi
+
+# Check for SPDX headers in new/modified files
+for file in $(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(res|js|ts|ncl|sh)$' || true); do
+    if [ -f "$file" ] && ! grep -q "SPDX-License-Identifier" "$file"; then
+        echo "WARNING: Missing SPDX header in $file"
+    fi
+done
+
+echo "Policy check passed."
+
+# ============================================================
+# CODE QUALITY CHECKS
+# ============================================================
+
+# Format check (if deno is available)
+if command -v deno >/dev/null 2>&1; then
+    echo "Checking formatting..."
+    deno fmt --check || {
+        echo "ERROR: Formatting issues found. Run 'just fmt' to fix."
+        exit 1
+    }
+fi
+
+echo "Pre-commit checks passed."

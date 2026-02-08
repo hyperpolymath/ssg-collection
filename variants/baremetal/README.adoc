@@ -1,0 +1,65 @@
+= baremetal-ssg
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+
+
+
+image:https://img.shields.io/badge/Philosophy-Palimpsest-indigo.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+
+:toc:
+:toc-title: Table of Contents
+:icons: font
+
+**Hardware-native static site generation in RISC-V Assembly.**
+"Baremetal" — No OS, no runtime, no abstractions. A generator that treats site synthesis as a formal sequence of register-level operations.
+
+== Who Is This For?
+* **Firmware Engineers** targeting **ASICs** and **Edge tech** where every byte of overhead is a failure.
+* **Low-level purists** who want to generate site content directly from bootloaders or custom silicon.
+* **Systems Architects** requiring an engine that can run on a **RISC-V** soft-core within an FPGA without a kernel.
+* **Security Researchers** needing a generator with a zero-syscall attack surface.
+
+== Why baremetal-ssg?
+
+=== Instruction-Level Synthesis
+`baremetal-ssg` is written in pure RISC-V assembly (`rv64gc`). Site generation is reduced to a series of atomic memory moves and integer operations, bypassing the "bloat" of even the most efficient C compilers.
+
+=== Zero-Syscall Architecture
+Designed to run on the metal. It manages its own memory and I/O, making it the fastest possible generator for high-integrity **Edge** hardware where a kernel is an unnecessary security risk.
+
+=== Register-Mapped Templates
+Templates are not parsed; they are memory-mapped. By treating content as a series of offsets, `baremetal-ssg` achieves true $O(1)$ access times for site structure, limited only by hardware clock speed.
+
+=== Formal Interrupt Logic
+Build steps are triggered by hardware interrupts. This ensures that the generation process is perfectly timed and deterministic, making it ideal for safety-critical documentation displays on custom hardware.
+
+== Quick Start
+[source,oil]
+----
+# Assemble the core using the RISC-V toolchain via asdf
+just setup
+
+# Flash the generator logic to the target ASIC or Simulator
+just flash
+
+# Build the site directly on the hardware (Zero-OS mode)
+just build-hardware
+----
+
+== Features
+* **O(1) Memory Management** - Manual stack and heap control for absolute predictability.
+* **Zero-Runtime Overhead** - No garbage collection, no heap-fragmentation, no hidden control flow.
+* **Podman-First Simulation** - Test assembly logic in a QEMU-driven Podman container.
+* **Accessibility** - Hardware-accelerated metadata tagging for **BSL**, **GSL**, and **Makaton**.
+
+== Requirements
+* **RISC-V GNU Toolchain** (rv64gc)
+* **QEMU** (for simulation/testing)
+* **Just** (Orchestrator)
+
+== Part of poly-ssg
+`baremetal-ssg` is the hardware-native cornerstone of the **poly-ssg** family.
+
+== License
+PMPL-1.0-or-later

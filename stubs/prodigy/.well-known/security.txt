@@ -1,0 +1,9 @@
+# Security Policy for prodigy-ssg
+# https://securitytxt.org/
+
+Contact: security@hyperpolymath.org
+Expires: 2026-12-31T23:59:59.000Z
+Encryption: https://hyperpolymath.org/gpg/security.asc
+Preferred-Languages: en, nl
+Canonical: https://github.com/hyperpolymath/prodigy-ssg/.well-known/security.txt
+Policy: https://github.com/hyperpolymath/prodigy-ssg/blob/main/SECURITY.md

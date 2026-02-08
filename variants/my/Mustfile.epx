@@ -1,0 +1,118 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+# Mustfile.epx - Ephapax Linear Logic Deployment Contract
+# See: https://github.com/hyperpolymath/mustfile
+
+# ============================================================================
+# METADATA
+# ============================================================================
+
+name: my-ssg
+version: 0.1.0
+tier: 2
+description: SSG Adapter Collection - Customizable static site generator template
+
+# ============================================================================
+# STATE CONTRACTS
+# ============================================================================
+
+# Initial state requirements
+preconditions:
+  - just --version >= 1.0.0
+  - deno --version >= 2.0.0
+  - nickel --version >= 1.0.0
+
+# Post-deployment invariants
+postconditions:
+  - no_typescript_files
+  - no_package_json
+  - no_makefile
+  - has_justfile
+  - has_deno_json
+  - has_rescript_json
+
+# ============================================================================
+# TRANSITIONS
+# ============================================================================
+
+transitions:
+  # Development setup
+  setup:
+    consumes: [clean_workspace]
+    produces: [dev_ready]
+    actions:
+      - just deps
+      - just build
+
+  # Build ReScript to JavaScript
+  build:
+    consumes: [rescript_sources]
+    produces: [compiled_js]
+    actions:
+      - deno task rescript:build
+
+  # Run tests
+  test:
+    consumes: [compiled_js]
+    produces: [test_results]
+    actions:
+      - deno task test
+
+  # Policy enforcement
+  enforce:
+    consumes: [any_commit]
+    produces: [policy_compliant]
+    actions:
+      - just policy-check
+
+  # Container deployment
+  deploy:
+    consumes: [test_results, policy_compliant]
+    produces: [container_running]
+    actions:
+      - just container-build
+      - just container-push
+
+# ============================================================================
+# POLICY ENFORCEMENT
+# ============================================================================
+
+policy:
+  config: config/policy.ncl
+
+  checks:
+    - name: no_typescript
+      pattern: "**/*.ts"
+      expected: 0
+      message: "TypeScript files are banned - use ReScript instead"
+
+    - name: no_package_json
+      pattern: "package.json"
+      expected: 0
+      message: "npm package.json is banned - use deno.json imports"
+
+    - name: no_makefile
+      pattern: "[Mm]akefile"
+      expected: 0
+      message: "Makefiles are banned - use just/must instead"
+
+    - name: no_node_modules
+      pattern: "node_modules/**"
+      expected: 0
+      message: "node_modules is banned - use Deno caching"
+
+# ============================================================================
+# VECTORS (Deployment Targets)
+# ============================================================================
+
+vectors:
+  container:
+    engine: podman
+    file: Containerfile
+    registry: ghcr.io/hyperpolymath/my-ssg
+
+  guix:
+    manifest: guix.scm
+
+  nix:
+    flake: flake.nix

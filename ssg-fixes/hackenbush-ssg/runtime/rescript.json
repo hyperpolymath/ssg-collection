@@ -1,0 +1,21 @@
+{
+  "name": "hackenbush-runtime",
+  "sources": [
+    {
+      "dir": ".",
+      "subdirs": false
+    }
+  ],
+  "package-specs": [
+    {
+      "module": "es6",
+      "in-source": true
+    }
+  ],
+  "suffix": ".res.js",
+  "bs-dependencies": [],
+  "warnings": {
+    "number": "+A-42-48",
+    "error": "+A-42-48-102"
+  }
+}

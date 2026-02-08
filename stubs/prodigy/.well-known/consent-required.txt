@@ -1,0 +1,15 @@
+# Consent-Aware HTTP Declaration for prodigy-ssg
+# RFC Draft: draft-jewell-http-430-consent-required
+
+Version: 1.0
+Project: prodigy-ssg
+Canonical: https://github.com/hyperpolymath/prodigy-ssg
+
+Level-1-Public: true
+Level-2-Attributed: requires-consent
+Level-3-Commercial: requires-consent
+Level-4-AI-Training: requires-explicit-consent
+Level-5-Derivative: follows-license
+
+Consent-Request-URL: https://hyperpolymath.org/consent/prodigy-ssg
+Documentation: https://github.com/hyperpolymath/consent-aware-http

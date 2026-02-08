@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata
+  xmlns="http://purl.org/dc/elements/1.1/"
+  xmlns:dcterms="http://purl.org/dc/terms/">
+  <title>prodigy-ssg</title>
+  <creator>Jonathan D.A. Jewell</creator>
+  <subject>static-site-generator</subject>
+  <subject>prolog</subject>
+  <description>Logic-based SSG with declarative site definitions</description>
+  <publisher>hyperpolymath</publisher>
+  <date>2025</date>
+  <type>Software</type>
+  <identifier>https://github.com/hyperpolymath/prodigy-ssg</identifier>
+  <relation>https://github.com/hyperpolymath/poly-ssg</relation>
+  <rights>AGPL-3.0-or-later</rights>
+  <dcterms:license>https://spdx.org/licenses/AGPL-3.0-or-later.html</dcterms:license>
+</metadata>

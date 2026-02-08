@@ -1,0 +1,28 @@
+# CITATION.cff - Citation File Format for hackenbush-ssg
+# https://citation-file-format.github.io/
+# SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Palimpsest-0.5
+
+cff-version: 1.2.0
+title: "hackenbush-ssg"
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - family-names: "Jewell"
+    given-names: "Jonathan D.A."
+    alias: "hyperpolymath"
+    email: "jonathan@hyperpolymath.org"
+    affiliation: "Rhodium Standard / Independent Researcher"
+repository-code: "https://github.com/hyperpolymath/hackenbush-ssg"
+url: "https://rhodium.sh/projects/hackenbush-ssg"
+abstract: "Static site generator implemented in Conway's Game of Life patterns - proving Turing-completeness through cellular automata"
+keywords:
+  - RSR
+  - rhodium-standard
+  - game-of-life
+  - cellular-automata
+  - static-site-generator
+  - turing-complete
+license: "AGPL-3.0-or-later"
+license-url: "https://github.com/hyperpolymath/hackenbush-ssg/blob/main/LICENSE.txt"
+version: "0.1.0"
+date-released: "2025-12-10"

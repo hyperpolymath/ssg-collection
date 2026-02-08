@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+# pre-push hook for chicxulub--ssg
+# Install: cp hooks/pre-push .git/hooks/ && chmod +x .git/hooks/pre-push
+
+set -euo pipefail
+
+# Configuration
+HOOKS_CONFIG="${HOOKS_CONFIG:-hooks/config.sh}"
+SKIP_HOOKS="${SKIP_HOOKS:-0}"
+VERBOSE="${VERBOSE:-0}"
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+# Helper functions
+log_info() { echo -e "${GREEN}[pre-push]${NC} $1"; }
+log_warn() { echo -e "${YELLOW}[pre-push]${NC} $1"; }
+log_error() { echo -e "${RED}[pre-push]${NC} $1"; }
+log_verbose() { [[ "$VERBOSE" == "1" ]] && echo -e "[pre-push] $1" || true; }
+
+# Allow skipping hooks
+if [[ "$SKIP_HOOKS" == "1" ]]; then
+    log_warn "Hooks skipped (SKIP_HOOKS=1)"
+    exit 0
+fi
+
+# Load custom configuration if exists
+if [[ -f "$HOOKS_CONFIG" ]]; then
+    log_verbose "Loading config from $HOOKS_CONFIG"
+    source "$HOOKS_CONFIG"
+fi
+
+# Default configuration
+ENABLE_TESTS="${ENABLE_TESTS:-1}"
+ENABLE_FULL_LINT="${ENABLE_FULL_LINT:-1}"
+ENABLE_ADAPTER_VALIDATION="${ENABLE_ADAPTER_VALIDATION:-1}"
+TEST_TIMEOUT="${TEST_TIMEOUT:-300}"
+
+log_info "Running pre-push checks..."
+
+# Full lint check on all adapters
+if [[ "$ENABLE_FULL_LINT" == "1" ]]; then
+    log_info "Linting all adapters..."
+    if ! deno lint adapters/*.js 2>/dev/null; then
+        log_error "Linting errors found in adapters"
+        exit 1
+    fi
+    log_verbose "Full lint passed"
+fi
+
+# Run tests if directory exists
+if [[ "$ENABLE_TESTS" == "1" ]]; then
+    if [[ -d "tests" ]] && ls tests/*.js 1>/dev/null 2>&1; then
+        log_info "Running tests..."
+        if ! timeout "$TEST_TIMEOUT" deno test --allow-all tests/ 2>/dev/null; then
+            log_error "Tests failed"
+            exit 1
+        fi
+        log_verbose "Tests passed"
+    else
+        log_warn "No tests found, skipping test run"
+    fi
+fi
+
+# Validate all adapter exports
+if [[ "$ENABLE_ADAPTER_VALIDATION" == "1" ]]; then
+    log_info "Validating adapter exports..."
+    validation_script='
+        const adapters = [...Deno.readDirSync("./adapters")]
+            .filter(f => f.name.endsWith(".js"))
+            .map(f => f.name);
+
+        let hasErrors = false;
+        for (const adapter of adapters) {
+            try {
+                const mod = await import("./adapters/" + adapter);
+                if (!mod.name || !mod.language || !mod.tools) {
+                    console.error("✗", adapter, "- missing required exports");
+                    hasErrors = true;
+                }
+            } catch (e) {
+                console.error("✗", adapter, "- import error:", e.message);
+                hasErrors = true;
+            }
+        }
+        if (hasErrors) Deno.exit(1);
+        console.log("All adapters valid!");
+    '
+    if ! deno eval "$validation_script" 2>/dev/null; then
+        log_error "Adapter validation failed"
+        exit 1
+    fi
+    log_verbose "Adapter validation passed"
+fi
+
+log_info "All pre-push checks passed! ✓"
+exit 0

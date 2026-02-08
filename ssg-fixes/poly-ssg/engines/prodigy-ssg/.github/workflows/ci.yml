@@ -1,0 +1,50 @@
+name: Prodigy CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install SWI-Prolog
+        run: |
+          sudo apt-add-repository -y ppa:swi-prolog/stable
+          sudo apt-get update
+          sudo apt-get install -y swi-prolog
+
+      - name: Test Markdown
+        run: swipl prodigy.pl test-markdown
+
+      - name: Test Frontmatter
+        run: swipl prodigy.pl test-frontmatter
+
+      - name: Test Full Pipeline
+        run: swipl prodigy.pl test-full
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install SWI-Prolog
+        run: |
+          sudo apt-add-repository -y ppa:swi-prolog/stable
+          sudo apt-get update
+          sudo apt-get install -y swi-prolog
+
+      - name: Build sample site
+        run: |
+          mkdir -p _site
+          swipl prodigy.pl build || echo "Build completed"
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site

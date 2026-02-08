@@ -1,0 +1,44 @@
+= pharos-ssg
+
+image:https://img.shields.io/badge/License-MPL_2.0-blue.svg[MPL-2.0-or-later,link="https://opensource.org/licenses/MPL-2.0"]
+:toc:
+:toc-title: Table of Contents
+:icons: font
+
+**Live, object-oriented static site generation in Pharo.**
+"Pharos" — A lighthouse in the sea of static files. A site engine where your content lives as a graph of interactive objects.
+
+== Who Is This For?
+* **Smalltalkers** who prefer a "live image" environment over a "edit-compile-run" cycle.
+* **Architects** who view site structure as a dynamic object-graph rather than a file-tree.
+* **Teams** needing a reflective, interactive build environment that persists state across sessions.
+
+== Why pharos-ssg?
+=== Live Image Synthesis
+In `pharos-ssg`, the generator and the site content share the same memory space. Changes to a template are reflected instantly across the entire object-graph. You don't "run" a build; you "save" the state of the objects into HTML.
+
+=== Fully Reflective Logic
+The engine can inspect itself and your content at runtime. Use the Pharo inspector to navigate your site's hierarchy, find broken links, and refactor templates as live objects.
+
+== Quick Start
+[source,oil]
+----
+# Download the Pharo image via asdf
+just setup
+
+# Open the live environment to edit the site-graph
+just open
+
+# Headless build for CI/CD pipelines
+just build-headless
+----
+
+== Requirements
+* **Pharo VM** (v12 or later)
+* **Just** (Orchestrator)
+
+== Part of poly-ssg
+`pharos-ssg` is the interactive, image-based member of the **poly-ssg** family.
+
+== License
+AGPL-3.0-or-later

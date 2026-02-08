@@ -1,0 +1,4 @@
+(executable
+ (name main)
+ (public_name rescript_wasm)
+ (libraries rescript_wasm))

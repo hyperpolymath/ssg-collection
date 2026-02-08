@@ -1,0 +1,37 @@
+{
+  "name": "ddraig-ssg",
+  "displayName": "Ddraig",
+  "version": "0.1.0",
+  "language": "Idris 2",
+  "description": "Dependently typed SSG - types that breathe fire",
+  "author": "hyperpolymath",
+  "license": "MIT",
+  "paradigm": ["functional", "dependently-typed", "pure"],
+  "features": {
+    "markdown": true,
+    "frontmatter": true,
+    "templates": true,
+    "drafts": true,
+    "codeBlocks": true,
+    "inlineFormatting": true
+  },
+  "build": {
+    "command": "idris2 Ddraig.idr -o ddraig",
+    "runtime": "idris2 >= 0.8.0",
+    "output": "build/exec/ddraig"
+  },
+  "test": {
+    "commands": [
+      "./build/exec/ddraig test-markdown",
+      "./build/exec/ddraig test-frontmatter",
+      "./build/exec/ddraig test-full"
+    ]
+  },
+  "ci": {
+    "github-pages": {
+      "container": "ghcr.io/idris-community/idris2:latest",
+      "install": "apk add --no-cache make",
+      "build": "idris2 Ddraig.idr -o ddraig && ./build/exec/ddraig build"
+    }
+  }
+}

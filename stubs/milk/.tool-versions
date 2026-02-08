@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# asdf version management for milk-ssg
+# Install asdf: https://asdf-vm.com/
+
+nodejs 20.10.0
+just 1.25.2

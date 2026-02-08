@@ -1,0 +1,14 @@
+{
+  "name": "arangodb-demo-rescript",
+  "version": "1.0.0",
+  "tasks": {
+    "build": "rescript build",
+    "clean": "rescript clean",
+    "start": "deno run --allow-net src/ArangoDemo.res.js"
+  },
+  "imports": {
+    "@rescript/core": "npm:@rescript/core@^1.0.0",
+    "rescript": "npm:rescript@^11.0.0",
+    "arangojs": "https://deno.land/x/arangojs@8.0.0/mod.ts"
+  }
+}

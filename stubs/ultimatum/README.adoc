@@ -1,0 +1,167 @@
+= ultimatum-ssg
+
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+:toc:
+:sectnums:
+
+// Badges
+image:https://img.shields.io/badge/RSR-Compliant-cd7f32[RSR Compliant]
+image:https://img.shields.io/badge/poly--ssg--mcp-integrated-blueviolet[poly-ssg-mcp]
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+**Static site generator in Must.**
+
+_No negotiation. No ambiguity. Just deployment._
+
+== Who This Is For
+
+* **Must adopters** who want their content pipelines to follow the same contract-driven philosophy as their deployments
+* **Linear logic enthusiasts** seeking SSGs where resources are consumed exactly once—no orphaned state, no dangling artifacts
+* **State-transition thinkers** who view site generation as a series of validated transformations, not imperative scripts
+* **Deployment-first developers** who want build and deploy to share the same semantic foundation
+
+== Why Must for Static Sites?
+
+=== Contracts All the Way Down
+
+Traditional SSGs treat content as files to be processed. ultimatum-ssg treats content as **resources bound by contracts**. Every transformation—markdown to HTML, template to page, asset to output—is a state transition governed by Ephapax Linear Logic. Resources are consumed to produce outputs. Nothing is duplicated. Nothing is forgotten.
+
+=== Type-Safe Content Pipeline
+
+Powered by Nickel configuration, your site manifest is validated before a single file is generated:
+
+[source,nickel]
+----
+let Site = {
+  content : { path : String, format : [| 'markdown, 'asciidoc, 'org |] },
+  output  : { path : String, clean : Bool },
+  assets  : Array { src : String, dest : String },
+}
+----
+
+Type errors surface at configuration time, not build time.
+
+=== The Must/Just Separation
+
+ultimatum-ssg honors the Must philosophy:
+
+* **`just`** handles local development tasks—watch mode, dev server, incremental rebuilds
+* **`must`** handles deployment contracts—production builds, asset optimization, integrity verification
+
+This isn't arbitrary separation. It's **semantic clarity**: development is exploratory; deployment is contractual.
+
+== Architecture
+
+[source]
+----
+┌─────────────────────────────────────────────────────────────┐
+│                    Must Contract                        │
+│  ┌──────────┐    ┌──────────┐    ┌──────────┐              │
+│  │ Content  │───▶│ Transform│───▶│  Output  │              │
+│  │ Resource │    │ Contract │    │  State   │              │
+│  └──────────┘    └──────────┘    └──────────┘              │
+│       ↓               ↓               ↓                     │
+│   validated       consumed        verified                  │
+│   inputs          exactly once    outputs                   │
+└─────────────────────────────────────────────────────────────┘
+                           │
+                           ▼
+              ┌────────────────────────┐
+              │   Deployment Target    │
+              │  (Podman / Static Host)│
+              └────────────────────────┘
+----
+
+== Quick Start
+
+[source,bash]
+----
+# Clone
+git clone https://github.com/hyperpolymath/ultimatum-ssg my-site
+cd my-site
+
+# Development (local tasks via just)
+just dev          # Start dev server with watch mode
+just build-dev    # Incremental development build
+
+# Production (deployment contracts via must)
+must build        # Full production build with optimization
+must verify       # Validate output integrity
+must deploy       # Deploy to configured target
+----
+
+== Features
+
+[cols="1,2"]
+|===
+|Feature |Description
+
+|**Linear Resource Consumption**
+|Content files are consumed exactly once per build. No duplicate processing, no orphaned intermediates.
+
+|**Contract Verification**
+|Every build step verifies preconditions and postconditions. Failed contracts halt the pipeline with clear diagnostics.
+
+|**Nickel Manifests**
+|Type-safe site configuration. Catch misconfigurations before they become runtime errors.
+
+|**Podman-First Deployment**
+|Production builds target containers by default. Reproducible, isolated, deployable anywhere.
+
+|**17-Shell Compatibility**
+|Works with bash, zsh, fish, nushell, and 13 other shell variants. Your environment, your choice.
+
+|**Incremental by Default**
+|Development builds track state transitions. Only changed resources trigger reprocessing.
+|===
+
+== State Transition Primer
+
+Must's Ephapax Linear Logic ensures resources follow strict consumption rules:
+
+[cols="1,1,3"]
+|===
+|State |Symbol |Meaning
+
+|**Pending**
+|`○`
+|Resource exists, not yet consumed
+
+|**Consuming**
+|`◐`
+|Transformation in progress
+
+|**Consumed**
+|`●`
+|Resource fully processed, output produced
+
+|**Verified**
+|`✓`
+|Output validated against contract
+|===
+
+A resource cannot be consumed twice. An output cannot exist without its input being consumed. This is the ultimatum: **contracts are honored, or the build fails**.
+
+== Ecosystem Integration
+
+ultimatum-ssg is part of the hyperpolymath static site generator portfolio:
+
+* **https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp]** — Unified MCP server for AI assistant integration across 28 SSGs
+* **https://github.com/hyperpolymath/Must[Must]** — The contract-driven deployment system powering this SSG
+* **https://github.com/hyperpolymath/praxis-ssg[praxis-ssg]** — Sister project for Just-native static sites
+
+Related MCP servers in the portfolio:
+
+* https://github.com/hyperpolymath/poly-container-mcp[poly-container-mcp] — Container orchestration
+* https://github.com/hyperpolymath/poly-iac-mcp[poly-iac-mcp] — Infrastructure as code
+
+== Requirements
+
+* Must toolchain (includes `must` CLI)
+* Just 1.0+ (for local development tasks)
+* Nickel 1.0+ (for manifest validation)
+* Optional: Podman (for containerized deployment)
+
+== License
+
+SPDX-License-Identifier: PMPL-1.0-or-later-or-later

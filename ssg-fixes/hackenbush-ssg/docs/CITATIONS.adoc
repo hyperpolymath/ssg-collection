@@ -1,0 +1,36 @@
+= hackenbush-ssg - Citation Guide
+:toc:
+
+== BibTeX
+
+[source,bibtex]
+----
+@software{hackenbush-ssg_2025,
+  author = {Jewell, Jonathan D.A.},
+  title = {hackenbush-ssg: Game of Life Static Site Generator},
+  year = {2025},
+  url = {https://github.com/hyperpolymath/hackenbush-ssg},
+  license = {AGPL-3.0-or-later}
+}
+----
+
+== Harvard Style
+
+Jewell, J.D.A. (2025) _hackenbush-ssg: Game of Life Static Site Generator_ [Computer software]. Available at: https://github.com/hyperpolymath/hackenbush-ssg
+
+== OSCOLA
+
+Jonathan D.A. Jewell, 'hackenbush-ssg: Game of Life Static Site Generator' (2025) <https://github.com/hyperpolymath/hackenbush-ssg>
+
+== MLA
+
+Jewell, Jonathan D.A. "hackenbush-ssg: Game of Life Static Site Generator." 2025, github.com/hyperpolymath/hackenbush-ssg.
+
+== APA 7
+
+Jewell, J.D.A. (2025). _hackenbush-ssg: Game of Life Static Site Generator_ [Computer software]. GitHub. https://github.com/hyperpolymath/hackenbush-ssg
+
+== See Also
+
+* link:../CITATION.cff[CITATION.cff]
+* link:../codemeta.json[codemeta.json]

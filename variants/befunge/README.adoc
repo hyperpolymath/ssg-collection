@@ -1,0 +1,149 @@
+= befunge-ssg
+:toc: auto
+:toclevels: 2
+
+image:https://img.shields.io/badge/RSR-compliant-gold[RSR Compliant,link=https://github.com/hyperpolymath/rhodium-standard-repositories]
+image:https://img.shields.io/badge/poly--ssg-satellite-blue[poly-ssg,link=https://github.com/hyperpolymath/poly-ssg]
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/status-experimental-orange[Experimental]
+
+**Static site generator for Befunge programs.**
+
+Turns a folder of `.bf` programs into a beautiful static website with 2D grid rendering.
+
+== Who Is This For?
+
+* **Esolang enthusiasts** displaying Befunge program collections
+* **Educators** teaching 2D programming concepts
+* **Code archaeologists** preserving vintage programs
+* **Esoteric language researchers** documenting implementations
+
+== Why befunge-ssg?
+
+=== 2D Grid Rendering
+
+Befunge programs are displayed as proper 2D grids with coordinates, not just text files.
+
+[source]
+----
+  0123456789
+0 >v
+1 v,<
+2 >^
+----
+
+=== Literate Documentation
+
+Extract documentation from Befunge files using conventions:
+
+[source,befunge]
+----
+; Title: Hello Pointer
+; Tags: demo, intro
+; Summary: Minimal IP loop with output.
+>v
+v,<
+>^
+----
+
+=== Static Output
+
+Build produces pure HTML/CSS/JS. Deploy anywhere - GitHub Pages, Netlify, or your own server.
+
+=== Optional Execution
+
+Capture program output at build time with strict safety limits (step count, output size, no I/O).
+
+== Quick Start
+
+[source,bash]
+----
+# Build ReScript adapter
+cd rs && rescript build && cd ..
+
+# Build the site
+deno task build
+
+# Serve locally
+deno task serve
+# Open http://127.0.0.1:8000
+
+# Development mode (watch + rebuild)
+deno task dev
+----
+
+== Architecture
+
+----
+befunge-ssg/
+├── cli.mjs              (CLI entry point)
+├── deno.json            (Deno config + tasks)
+├── befunge-ssg.json     (Site config)
+├── src/                 (Deno host code)
+│   ├── ssg.mjs          (Build logic)
+│   ├── serve.mjs        (Dev server)
+│   ├── dev.mjs          (Watch mode)
+│   └── util.mjs         (Utilities)
+├── rs/                  (ReScript adapter)
+│   ├── rescript.json
+│   └── src/
+│       ├── Adapter.res  (Main adapter)
+│       ├── Render.res   (HTML generation)
+│       ├── Html.res     (HTML utilities)
+│       └── Slug.res     (URL slugs)
+├── assets/
+│   └── site.css         (Theme styles)
+├── site/
+│   └── programs/        (Befunge programs)
+│       └── hello.bf
+└── dist/                (Generated output)
+----
+
+== Content Model
+
+=== Inputs
+
+* `site/programs/*.bf` - Befunge source programs
+* `site/programs/*.meta.json` - Optional metadata (title, tags)
+* `site/pages/*.adoc` - Extra pages (About, FAQ)
+* `site/theme/` - Custom theme assets
+
+=== Outputs
+
+* `dist/index.html` - Gallery index
+* `dist/programs/<slug>/index.html` - Program pages
+* `dist/assets/` - CSS/JS
+
+== Configuration
+
+[source,json]
+----
+{
+  "siteTitle": "My Befunge Gallery",
+  "baseUrl": "/",
+  "inputDir": "site",
+  "outputDir": "dist",
+  "execute": {
+    "enabled": false,
+    "maxSteps": 250000,
+    "maxOutputBytes": 8192
+  }
+}
+----
+
+== About Befunge-93
+
+https://esolangs.org/wiki/Befunge[Befunge-93] is an esoteric programming language created by Chris Pressey in 1993:
+
+* **2D execution**: Program counter moves on an 80x25 grid
+* **Stack-based**: All operations use a LIFO stack
+* **Self-modifying**: Programs can modify their own code
+* **Direction commands**: `<>^v` change execution direction
+
+== Part of poly-ssg
+
+befunge-ssg is part of the https://github.com/hyperpolymath/poly-ssg[poly-ssg] family, unified through https://github.com/hyperpolymath/poly-ssg-mcp[MCP integration].
+
+== License
+
+PMPL-1.0-or-later

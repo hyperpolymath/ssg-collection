@@ -1,0 +1,193 @@
+= noteg-ssg
+
+image:https://img.shields.io/badge/License-PMPL_1.0-blue.svg[PMPL-1.0-or-later,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/Philosophy-Palimpsest-indigo.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+== License & Philosophy
+
+This project is licensed under **PMPL-1.0-or-later**.
+
+Philosophy: **Palimpsest**. See the palimpsest-license repository for details.
+
+
+:toc: macro
+:toc-title: Contents
+:toclevels: 2
+:icons: font
+:source-highlighter: highlight.js
+
+Static site generator in Note G - the world's first algorithm as an esolang.
+
+____
+In 1843, Ada Lovelace published Note G: the first algorithm.
+Now her legacy compiles websites.
+____
+
+toc::[]
+
+== What Is Note G?
+
+**Note G** is an esoteric programming language based on Ada Lovelace's 1843 algorithm for calculating Bernoulli numbers on Charles Babbage's Analytical Engine. It was the first published algorithm in history.
+
+This SSG implements Note G as a functional esolang, honoring the mathematical and historical foundations of computing's first programmer.
+
+== Who Is This For?
+
+* **Computing historians** who want to explore algorithmic heritage
+* **Esolang enthusiasts** seeking mathematically-grounded languages
+* **Educators** teaching the history of programming
+* **Artists** working with computational artifacts and digital archaeology
+
+== Why noteg-ssg?
+
+Note G brings unique characteristics to static site generation:
+
+[cols="1,2"]
+|===
+|Feature |Benefit
+
+|**Historical Fidelity**
+|Syntax inspired by Lovelace's notation and Babbage's Analytical Engine
+
+|**Mathematical Foundation**
+|Operations based on 19th-century difference engine principles
+
+|**Educational Value**
+|Learn computing history while building modern websites
+
+|**Esoteric Beauty**
+|Challenge yourself with an algorithm from 1843
+
+|**Formal Specification**
+|Idris2 ABI definitions with dependent type proofs
+|===
+
+No JavaScript frameworks. No npm dependencies. Just Victorian algorithms and formal verification.
+
+== Quick Start (Note G Syntax)
+
+[source,noteg]
+----
+# Note G: Calculate site structure
+# Based on Lovelace's Bernoulli algorithm adapted for web generation
+
+Store content/index.md in Register A
+Transform A via Markdown-Engine into Register B
+Apply template/default.html to Register B into Register C
+Emit Register C to _site/index.html
+
+# Note G uses Analytical Engine concepts:
+# - Registers (memory locations)
+# - Operations (transformations)
+# - Cards (program instructions)
+----
+
+== Architecture
+
+[source]
+----
+                    ┌─────────────┐
+                    │ Card Reader │  (read .noteg files)
+                    └──────┬──────┘
+                           │
+                    ┌──────▼──────┐
+                    │   Mill      │  (Note G interpreter)
+                    └──────┬──────┘
+                           │
+              ┌────────────┼────────────┐
+              │            │            │
+       ┌──────▼──────┐ ┌───▼───┐ ┌──────▼──────┐
+       │  Registers  │ │ Store │ │  Variables  │
+       └──────┬──────┘ └───┬───┘ └──────┬──────┘
+              │            │            │
+              └────────────┼────────────┘
+                           │
+                    ┌──────▼──────┐
+                    │   Printer   │  (emit HTML)
+                    └─────────────┘
+----
+
+Each stage uses Analytical Engine metaphors—the Mill processes operations, Registers hold intermediate values, the Store maintains state, and the Printer outputs results.
+
+== Features
+
+* **Note G Language** - Lovelace-inspired syntax for site generation
+* **Formal Verification** - Idris2 ABI definitions with dependent types
+* **Zig FFI** - C-compatible implementation for performance
+* **Historical Accuracy** - Operations mirror 19th-century computing concepts
+* **Educational Resources** - Learn computing history through code
+
+== Note G Language Concepts
+
+[cols="1,2"]
+|===
+|Concept |Purpose
+
+|`Store [value] in Register [N]`
+|Assign data to a numbered register (memory location)
+
+|`Transform [Register] via [Operation]`
+|Apply an operation to register contents
+
+|`Apply [template] to [Register]`
+|Combine template with data
+
+|`Emit [Register] to [path]`
+|Output register contents to file
+
+|`Card [N]: [instruction]`
+|Numbered instruction (like Analytical Engine punch cards)
+|===
+
+== Ecosystem
+
+noteg-ssg integrates with the https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp] hub via MCP adapters.
+
+Related projects:
+
+* https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp] - Unified MCP server for static site generators
+* https://github.com/hyperpolymath/anvil-ssg[anvil-ssg] - Ada/SPARK SSG (note: different from Note G!)
+* https://github.com/hyperpolymath/poly-ssg-lsp[poly-ssg-lsp] - LSP server for SSG languages
+
+== Technical Implementation
+
+**ABI Layer** (`src/abi/*.idr`):
+- Idris2 definitions with dependent type proofs
+- Formal verification of Note G semantics
+- Platform-specific ABI with compile-time selection
+
+**FFI Layer** (`ffi/zig/src/*.zig`):
+- Zig implementation with C ABI compatibility
+- Memory-safe execution
+- Zero-cost abstractions
+
+**Language** (`*.noteg` files):
+- Note G esolang source files
+- Lovelace-inspired syntax
+- Analytical Engine operational model
+
+== Requirements
+
+* Idris2 (for ABI layer formal verification)
+* Zig (for FFI implementation)
+* Deno (for MCP adapter integration)
+
+== Historical Note
+
+Ada Lovelace's Note G (1843) contained an algorithm for calculating Bernoulli numbers using Charles Babbage's Analytical Engine. It is considered the first published algorithm and makes Lovelace the world's first computer programmer.
+
+This project honors that legacy by implementing her algorithmic concepts as a modern esolang for static site generation.
+
+== License
+
+PMPL-1.0-or-later. See link:LICENSE[LICENSE].
+
+== Contributing
+
+See link:CONTRIBUTING.md[CONTRIBUTING.md] for guidelines.
+
+---
+
+_Part of the https://github.com/hyperpolymath[hyperpolymath] ecosystem_
+
+**Note**: For Ada programming language SSG, see https://github.com/hyperpolymath/anvil-ssg[anvil-ssg].

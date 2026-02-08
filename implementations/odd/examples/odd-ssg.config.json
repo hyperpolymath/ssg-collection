@@ -1,0 +1,32 @@
+{
+  "$schema": "../ssg/src/types.ts",
+  "title": "Example Site",
+  "description": "An example site built with odd-ssg",
+  "baseUrl": "https://example.com",
+  "language": "en",
+  "author": {
+    "name": "Example Author",
+    "email": "author@example.com"
+  },
+  "build": {
+    "contentDir": "content",
+    "templateDir": "templates",
+    "outputDir": "dist",
+    "drafts": false,
+    "minify": true,
+    "sitemap": true,
+    "rss": true
+  },
+  "accessibility": {
+    "bsl": true,
+    "asl": true,
+    "gsl": false,
+    "makaton": true,
+    "easyRead": true,
+    "wcagLevel": "AA"
+  },
+  "metadata": {
+    "generator": "odd-ssg/0.1.0",
+    "theme": "default"
+  }
+}

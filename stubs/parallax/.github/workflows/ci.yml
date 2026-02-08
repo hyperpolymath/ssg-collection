@@ -1,0 +1,288 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-FileCopyrightText: 2025 hyperpolymath
+name: Chapel CI
+
+permissions: read-all
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  CHAPEL_VERSION: "1.33.0"
+
+jobs:
+  # ===========================================================================
+  # Language Enforcement (MUST pass first)
+  # ===========================================================================
+  language-check:
+    name: Language Enforcement
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+
+      - name: Verify Chapel-only in src/
+        run: |
+          echo "🔍 Checking for forbidden languages in src/..."
+          forbidden=$(find src/ -type f \( \
+            -name "*.py" -o -name "*.js" -o -name "*.ts" -o -name "*.jsx" -o -name "*.tsx" \
+            -o -name "*.rb" -o -name "*.go" -o -name "*.java" \
+            -o -name "*.cpp" -o -name "*.c" -o -name "*.rs" \
+          \) 2>/dev/null || true)
+
+          if [ -n "$forbidden" ]; then
+            echo "❌ ERROR: Found forbidden language files in src/:"
+            echo "$forbidden"
+            echo ""
+            echo "parallax-ssg MUST be written in Chapel only."
+            echo "See CLAUDE.md and META.scm for language requirements."
+            exit 1
+          fi
+
+          echo "✅ OK: Only Chapel files in src/"
+
+          # Verify at least one Chapel file exists
+          chapel_files=$(find src/ -name "*.chpl" 2>/dev/null | wc -l)
+          if [ "$chapel_files" -eq 0 ]; then
+            echo "⚠️ WARNING: No Chapel files found in src/"
+          else
+            echo "📁 Found $chapel_files Chapel file(s)"
+          fi
+
+      - name: Verify ReScript-only in adapters/
+        run: |
+          echo "🔍 Checking adapter language compliance..."
+          if [ -d "adapters/src" ]; then
+            forbidden=$(find adapters/src/ -type f \( \
+              -name "*.py" -o -name "*.js" -o -name "*.ts" \
+              -o -name "*.chpl" -o -name "*.go" \
+            \) 2>/dev/null || true)
+
+            if [ -n "$forbidden" ]; then
+              echo "❌ ERROR: Non-ReScript files in adapters/src/:"
+              echo "$forbidden"
+              exit 1
+            fi
+            echo "✅ OK: Only ReScript in adapters/"
+          fi
+
+  # ===========================================================================
+  # Build Chapel SSG
+  # ===========================================================================
+  build:
+    name: Build Chapel
+    runs-on: ubuntu-latest
+    needs: language-check
+
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+
+      - name: Cache Chapel
+        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
+        with:
+          path: chapel-${{ env.CHAPEL_VERSION }}
+          key: chapel-${{ env.CHAPEL_VERSION }}-linux64
+
+      - name: Install Chapel
+        run: |
+          if [ ! -d "chapel-${{ env.CHAPEL_VERSION }}" ]; then
+            echo "📦 Downloading Chapel ${{ env.CHAPEL_VERSION }}..."
+            wget -q https://github.com/chapel-lang/chapel/releases/download/${{ env.CHAPEL_VERSION }}/chapel-${{ env.CHAPEL_VERSION }}-linux64-x86_64.tar.gz
+            tar xzf chapel-${{ env.CHAPEL_VERSION }}-linux64-x86_64.tar.gz
+            rm chapel-${{ env.CHAPEL_VERSION }}-linux64-x86_64.tar.gz
+          else
+            echo "✅ Using cached Chapel ${{ env.CHAPEL_VERSION }}"
+          fi
+          echo "$PWD/chapel-${{ env.CHAPEL_VERSION }}/bin/linux64-x86_64" >> $GITHUB_PATH
+
+      - name: Verify Chapel Installation
+        run: |
+          chpl --version
+          echo "CHPL_HOME=$PWD/chapel-${{ env.CHAPEL_VERSION }}" >> $GITHUB_ENV
+
+      - name: Check Syntax
+        run: |
+          echo "🔍 Checking Chapel syntax..."
+          chpl --syntax-only src/parallel-press.chpl
+          echo "✅ Syntax check passed"
+
+      - name: Build (Debug)
+        run: |
+          echo "🔨 Building debug binary..."
+          chpl src/parallel-press.chpl -o parallax-ssg -g --checks
+          echo "✅ Debug build complete"
+
+      - name: Build (Release)
+        run: |
+          echo "🔨 Building release binary..."
+          chpl src/parallel-press.chpl -o parallax-ssg-release --fast --optimize
+          echo "✅ Release build complete"
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4
+        with:
+          name: parallax-ssg-binaries
+          path: |
+            parallax-ssg
+            parallax-ssg-release
+
+  # ===========================================================================
+  # Test Suite
+  # ===========================================================================
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4
+        with:
+          name: parallax-ssg-binaries
+
+      - name: Make Executable
+        run: chmod +x parallax-ssg parallax-ssg-release
+
+      - name: Run Markdown Tests
+        run: |
+          echo "🧪 Running markdown parser tests..."
+          ./parallax-ssg test-markdown
+          echo "✅ Markdown tests passed"
+
+      - name: Run Frontmatter Tests
+        run: |
+          echo "🧪 Running frontmatter parser tests..."
+          ./parallax-ssg test-frontmatter
+          echo "✅ Frontmatter tests passed"
+
+      - name: Run Full Test Suite
+        run: |
+          echo "🧪 Running full test suite..."
+          ./parallax-ssg test-full
+          echo "✅ All tests passed"
+
+      - name: E2E Test - Site Generation
+        run: |
+          echo "🧪 Running E2E site generation test..."
+          mkdir -p test-site/content
+
+          cat > test-site/content/hello.md << 'EOF'
+          ---
+          title: Hello World
+          date: 2025-01-01
+          tags: test, ci
+          ---
+
+          # Welcome
+
+          This is a **test post** for CI/CD.
+          EOF
+
+          ./parallax-ssg build --source=test-site/content --output=test-site/_site
+
+          if [ -f "test-site/_site/hello.html" ]; then
+            echo "✅ E2E test passed - HTML generated"
+            cat test-site/_site/hello.html
+          else
+            echo "❌ E2E test failed - HTML not generated"
+            exit 1
+          fi
+
+  # ===========================================================================
+  # Security Checks
+  # ===========================================================================
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: language-check
+
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+
+      - name: Check for Secrets
+        run: |
+          echo "🔍 Scanning for hardcoded secrets..."
+
+          # Check for common secret patterns
+          if grep -rE "(password|secret|api_key|private_key|token)\s*=\s*['\"][^'\"]+['\"]" src/ 2>/dev/null; then
+            echo "⚠️ WARNING: Possible hardcoded secrets found"
+          else
+            echo "✅ No obvious hardcoded secrets"
+          fi
+
+          # Check for .env files
+          if [ -f ".env" ]; then
+            echo "⚠️ WARNING: .env file found - ensure it's in .gitignore"
+          fi
+
+      - name: Check SPDX Headers
+        run: |
+          echo "🔍 Checking SPDX license headers..."
+          missing=0
+
+          for f in src/*.chpl; do
+            if [ -f "$f" ] && ! head -5 "$f" | grep -q "SPDX-License-Identifier"; then
+              echo "⚠️ Missing SPDX header: $f"
+              missing=$((missing + 1))
+            fi
+          done
+
+          if [ $missing -eq 0 ]; then
+            echo "✅ All source files have SPDX headers"
+          else
+            echo "⚠️ $missing file(s) missing SPDX headers"
+          fi
+
+      - name: Verify Security Files
+        run: |
+          echo "🔍 Checking security infrastructure..."
+
+          required_files=("SECURITY.md" ".well-known/security.txt")
+          for f in "${required_files[@]}"; do
+            if [ -f "$f" ]; then
+              echo "✅ Found: $f"
+            else
+              echo "❌ Missing: $f"
+              exit 1
+            fi
+          done
+
+  # ===========================================================================
+  # Adapter Build (ReScript)
+  # ===========================================================================
+  adapter:
+    name: Build Adapter
+    runs-on: ubuntu-latest
+    needs: language-check
+
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: adapters/package.json
+
+      - name: Install Dependencies
+        working-directory: adapters
+        run: npm ci
+
+      - name: Build ReScript Adapter
+        working-directory: adapters
+        run: npm run build
+
+      - name: Verify Build Output
+        working-directory: adapters
+        run: |
+          if [ -f "src/ParallaxAdapter.bs.js" ] || [ -f "src/ParallaxAdapter.mjs" ]; then
+            echo "✅ Adapter build successful"
+          else
+            echo "⚠️ Adapter build output not found (may use different output path)"
+          fi

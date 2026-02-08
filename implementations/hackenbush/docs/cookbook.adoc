@@ -1,0 +1,673 @@
+= hackenbush-ssg Cookbook
+:toc: left
+:toclevels: 4
+:sectnums:
+:source-highlighter: rouge
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+
+This cookbook provides comprehensive recipes for hackenbush-ssg operations, covering CLI commands, Justfile recipes, Nickel configuration, and combinatoric patterns.
+
+== Quick Reference
+
+[cols="1,2,3"]
+|===
+|Category |Command |Description
+
+|<<cli,CLI>>
+|`deno task run`
+|Run Life simulation
+
+|<<justfile,Just>>
+|`just build`
+|Build project
+
+|<<mustfile,Must>>
+|`make must-all`
+|All mandatory checks
+
+|<<nickel,Nickel>>
+|`nickel export config.ncl`
+|Export configuration
+|===
+
+[[cli]]
+== CLI Commands
+
+=== Deno Runtime
+
+==== Basic Operations
+
+[source,bash]
+----
+# Run the Life simulation
+deno task run
+
+# Run with custom pattern
+deno run --allow-read --allow-write runtime/host.ts evolve
+
+# Type check
+deno check runtime/host.ts
+
+# Run tests
+deno test --allow-read tests/
+
+# Format code
+deno fmt
+
+# Lint code
+deno lint
+----
+
+==== Advanced Operations
+
+[source,bash]
+----
+# Run with specific generations
+deno run --allow-read --allow-write runtime/host.ts evolve --generations 1000
+
+# Benchmark simulation
+deno bench
+
+# Watch mode development
+deno task dev
+
+# Generate documentation
+deno doc runtime/host.ts --html
+----
+
+=== Git Operations
+
+[source,bash]
+----
+# Standard workflow
+git add -A && git commit -m "message" && git push
+
+# View CI status
+gh run list --limit 10
+
+# Create PR
+gh pr create --title "Title" --body "Description"
+
+# View PR checks
+gh pr checks
+----
+
+=== Pattern Tools
+
+[source,bash]
+----
+# Validate RLE pattern
+head -5 src/hackenbush.rle
+
+# Count cells in pattern
+grep -o 'o' src/hackenbush.rle | wc -l
+
+# View in Golly (if installed)
+golly src/hackenbush.rle
+----
+
+[[justfile]]
+== Justfile Recipes
+
+=== Build & Compile
+
+[source,bash]
+----
+# Build project
+just build
+
+# Build in release mode
+just build-release
+
+# Watch for changes
+just build-watch
+
+# Clean build artifacts
+just clean
+
+# Deep clean
+just clean-all
+----
+
+=== Test & Quality
+
+[source,bash]
+----
+# Run all tests
+just test
+
+# Verbose tests
+just test-verbose
+
+# Test with coverage
+just test-coverage
+
+# Format code
+just fmt
+
+# Check formatting
+just fmt-check
+
+# Run linter
+just lint
+
+# All quality checks
+just quality
+
+# Auto-fix issues
+just fix
+----
+
+=== Run & Execute
+
+[source,bash]
+----
+# Run application
+just run
+
+# Development mode
+just dev
+
+# Start REPL
+just repl
+----
+
+=== Documentation
+
+[source,bash]
+----
+# Generate all docs
+just docs
+
+# Generate cookbook
+just cookbook
+
+# Generate man page
+just man
+----
+
+=== Container Operations
+
+[source,bash]
+----
+# Build container
+just container-build
+
+# Build with tag
+just container-build v1.0.0
+
+# Run container
+just container-run
+
+# Push to registry
+just container-push
+----
+
+=== Security
+
+[source,bash]
+----
+# Security audit
+just security
+
+# Generate SBOM
+just sbom
+
+# Audit dependencies
+just deps-audit
+----
+
+=== Validation
+
+[source,bash]
+----
+# RSR compliance check
+just validate-rsr
+
+# Validate STATE.scm
+just validate-state
+
+# Full validation
+just validate
+----
+
+=== Pattern Operations
+
+[source,bash]
+----
+# Validate patterns
+just validate-patterns
+
+# Evolve pattern
+just evolve
+
+# Benchmark patterns
+just bench-patterns
+----
+
+=== State Management
+
+[source,bash]
+----
+# Update STATE.scm timestamp
+just state-touch
+
+# Show current phase
+just state-phase
+----
+
+=== Guix/Nix
+
+[source,bash]
+----
+# Enter Guix shell
+just guix-shell
+
+# Build with Guix
+just guix-build
+
+# Enter Nix shell
+just nix-shell
+----
+
+[[mustfile]]
+== Mustfile (Required Checks)
+
+=== Mandatory Checks
+
+[source,bash]
+----
+# All mandatory checks
+make -f Mustfile must-all
+
+# Pattern validation
+make -f Mustfile must-patterns
+
+# No SSG logic in runtime
+make -f Mustfile must-no-ssg-logic
+
+# TypeScript location check
+make -f Mustfile must-typescript-location
+
+# Security checks
+make -f Mustfile must-security
+
+# Type checking
+make -f Mustfile must-typecheck
+
+# RSR compliance
+make -f Mustfile must-rsr
+----
+
+=== Build Operations
+
+[source,bash]
+----
+# Build
+make -f Mustfile build
+
+# Test
+make -f Mustfile test
+
+# E2E tests
+make -f Mustfile test-e2e
+
+# All tests
+make -f Mustfile test-all
+----
+
+[[nickel]]
+== Nickel Configuration
+
+=== Export Configuration
+
+[source,bash]
+----
+# Export full config as JSON
+nickel export config.ncl
+
+# Export specific section
+nickel export config.ncl --field project
+
+# Validate configuration
+nickel typecheck config.ncl
+----
+
+=== Configuration Sections
+
+==== Project
+
+[source,nickel]
+----
+let Project = {
+  name = "hackenbush-ssg",
+  version = "0.1.0",
+  language = "Conway's Game of Life",
+}
+----
+
+==== Life Configuration
+
+[source,nickel]
+----
+let LifeConfig = {
+  rule = "B3/S23",
+  grid.default_width = 1000,
+  grid.default_height = 1000,
+  simulation.max_generations = 1000000,
+}
+----
+
+==== Build Configuration
+
+[source,nickel]
+----
+let BuildConfig = {
+  deno.permissions = ["--allow-read", "--allow-write"],
+  rescript.version = "11.1.0",
+  container.base_image = "cgr.dev/chainguard/wolfi-base:latest",
+}
+----
+
+== Combinatorics & Permutations
+
+=== Matrix Recipes
+
+==== Build Matrix
+
+[source,bash]
+----
+# Build matrix: [debug|release] × [target] × [features]
+just build-matrix debug
+just build-matrix release
+just build-matrix debug wasm
+just build-matrix release wasm all-features
+----
+
+==== Test Matrix
+
+[source,bash]
+----
+# Test matrix: [unit|integration|e2e|all] × [verbosity] × [parallel]
+just test-matrix unit
+just test-matrix integration verbose
+just test-matrix e2e verbose false
+just test-matrix all normal true
+----
+
+==== Container Matrix
+
+[source,bash]
+----
+# Container matrix: [build|run|push|shell|scan] × [registry] × [tag]
+just container-matrix build
+just container-matrix run ghcr.io/hyperpolymath latest
+just container-matrix push ghcr.io/hyperpolymath v1.0.0
+just container-matrix scan
+----
+
+==== CI Matrix
+
+[source,bash]
+----
+# CI matrix: [lint|test|build|security|all] × [quick|full]
+just ci-matrix lint quick
+just ci-matrix test full
+just ci-matrix security full
+just ci-matrix all quick
+----
+
+=== Permutation Table
+
+[cols="1,1,1,1"]
+|===
+|Dimension |Options |Count |Total
+
+|Build Mode
+|debug, release
+|2
+|
+
+|Target
+|native, wasm, all
+|3
+|
+
+|Features
+|none, minimal, all
+|3
+|
+
+|**Build Total**
+|
+|
+|**18**
+
+|Test Suite
+|unit, integration, e2e, all
+|4
+|
+
+|Verbosity
+|quiet, normal, verbose
+|3
+|
+
+|Parallel
+|true, false
+|2
+|
+
+|**Test Total**
+|
+|
+|**24**
+
+|Container Action
+|build, run, push, shell, scan
+|5
+|
+
+|Registry
+|ghcr, dockerhub, custom
+|3
+|
+
+|Tag
+|latest, version, sha
+|3
+|
+
+|**Container Total**
+|
+|
+|**45**
+
+|**Grand Total**
+|
+|
+|**~10 billion** (with nesting)
+|===
+
+=== Concatenation Patterns
+
+[source,bash]
+----
+# Chain commands with &&
+just clean && just build && just test
+
+# Parallel execution
+just lint & just test & wait
+
+# Conditional execution
+just test && just deploy || just rollback
+
+# Full CI pipeline
+just clean && just deps && just quality && just build && just test
+----
+
+== Workflow Recipes
+
+=== Development Workflow
+
+[source,bash]
+----
+# Start development
+just deps
+just dev
+
+# Before commit
+just fmt
+just lint
+just test
+
+# Create commit
+git add -A
+git commit -m "feat: description"
+----
+
+=== Release Workflow
+
+[source,bash]
+----
+# Prepare release
+just clean
+just quality
+just build-release
+just test-all
+
+# Build container
+just container-build v1.0.0
+
+# Push release
+just container-push ghcr.io/hyperpolymath v1.0.0
+git tag v1.0.0
+git push --tags
+----
+
+=== Pattern Development Workflow
+
+[source,bash]
+----
+# Create new pattern
+# 1. Design in Golly
+# 2. Export as RLE
+cp my-pattern.rle patterns/new-pattern.rle
+
+# 3. Validate
+just validate-patterns
+
+# 4. Test
+just test-patterns
+
+# 5. Document
+echo "# Pattern description" >> patterns/README.adoc
+----
+
+== Hooks & Automation
+
+=== Git Hooks
+
+[source,bash]
+----
+# Install hooks
+just install-hooks
+
+# Pre-commit hook runs:
+# - just fmt-check
+# - just lint
+----
+
+=== CI/CD Hooks
+
+[source,yaml]
+----
+# .github/workflows/ci.yml triggers on:
+# - push to main, develop
+# - pull_request to main, develop
+
+# Required checks:
+# - pattern-validation
+# - type-check
+# - lint
+# - security-scan
+----
+
+=== Local Automation
+
+[source,bash]
+----
+# Run all automation
+just automate all
+
+# Cleanup
+just automate cleanup
+
+# Update deps
+just automate update
+----
+
+== Troubleshooting
+
+=== Common Issues
+
+[cols="1,2,2"]
+|===
+|Issue |Cause |Solution
+
+|Pattern not loading
+|Invalid RLE format
+|`just validate-patterns`
+
+|Type errors
+|TypeScript issues
+|`deno check runtime/host.ts`
+
+|CI failing
+|Missing checks
+|`make -f Mustfile must-all`
+
+|Container build fails
+|Missing Containerfile
+|Create Containerfile
+
+|RSR non-compliant
+|Missing required files
+|`just validate-rsr`
+|===
+
+=== Debug Commands
+
+[source,bash]
+----
+# Verbose output
+VERBOSE=1 just test
+
+# Debug Deno
+deno run --inspect runtime/host.ts
+
+# Check file permissions
+ls -la src/ runtime/ patterns/
+
+# Verify dependencies
+deno info
+----
+
+== Index
+
+* <<cli,CLI Commands>>
+** <<_deno_runtime,Deno Runtime>>
+** <<_git_operations,Git Operations>>
+** <<_pattern_tools,Pattern Tools>>
+* <<justfile,Justfile Recipes>>
+** <<_build_compile,Build & Compile>>
+** <<_test_quality,Test & Quality>>
+** <<_container_operations,Container Operations>>
+* <<mustfile,Mustfile>>
+** <<_mandatory_checks,Mandatory Checks>>
+* <<nickel,Nickel Configuration>>
+** <<_configuration_sections,Configuration Sections>>
+* <<_combinatorics_permutations,Combinatorics>>
+** <<_matrix_recipes,Matrix Recipes>>
+** <<_permutation_table,Permutation Table>>

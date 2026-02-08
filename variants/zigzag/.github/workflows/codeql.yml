@@ -1,0 +1,48 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# CodeQL workflow for zigzag-ssg
+#
+# Note: CodeQL does not support Zig. This workflow scans
+# the ReScript/JavaScript MCP adapter code in adapters/.
+
+name: "CodeQL"
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - 'adapters/**'
+      - '.github/workflows/codeql.yml'
+  pull_request:
+    branches: ["main"]
+    paths:
+      - 'adapters/**'
+      - '.github/workflows/codeql.yml'
+  schedule:
+    - cron: '42 20 * * 0'
+
+permissions: read-all
+
+jobs:
+  analyze:
+    name: Analyze JavaScript/TypeScript (MCP Adapter)
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      packages: read
+      actions: read
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@ea9e4e37992a54ee68a9571571f9a567d8f90f78 # v3.28.0
+        with:
+          languages: javascript-typescript
+          build-mode: none
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@ea9e4e37992a54ee68a9571571f9a567d8f90f78 # v3.28.0
+        with:
+          category: "/language:javascript-typescript"

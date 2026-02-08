@@ -1,0 +1,119 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+== [Unreleased]
+
+=== Added
+
+- Comprehensive project infrastructure with 44-component tracking
+- `Justfile` with 40+ recipes for build, test, lint, release
+- `Mustfile` with mandatory gates (pre-commit, pre-push, PR, release)
+- `cookbook.adoc` - Complete reference with CLI, Just, Must, Nickel sections
+- `PLAYBOOK.scm` - Workflows, procedures, runbooks, escalation paths
+- `AGENTIC.scm` - MCP config, agent capabilities, tool registry
+- `NEUROSYM.scm` - Symbolic types, reasoning rules, verification properties
+- `ci.yml` - Full CI pipeline (lint, test, security, RSR compliance)
+- PR template with comprehensive checklist
+- Git hooks (pre-commit, pre-push, commit-msg) with full validation
+- `Containerfile` for container builds (Podman/Docker)
+- `flake.nix` for Nix development environment
+- `.env.example` for environment configuration
+- `.editorconfig` for consistent code style
+- Comprehensive test suite (unit, E2E, security tests)
+- `README.adoc` with full project documentation
+
+=== Changed
+
+- Updated `META.scm` with 5 ADRs and 44-component inventory
+- Updated `ECOSYSTEM.scm` with architecture diagram and language families
+- Updated `STATE.scm` with detailed component tracking (44/44)
+- Improved `Justfile` hooks-install to use hooks/ directory
+
+=== Security
+
+- Fixed SECURITY.md template placeholders
+- Fixed CODE_OF_CONDUCT.md template placeholders
+- Added security audit job in CI pipeline
+- Added pre-commit hooks for secret detection
+- All GitHub Actions are SHA-pinned (RSR requirement)
+
+== [0.1.0] - 2025-12-16
+
+=== Added
+
+- Initial project setup with RSR Gold compliance framework
+- 28 SSG adapters synced from poly-ssg-mcp hub
+  - Rust: Cobalt, mdBook, Zola
+  - Haskell: Ema, Hakyll
+  - Elixir: Serum, Tableau, NimblePublisher
+  - Clojure: Babashka, Cryogen, Perun
+  - Julia: Documenter.jl, Franklin.jl, StaticWebPages.jl
+  - Scala: Laika, ScalaTex
+  - Common Lisp: Coleslaw
+  - F#: Fornax
+  - Racket: Frog, Pollen
+  - Kotlin: Orchid
+  - Crystal: Marmot
+  - Nim: Nimrod
+  - Swift: Publish
+  - D: Reggae
+  - Tcl: Wub
+  - OCaml: YOCaml
+  - Erlang: Zotonic
+- MCP-compatible adapter interface
+- SCM configuration files (META.scm, STATE.scm, ECOSYSTEM.scm)
+- SPDX headers on all files
+- GitHub configuration (issue templates, Dependabot, CodeQL)
+- SECURITY.md, CODE_OF_CONDUCT.md, CONTRIBUTING.md
+- Dual MIT/AGPL-3.0-or-later licensing
+
+=== Changed
+
+- Nothing (initial release)
+
+=== Deprecated
+
+- Nothing (initial release)
+
+=== Removed
+
+- Nothing (initial release)
+
+=== Fixed
+
+- Nothing (initial release)
+
+=== Security
+
+- CodeQL security analysis enabled
+- SHA-pinned GitHub Actions
+- Comprehensive security policy
+
+---
+
+== Version History
+
+| Version | Date | Status |
+|---------|------|--------|
+| 0.1.0 | 2025-12-16 | Initial Release |
+| Unreleased | - | In Development |
+
+== Upgrade Notes
+
+=== Upgrading to Unreleased
+
+No breaking changes. New features are additive:
+
+1. Run `just hooks-install` to install new git hooks
+2. Run `just ci` to verify all checks pass
+3. Review new SCM files (PLAYBOOK.scm, AGENTIC.scm, NEUROSYM.scm)
+
+---
+
+[Unreleased]: https://github.com/hyperpolymath/saur-ssg/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/hyperpolymath/saur-ssg/releases/tag/v0.1.0

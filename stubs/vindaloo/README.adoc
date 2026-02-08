@@ -1,0 +1,61 @@
+= vindaloo-ssg
+
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+:toc:
+:toc-title: Table of Contents
+:icons: font
+
+**Non-deterministic functional-logic site generation in Curry.**
+"Vindaloo" — A spicy, multi-layered blend of Haskell-style functional purity and Prolog-style logical search.
+
+== Who Is This For?
+* **Constraint-Satisfaction Enthusiasts** who want their SSG to "solve" for the best layout rather than just render it.
+* **Researchers** exploring the intersection of lazy evaluation, non-deterministic search, and logical variables.
+* **Architects** needing a generator capable of handling ambiguous content relationships and complex taxonomies.
+* **Teams** seeking a "search-first" approach to static content orchestration.
+
+== Why vindaloo-ssg?
+
+=== Constraint-Based Synthesis
+Define your site structure as a set of constraints (e.g., "This post must be adjacent to a related image, and the total page-weight must not exceed 200kb"). The engine "searches" the solution space to generate the site automatically.
+
+=== Functional Purity + Logical Search
+Leveraging the Curry language, you get the best of both worlds: the strictness of algebraic data types and the power of logical variables. This allows for complex, high-level site queries that are impossible in traditional imperative SSGs.
+
+=== Non-Deterministic Layouts
+If a layout has multiple valid configurations, `vindaloo-ssg` can explore all possibilities (non-determinism). This is perfect for A/B testing or generating multiple variations of a site from a single source-logic core.
+
+=== Deep Integration with poly-ssg
+While the core uses Curry's logic engine, it is bridged to the **poly-ssg-mcp** hub via **ReScript** on **Deno**, allowing modern AI agents to interact with the search-based build process.
+
+== Quick Start
+[source,oil]
+----
+# Setup the Curry environment (PAKCS or KiCS2) via asdf
+just setup
+
+# Run the constraint-based build
+# The engine will 'solve' for the optimal site structure
+just build
+
+# Type-check and verify constraints without building
+just check
+----
+
+== Features
+* **Logic-Driven Routing** - Use logical variables to define dynamic site paths and relationships.
+* **Lazy Evaluation** - Only render what is strictly necessary to satisfy the current search constraints.
+* **Podman-First** - Isolated, containerised logic-search environments for **Linux**, **Minix**, and **PC**.
+* **Accessibility** - Integrated support for **BSL**, **GSL**, **ASL**, and **Makaton** metadata.
+* **Edge-Ready** - Verified for **ASICs** and **Edge tech** via efficient backend emission.
+
+== Requirements
+* **PAKCS** or **KiCS2** (Curry Compilers)
+* **Deno** (for ReScript/MCP adapters)
+* **Just** (Orchestrator)
+
+== Part of poly-ssg
+`vindaloo-ssg` provides the constraint-logic and non-deterministic tier of the **poly-ssg** family.
+
+== License
+PMPL-1.0-or-later

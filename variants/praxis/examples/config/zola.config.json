@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/ssg-config.schema.json",
+  "ssg": "zola",
+  "site": {
+    "title": "My Zola Site",
+    "baseUrl": "https://example.com",
+    "description": "A static site built with Zola"
+  },
+  "build": {
+    "outputDir": "public",
+    "drafts": false
+  },
+  "serve": {
+    "port": 1111,
+    "interface": "127.0.0.1",
+    "openBrowser": true
+  }
+}

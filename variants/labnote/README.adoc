@@ -1,0 +1,140 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+= labnote-ssg
+:toc: macro
+:toclevels: 2
+:source-highlighter: rouge
+
+image:https://img.shields.io/badge/RSR-Gold-gold[RSR Gold]
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/poly--ssg-satellite-purple[poly-ssg satellite]
+image:https://img.shields.io/badge/stage-experimental-orange[Experimental]
+
+SciLab-based static site generator for lab notebooks.
+
+_Let matrices compute. Let figures render. Let science publish._
+
+toc::[]
+
+== For Who
+
+[cols="1,2"]
+|===
+|Audience |Why labnote-ssg
+
+|**Computational scientists**
+|Publish research with embedded numerical results, signal plots, and matrix computations
+
+|**MATLAB refugees**
+|Open-source alternative with no license fees, vendor lock-in, or proprietary restrictions
+
+|**Lab notebook maintainers**
+|Reproducible documentation that executes inline — results update when data changes
+
+|**Technical writers**
+|Scientific documents with live computation, not static screenshots of results
+|===
+
+== Why SciLab
+
+SciLab brings numerical computing to documentation. Four properties make it distinctive:
+
+**Matrix-native computation** — First-class matrix operations, linear algebra, and array mathematics. Documentation includes live numerical results, not copy-pasted output.
+
+**Open scientific ecosystem** — ATOMS package manager provides signal processing, optimization, statistics, and control systems. FOSS from Inria/ESI with no commercial encumbrance.
+
+**Xcos block diagrams** — Visual modeling for control systems and signal flow renders directly into documentation. Hybrid simulation combines continuous and discrete dynamics.
+
+**Scilab-to-C compilation** — Performance-critical sections compile to native code. Documentation can include benchmarks that actually run.
+
+== Quick Start
+
+[source,bash]
+----
+# Ensure SciLab is installed
+scilab-cli --version
+
+# Initialize a new lab notebook site
+labnote init my-research
+
+# Build the site (executes all .sce blocks)
+labnote build
+
+# Serve with live reload
+labnote serve
+----
+
+== Architecture
+
+....
+                ┌─────────────────────────────────────┐
+                │           labnote-ssg               │
+                │    SciLab Documentation Engine      │
+                └──────────────────┬──────────────────┘
+                                   │
+        ┌──────────────────────────┼──────────────────────────┐
+        │                          │                          │
+┌───────┴───────┐         ┌────────┴────────┐        ┌────────┴────────┐
+│    Parser     │         │    Executor     │        │    Renderer     │
+│  .adoc + .sce │         │  SciLab Engine  │        │   HTML + SVG    │
+└───────────────┘         └─────────────────┘        └─────────────────┘
+        │                          │                          │
+        └──────────────────────────┼──────────────────────────┘
+                                   │
+                    ┌──────────────┴──────────────┐
+                    │         Output              │
+                    │  Static site with embedded  │
+                    │  computed results & plots   │
+                    └─────────────────────────────┘
+....
+
+== Features
+
+* **Inline execution** — `.sce` code blocks run through SciLab, results embedded in output
+* **Figure generation** — Plots render to SVG, embedded directly in pages
+* **Incremental builds** — Only re-execute changed computational blocks
+* **Reproducibility** — Same source produces identical output on any machine with SciLab
+* **AsciiDoc base** — Full technical documentation capabilities (equations, tables, cross-refs)
+
+== Computational Blocks
+
+[source,asciidoc]
+----
+[source,scilab]
+....
+// This block executes during build
+A = [1 2; 3 4];
+B = inv(A);
+disp(B);
+....
+----
+
+Results appear inline in the rendered documentation.
+
+== Integration
+
+labnote-ssg operates as a satellite in the poly-ssg ecosystem:
+
+* **https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp]** — Central hub providing unified MCP interface
+* **https://github.com/hyperpolymath/poly-container-mcp[poly-container-mcp]** — Container runtime management
+* **https://github.com/hyperpolymath/poly-iac-mcp[poly-iac-mcp]** — Infrastructure as Code tooling
+
+The ReScript adapter exposes MCP tools for AI-assisted workflows:
+
+* `labnote_init` — Initialize new lab notebook project
+* `labnote_build` — Execute and render documentation
+* `labnote_serve` — Development server with live reload
+* `labnote_clean` — Remove generated artifacts
+
+== Requirements
+
+* **SciLab 2024.0+** — Core computation engine
+* **Deno 1.40+** — Adapter runtime (for MCP integration)
+
+== Contributing
+
+See link:CONTRIBUTING.md[CONTRIBUTING.md] for development guidelines.
+
+== License
+
+Dual licensed under MIT OR PMPL-1.0-or-later. See link:LICENSE.txt[LICENSE.txt] for details.

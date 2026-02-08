@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Dependabot configuration for prodigy-ssg
+# Only ecosystems actually used in this repository
+
+version: 2
+updates:
+  # GitHub Actions - for workflow security
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      actions:
+        patterns:
+          - "*"
+
+  # Node.js/npm - for ReScript adapter in adapters/
+  - package-ecosystem: "npm"
+    directory: "/adapters"
+    schedule:
+      interval: "weekly"

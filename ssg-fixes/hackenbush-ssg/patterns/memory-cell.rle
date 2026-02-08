@@ -1,0 +1,11 @@
+#N Memory Cell Pattern
+#C Stable memory storage using still life + glider interaction
+#C Can be set, read, and cleared via glider signals
+#O hackenbush-ssg project
+x = 20, y = 20, rule = B3/S23
+# Memory cell uses block + glider interaction
+# Block present = 1, absent = 0
+# SET: glider creates block
+# CLEAR: glider destroys block
+# READ: detection glider stream
+5b2o$5b2o!

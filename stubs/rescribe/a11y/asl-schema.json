@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/hyperpolymath/rescribe-ssg/a11y/asl-schema.json",
+  "title": "American Sign Language (ASL) Metadata Schema",
+  "description": "Schema for ASL content integration in rescribe-ssg",
+  "type": "object",
+  "required": ["version", "language"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "language": {
+      "type": "string",
+      "const": "asl",
+      "description": "American Sign Language identifier"
+    },
+    "iso639_3": {
+      "type": "string",
+      "const": "ase",
+      "description": "ISO 639-3 code for ASL"
+    },
+    "content": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/aslContent"
+      }
+    },
+    "glossary": {
+      "type": "object",
+      "description": "Sign glossary mappings",
+      "additionalProperties": {
+        "$ref": "#/$defs/glossaryEntry"
+      }
+    },
+    "interpreter": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "certification": {
+          "type": "string",
+          "enum": ["RID-CI", "RID-CT", "NIC", "CDI", "other"]
+        },
+        "registrationNumber": { "type": "string" }
+      }
+    }
+  },
+  "$defs": {
+    "aslContent": {
+      "type": "object",
+      "required": ["id", "type"],
+      "properties": {
+        "id": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": ["video", "gif", "avatar", "signwriting"]
+        },
+        "src": { "type": "string", "format": "uri" },
+        "transcript": { "type": "string" },
+        "duration": { "type": "number" },
+        "closedCaptions": {
+          "type": "boolean",
+          "default": true
+        },
+        "signWriting": {
+          "type": "string",
+          "description": "SignWriting notation"
+        }
+      }
+    },
+    "glossaryEntry": {
+      "type": "object",
+      "properties": {
+        "term": { "type": "string" },
+        "signVideo": { "type": "string", "format": "uri" },
+        "signWriting": { "type": "string" },
+        "description": { "type": "string" },
+        "handshape": { "type": "string" },
+        "palmOrientation": { "type": "string" },
+        "movement": { "type": "string" },
+        "location": { "type": "string" },
+        "nonManualSignals": { "type": "string" }
+      }
+    }
+  }
+}

@@ -1,0 +1,61 @@
+= liminal-ssg
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+
+
+
+:toc:
+:toc-title: Table of Contents
+:icons: font
+
+**Time-reversible, structured site generation in Janus.**
+"January" — Named for the two-faced god who looks simultaneously into the past and the future. A generator where every build is a mathematically invertible transformation.
+
+== Who Is This For?
+* **Reversible Computing Researchers** seeking a structured, imperative approach to zero-entropy site synthesis.
+* **Systems Engineers** targeting **ASICs** and **Edge tech** where thermal management and energy conservation are primary constraints.
+* **Formal Verification Purists** who require the ability to "un-build" a site to verify the absolute integrity of the source data.
+
+== Why january-ssg?
+
+=== Deterministic Invertibility
+Janus is a structured imperative language where every statement has a unique inverse. In `january-ssg`, site generation is a reversible process; you can "uncall" the build procedure to revert to the exact source state with mathematical certainty.
+
+=== Thermodynamic Minimalism
+By avoiding the erasure of information, reversible computing circumvents the Landauer limit of energy dissipation. This makes `january-ssg` the most ecologically sound and heat-efficient engine in the **poly-ssg** family.
+
+=== Peer of undo-ssg
+While `undo-ssg` leverages the Arrow paradigm, `january-ssg` provides a familiar imperative structure (loops, conditionals) that remains strictly reversible. It serves as the "structured" anchor for the reversible tier of the ecosystem.
+
+=== Podman-First "Time-Capsule"
+The Janus runtime is fully containerised. Whether deploying to **Minix**, **Linux**, or **PC**, the reversible environment is isolated, ensuring that "undoing" a build never affects the host system's stability.
+
+== Quick Start
+[source,oil]
+----
+# Bootstrap the Janus environment via asdf
+just setup
+
+# Execute the site build (Forward transformation)
+just build-forward
+
+# Reverse the transformation to recover source state
+just build-backward
+----
+
+== Features
+* **Invertible Site Synthesis** - Forward and backward build paths are equally valid.
+* **Information Preservation** - Zero loss of source data during the rendering pipeline.
+* **Multi-Arch Support** - Optimized for **Minix**, **iOS**, **Android**, and **Edge** hardware.
+* **Accessibility** - Integrated support for **BSL**, **GSL**, **ASL**, and **Makaton** metadata.
+
+== Requirements
+* **Janus Interpreter** (Academic/FOSS implementation)
+* **Deno** (for ReScript/MCP adapters)
+* **Just** (Orchestrator)
+
+== Part of poly-ssg
+`january-ssg` is the reversible, structured member of the **poly-ssg** family, unified through **MCP** integration.
+
+== License
+PMPL-1.0-or-later

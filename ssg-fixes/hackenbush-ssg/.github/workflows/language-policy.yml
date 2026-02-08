@@ -1,0 +1,82 @@
+# SPDX-License-Identifier: MPL-2.0-or-later
+name: Language Policy Enforcement
+
+on:
+  push:
+    branches: ["*"]
+  pull_request:
+    branches: ["*"]
+
+permissions: read-all
+
+jobs:
+  check-policy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@e95548e56ddc3f63d0e1eab7bed41d4031f02b36 # v2
+        with:
+          deno-version: v2.x
+
+      - name: Check for banned TypeScript files
+        run: |
+          echo "Checking for banned TypeScript files..."
+          VIOLATIONS=$(find . -type f \( -name "*.ts" -o -name "*.tsx" \) \
+            ! -name "*.d.ts" \
+            ! -path "./.git/*" \
+            ! -path "./node_modules/*" \
+            ! -path "./_site/*" | head -20)
+          if [ -n "$VIOLATIONS" ]; then
+            echo "ERROR: TypeScript files found (banned - use ReScript instead):"
+            echo "$VIOLATIONS"
+            exit 1
+          fi
+          echo "No TypeScript violations found"
+
+      - name: Check for banned Go files
+        run: |
+          echo "Checking for banned Go files..."
+          VIOLATIONS=$(find . -type f -name "*.go" \
+            ! -path "./.git/*" | head -20)
+          if [ -n "$VIOLATIONS" ]; then
+            echo "ERROR: Go files found (banned - use Rust instead):"
+            echo "$VIOLATIONS"
+            exit 1
+          fi
+          echo "No Go violations found"
+
+      - name: Check for banned Node.js lock files
+        run: |
+          echo "Checking for banned lock files..."
+          VIOLATIONS=""
+          for f in package-lock.json yarn.lock pnpm-lock.yaml bun.lockb; do
+            if [ -f "$f" ]; then
+              VIOLATIONS="$VIOLATIONS $f"
+            fi
+          done
+          if [ -n "$VIOLATIONS" ]; then
+            echo "ERROR: Node.js lock files found (banned - use Deno instead):"
+            echo "$VIOLATIONS"
+            exit 1
+          fi
+          echo "No Node.js lock file violations found"
+
+      - name: Check for banned Python files
+        run: |
+          echo "Checking for banned Python files..."
+          VIOLATIONS=$(find . -type f -name "*.py" \
+            ! -path "./.git/*" \
+            ! -path "./salt/*" \
+            ! -path "./saltstack/*" \
+            ! -path "./_salt/*" | head -20)
+          if [ -n "$VIOLATIONS" ]; then
+            echo "ERROR: Python files found outside SaltStack (banned - use ReScript/Rust):"
+            echo "$VIOLATIONS"
+            exit 1
+          fi
+          echo "No Python violations found"
+
+      - name: Run full policy check
+        run: deno run --allow-read scripts/check-language-policy.js

@@ -1,0 +1,526 @@
+= wagasm-ssg Cookbook
+:toc: left
+:toclevels: 3
+:sectanchors:
+:sectlinks:
+:icons: font
+
+The complete reference for building, testing, and deploying wagasm-ssg.
+
+== Quick Reference
+
+[cols="1,2,3"]
+|===
+| Task | Just | CLI
+
+| Build site
+| `just build`
+| `wat2wasm src/wagasm-ssg.wat -o src/wagasm-ssg.wasm && deno run --allow-read --allow-write runtime/host.ts`
+
+| Run tests
+| `just test`
+| `just test-compile && just test-validate && just test-language && just test-build`
+
+| Clean
+| `just clean`
+| `rm -rf src/*.wasm _site/`
+
+| Show help
+| `just help`
+| `just --list`
+|===
+
+[[cli]]
+== CLI Commands
+
+=== WABT (WebAssembly Binary Toolkit)
+
+[source,bash]
+----
+# Compile WAT to WASM
+wat2wasm src/wagasm-ssg.wat -o src/wagasm-ssg.wasm
+
+# Compile with debug names (for development)
+wat2wasm --debug-names src/wagasm-ssg.wat -o src/wagasm-ssg.wasm
+
+# Validate WASM binary
+wasm-validate src/wagasm-ssg.wasm
+
+# Disassemble WASM back to WAT
+wasm2wat src/wagasm-ssg.wasm -o output.wat
+
+# Show WASM module info
+wasm-objdump -h src/wagasm-ssg.wasm
+
+# Dump all sections
+wasm-objdump -x src/wagasm-ssg.wasm
+
+# Run with interpreter (basic testing)
+wasm-interp src/wagasm-ssg.wasm --run-all-exports
+----
+
+=== Deno Runtime
+
+[source,bash]
+----
+# Run the SSG host
+deno run --allow-read --allow-write runtime/host.ts
+
+# Run with verbose output
+deno run --allow-read --allow-write --log-level=debug runtime/host.ts
+
+# Check TypeScript (host only)
+deno check runtime/host.ts
+
+# Format host.ts
+deno fmt runtime/host.ts
+
+# Lint host.ts
+deno lint runtime/host.ts
+----
+
+=== Git Operations
+
+[source,bash]
+----
+# Check language compliance before commit
+find src/ -type f \( -name "*.ts" -o -name "*.js" -o -name "*.rs" -o -name "*.py" \) 2>/dev/null
+
+# Pre-commit check
+just pre-commit
+
+# Pre-push check
+just pre-push
+----
+
+[[just]]
+== Just Recipes
+
+=== Build Commands
+
+[source,bash]
+----
+# Show all available recipes
+just help
+
+# Compile WAT to WASM
+just compile
+
+# Compile with debug symbols
+just compile-debug
+
+# Validate WASM binary
+just validate
+
+# Build complete site
+just build
+
+# Run without recompiling
+just run
+
+# Clean build artifacts
+just clean
+
+# Full rebuild (clean + build)
+just rebuild
+----
+
+=== Test Commands
+
+[source,bash]
+----
+# Run all tests
+just test
+
+# Test compilation only
+just test-compile
+
+# Test WASM validation
+just test-validate
+
+# Test language compliance
+just test-language
+
+# Test build output
+just test-build
+
+# Run E2E tests
+just test-e2e
+
+# Run everything
+just test-all
+----
+
+=== Development Commands
+
+[source,bash]
+----
+# Watch for changes and rebuild
+just watch
+
+# Disassemble WASM for debugging
+just disassemble
+
+# Show WASM module info
+just info
+
+# Dump WASM sections
+just dump
+
+# Show memory layout documentation
+just memory-layout
+
+# Show project status
+just status
+----
+
+=== Adapter Commands
+
+[source,bash]
+----
+# Install adapter dependencies
+just adapter-install
+
+# Build ReScript adapter
+just adapter-build
+
+# Clean adapter
+just adapter-clean
+----
+
+=== CI/CD Commands
+
+[source,bash]
+----
+# Run CI pipeline locally
+just ci
+
+# Pre-commit checks
+just pre-commit
+
+# Pre-push checks
+just pre-push
+----
+
+=== Release Commands
+
+[source,bash]
+----
+# Prepare release (update version)
+just release-prepare 0.2.0
+
+# Tag release
+just release-tag 0.2.0
+----
+
+[[nickel]]
+== Nickel Formulae
+
+Nickel configuration language expressions for wagasm-ssg.
+
+=== Build Configuration
+
+[source,nickel]
+----
+# wagasm-ssg.ncl - Build configuration
+{
+  project = "wagasm-ssg",
+  version = "0.1.0",
+  language = "WebAssembly Text (WAT)",
+  status = "EXPERIMENTAL",
+
+  paths = {
+    wat_source = "src/wagasm-ssg.wat",
+    wasm_output = "src/wagasm-ssg.wasm",
+    host_runtime = "runtime/host.ts",
+    output_dir = "_site",
+  },
+
+  tools = {
+    compiler = "wat2wasm",
+    validator = "wasm-validate",
+    runtime = "deno",
+  },
+
+  forbidden_languages = [
+    "TypeScript",
+    "JavaScript",
+    "AssemblyScript",
+    "Rust",
+    "Python",
+  ],
+}
+----
+
+=== Memory Layout Configuration
+
+[source,nickel]
+----
+# memory-layout.ncl
+{
+  regions = {
+    html_output = { start = 0, end = 1023, purpose = "Generated HTML" },
+    title_buffer = { start = 1024, end = 2047, purpose = "Page title" },
+    body_buffer = { start = 2048, end = 4095, purpose = "Body content" },
+    static_strings = { start = 4096, end = 8191, purpose = "Static data" },
+    filename_buffer = { start = 8192, end = 8447, purpose = "Filenames" },
+  },
+
+  total_pages = 1,
+  page_size = 65536, # 64KB
+}
+----
+
+=== Validation Rules
+
+[source,nickel]
+----
+# validation.ncl
+let check_language_compliance = fun src_dir =>
+  let forbidden = ["*.ts", "*.js", "*.rs", "*.py", "*.as"]
+  in
+  {
+    rule = "wat-only",
+    directory = src_dir,
+    exclude_patterns = forbidden,
+    severity = "FATAL",
+  }
+
+let check_host_io_only = fun host_file =>
+  {
+    rule = "io-only",
+    file = host_file,
+    forbidden_patterns = [
+      "parseMarkdown",
+      "renderTemplate",
+      "generateRoute",
+    ],
+    severity = "FATAL",
+  }
+
+in {
+  language_compliance = check_language_compliance "src/",
+  host_compliance = check_host_io_only "runtime/host.ts",
+}
+----
+
+[[combinatorics]]
+== CLI Combinatorics
+
+Common command combinations and permutations.
+
+=== Development Workflow
+
+[source,bash]
+----
+# Quick iteration: edit -> compile -> run
+just compile && just run
+
+# Full test cycle: compile -> validate -> test -> build
+just test && just build
+
+# Debug cycle: compile with symbols -> disassemble -> inspect
+just compile-debug && just disassemble && cat src/wagasm-ssg.wasm.disasm.wat
+
+# Clean rebuild with tests
+just clean && just test && just build
+----
+
+=== CI Pipeline Sequence
+
+[source,bash]
+----
+# Full CI pipeline
+just test-language && just test-compile && just test-validate && just build
+
+# Minimal verification
+just test-compile && just test-validate
+
+# Security-focused
+just test-language && just lint
+----
+
+=== Release Workflow
+
+[source,bash]
+----
+# Full release preparation
+just test-all && just release-prepare 0.2.0 && git add -A && git commit -m "Prepare v0.2.0" && just release-tag 0.2.0
+
+# Quick patch release
+just test && just release-prepare 0.1.1 && git commit -am "Patch v0.1.1" && just release-tag 0.1.1
+----
+
+=== Adapter Development
+
+[source,bash]
+----
+# Full adapter cycle
+just adapter-install && just adapter-build && just build
+
+# Adapter with tests
+cd adapters && npm test && npm run build && cd ..
+
+# Clean adapter rebuild
+just adapter-clean && just adapter-build
+----
+
+[[concatenations]]
+== Command Concatenations
+
+Chained commands for common tasks.
+
+=== Build Chains
+
+[source,bash]
+----
+# Compile and validate
+wat2wasm src/wagasm-ssg.wat -o src/wagasm-ssg.wasm && wasm-validate src/wagasm-ssg.wasm
+
+# Validate, build, and verify
+just validate && just build && cat _site/index.html | head -20
+
+# Full pipeline with output
+just clean && just build && echo "=== Generated HTML ===" && cat _site/index.html
+----
+
+=== Test Chains
+
+[source,bash]
+----
+# All compilations tests
+just test-compile && just test-validate && echo "Compilation OK"
+
+# All compliance tests
+just test-language && just lint && echo "Compliance OK"
+
+# Complete test suite with timing
+time (just test-all)
+----
+
+=== Debugging Chains
+
+[source,bash]
+----
+# Debug build pipeline
+just compile-debug && wasm-objdump -d src/wagasm-ssg.wasm | head -100
+
+# Memory inspection
+just info && just dump | grep -A5 "Memory"
+
+# Full debug session
+just compile-debug && just disassemble && just info && just dump
+----
+
+[[hooks]]
+== Git Hooks
+
+=== Pre-commit Hook
+
+[source,bash]
+----
+#!/bin/bash
+# .git/hooks/pre-commit
+
+set -e
+
+echo "Running pre-commit checks..."
+
+# Language compliance (FATAL if fails)
+just test-language || exit 1
+
+# Compilation check
+just test-compile || exit 1
+
+echo "Pre-commit checks passed"
+----
+
+=== Pre-push Hook
+
+[source,bash]
+----
+#!/bin/bash
+# .git/hooks/pre-push
+
+set -e
+
+echo "Running pre-push checks..."
+
+# Full test suite
+just test || exit 1
+
+echo "Pre-push checks passed"
+----
+
+=== Commit-msg Hook
+
+[source,bash]
+----
+#!/bin/bash
+# .git/hooks/commit-msg
+
+# Ensure commit message follows conventional commits
+if ! grep -qE "^(feat|fix|docs|style|refactor|test|chore|security|ci)(\(.+\))?:" "$1"; then
+    echo "ERROR: Commit message must follow conventional commits format"
+    echo "Example: feat(wat): add markdown parsing support"
+    exit 1
+fi
+----
+
+[[troubleshooting]]
+== Troubleshooting
+
+=== Common Errors
+
+==== "wat2wasm not found"
+
+[source,bash]
+----
+# Ubuntu/Debian
+sudo apt install wabt
+
+# macOS
+brew install wabt
+
+# From source
+wget https://github.com/WebAssembly/wabt/releases/download/1.0.34/wabt-1.0.34-ubuntu.tar.gz
+tar xzf wabt-1.0.34-ubuntu.tar.gz
+export PATH="$PWD/wabt-1.0.34/bin:$PATH"
+----
+
+==== "deno not found"
+
+[source,bash]
+----
+# Install via shell script
+curl -fsSL https://deno.land/install.sh | sh
+
+# Or via asdf
+asdf plugin add deno
+asdf install deno 2.1.4
+asdf local deno 2.1.4
+----
+
+==== WAT Syntax Error
+
+[source,bash]
+----
+# Validate WAT syntax with verbose output
+wat2wasm --debug-names src/wagasm-ssg.wat -o /dev/null 2>&1
+
+# Common issues:
+# - Mismatched parentheses
+# - Wrong type annotations
+# - Stack imbalance
+----
+
+==== WASM Validation Error
+
+[source,bash]
+----
+# Get detailed validation errors
+wasm-validate --verbose src/wagasm-ssg.wasm
+
+# Disassemble to inspect structure
+wasm2wat src/wagasm-ssg.wasm
+----

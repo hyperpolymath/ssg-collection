@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --text: #1a1a1a;
+            --accent: #0066cc;
+            --code-bg: #f4f4f4;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #1a1a1a;
+                --text: #f0f0f0;
+                --accent: #66b3ff;
+                --code-bg: #2a2a2a;
+            }
+        }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        h1, h2, h3 { color: var(--accent); }
+        pre {
+            background: var(--code-bg);
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        code { font-family: 'Fira Code', 'Consolas', monospace; }
+        a { color: var(--accent); }
+        time { color: #666; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <article role="main">
+        <header>
+            <h1>{{title}}</h1>
+            <time datetime="{{date}}">{{date}}</time>
+        </header>
+        <main>
+            {{content}}
+        </main>
+    </article>
+    <footer>
+        <p>Generated with <a href="https://github.com/hyperpolymath/rescribe-ssg">rescribe-ssg</a></p>
+    </footer>
+</body>
+</html>

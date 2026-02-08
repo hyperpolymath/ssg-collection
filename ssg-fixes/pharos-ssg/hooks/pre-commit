@@ -1,0 +1,56 @@
+#!/bin/bash
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 hyperpolymath
+#
+# NoteG SSG - Pre-commit Hook
+
+set -euo pipefail
+
+echo "Running pre-commit checks..."
+
+# Check for secrets
+echo "Checking for secrets..."
+if grep -rE '(password|secret|api_key|private_key)\s*=' \
+   --include='*.json' --include='*.env' . 2>/dev/null | \
+   grep -v '.example' | grep -v 'node_modules'; then
+    echo "ERROR: Potential secrets found in files"
+    exit 1
+fi
+
+# Check for eval
+echo "Checking for eval()..."
+if grep -rE '\beval\s*\(' \
+   --include='*.js' --include='*.ts' --include='*.mjs' \
+   --exclude-dir=node_modules . 2>/dev/null; then
+    echo "ERROR: eval() found - security risk"
+    exit 1
+fi
+
+# Format check for Deno files
+if command -v deno &> /dev/null; then
+    echo "Checking Deno formatting..."
+    if ! deno fmt --check adapters/ 2>/dev/null; then
+        echo "WARNING: Deno files need formatting (run 'deno fmt adapters/')"
+    fi
+fi
+
+# Lint Deno files
+if command -v deno &> /dev/null; then
+    echo "Linting Deno files..."
+    if ! deno lint adapters/ 2>/dev/null; then
+        echo "WARNING: Deno lint issues found"
+    fi
+fi
+
+# ReScript type check
+if [ -f "ssg/rescript.json" ] && command -v npx &> /dev/null; then
+    echo "Type checking ReScript SSG..."
+    (cd ssg && npx rescript build 2>&1) | grep -i "error" && exit 1 || true
+fi
+
+if [ -f "noteg-lang/rescript.json" ] && command -v npx &> /dev/null; then
+    echo "Type checking NoteG language..."
+    (cd noteg-lang && npx rescript build 2>&1) | grep -i "error" && exit 1 || true
+fi
+
+echo "Pre-commit checks passed!"

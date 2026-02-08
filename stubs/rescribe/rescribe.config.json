@@ -1,0 +1,19 @@
+{
+  "$schema": "https://github.com/hyperpolymath/rescribe-ssg/blob/main/config-schema.json",
+  "site": {
+    "title": "rescribe-ssg",
+    "description": "The DEFINITIVE ReScript static site generator",
+    "url": "https://github.com/hyperpolymath/rescribe-ssg",
+    "author": "hyperpolymath",
+    "language": "en"
+  },
+  "build": {
+    "contentDir": "_content",
+    "outputDir": "_site",
+    "templateDir": "templates",
+    "cleanUrls": true
+  },
+  "accessibility": {
+    "wcag": { "level": "AA", "version": "2.1" }
+  }
+}

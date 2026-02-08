@@ -1,0 +1,25 @@
+
+# AI Assistant Instructions
+
+## CRITICAL: Language Immutability
+
+⚠️ **DO NOT CHANGE THE PROGRAMMING LANGUAGE OF THIS REPOSITORY**
+
+This repository is written in **Ada/SPARK** as stated in the README description.
+- The implementation language MUST remain Ada/SPARK
+- Do NOT port, rewrite, or translate to other languages
+- Do NOT change the repository description or tagline
+- The language is a fundamental architectural decision
+
+## Repository Focus
+- `cloudanvil-ssg` is a Rhodium Standard Repository; obey the Rhodium policies, maintain `.bot_directives`, and keep `.machine_readable/` authoritative.
+- Prefer to keep generated files out of source control, and regenerate them with the documented commands before committing.
+
+## Workflow
+1. Inspect `.machines_readable/6scm/STATE.scm` for blockers and next actions.
+2. Respect any constraints listed inside `.machines_readable/6scm/AGENTIC.scm` when tooling changes are requested.
+3. After finishing edits, update STATE with your outcomes and commit with a concise, imperative message.
+
+## Delivery Promises
+- Mention in summaries whether STATE, `contractiles/`, or `.bot_directives/` changed.
+- Keep this file in sync with the repository’s status; update it if the governance changes.

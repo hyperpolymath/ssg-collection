@@ -1,0 +1,63 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+# Containerfile — rats-ssg MCP SSG Hub (ReScript + Deno)
+
+# Build stage - compile ReScript to JS
+FROM docker.io/node:20-alpine AS rescript-builder
+
+WORKDIR /app
+
+# Install ReScript
+RUN npm install -g rescript@11
+
+# Copy ReScript sources and config
+COPY rescript.json ./
+COPY src/ ./src/
+COPY test/ ./test/
+
+# Build ReScript
+RUN npx rescript build
+
+# Runtime stage
+FROM docker.io/denoland/deno:alpine-2.1.4
+
+LABEL org.opencontainers.image.title="rats-ssg"
+LABEL org.opencontainers.image.description="MCP SSG Hub - Unified access to 28 static site generators"
+LABEL org.opencontainers.image.vendor="hyperpolymath"
+LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
+LABEL org.opencontainers.image.source="https://github.com/hyperpolymath/rats-ssg"
+
+WORKDIR /app
+
+# Copy compiled ReScript output
+COPY --from=rescript-builder /app/lib/es6/ ./lib/es6/
+
+# Copy runtime JS glue and entry point
+COPY runtime/ ./runtime/
+COPY server.js ./
+COPY deno.json ./
+
+# Copy adapters (if they exist)
+COPY adapters/ ./adapters/ 2>/dev/null || true
+
+# Create non-root user
+RUN addgroup -g 1000 rats && \
+    adduser -D -u 1000 -G rats rats && \
+    chown -R rats:rats /app
+
+USER rats
+
+# Expose MCP server port
+EXPOSE 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD deno eval "fetch('http://localhost:3000/health').then(r => r.ok ? Deno.exit(0) : Deno.exit(1))" || exit 1
+
+# Environment variables
+ENV RATS_PORT=3000
+ENV RATS_LOG_LEVEL=info
+ENV DENO_NO_UPDATE_CHECK=1
+
+# Run the MCP server
+CMD ["deno", "run", "--allow-all", "server.js"]

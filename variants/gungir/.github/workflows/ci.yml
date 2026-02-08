@@ -1,0 +1,164 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# CI workflow for gungir-ssg
+# RSR-compliant with SHA-pinned actions
+
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  DENO_VERSION: "2.1.4"
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Lint and Format Check
+  # ─────────────────────────────────────────────────────────────────────────────
+  lint:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.2
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Check formatting
+        run: deno fmt --check adapters/*.js
+
+      - name: Run linter
+        run: deno lint adapters/*.js
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # SPDX Header Check
+  # ─────────────────────────────────────────────────────────────────────────────
+  spdx:
+    name: SPDX Headers
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Check SPDX headers
+        run: |
+          missing=0
+          for f in adapters/*.js *.scm; do
+            if [ -f "$f" ] && ! grep -q "SPDX-License-Identifier" "$f"; then
+              echo "Missing SPDX header: $f"
+              missing=$((missing+1))
+            fi
+          done
+          if [ $missing -gt 0 ]; then
+            echo "::error::$missing files missing SPDX headers"
+            exit 1
+          fi
+          echo "✓ All files have SPDX headers"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Adapter Verification
+  # ─────────────────────────────────────────────────────────────────────────────
+  verify-adapters:
+    name: Verify Adapters
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.2
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Count adapters
+        run: |
+          count=$(ls -1 adapters/*.js | wc -l)
+          echo "Found $count adapters"
+          if [ "$count" -ne 28 ]; then
+            echo "::error::Expected 28 adapters, found $count"
+            exit 1
+          fi
+
+      - name: Verify adapter exports
+        run: |
+          for adapter in adapters/*.js; do
+            name=$(basename "$adapter" .js)
+            echo "Verifying $name..."
+            deno eval "
+              import * as a from './$adapter';
+              if (!a.name) throw new Error('Missing name export');
+              if (!a.language) throw new Error('Missing language export');
+              if (!a.tools) throw new Error('Missing tools export');
+              if (!Array.isArray(a.tools)) throw new Error('tools must be array');
+              console.log('  ✓', a.name, '(' + a.tools.length + ' tools)');
+            "
+          done
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Security Checks
+  # ─────────────────────────────────────────────────────────────────────────────
+  security:
+    name: Security Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Check for eval usage
+        run: |
+          if grep -r "eval(" adapters/*.js; then
+            echo "::error::Found eval() usage - security risk"
+            exit 1
+          fi
+          echo "✓ No eval() usage found"
+
+      - name: Check for hardcoded secrets
+        run: |
+          if grep -riE "(api_key|password|secret|token)\s*=\s*['\"][^'\"]+['\"]" adapters/*.js; then
+            echo "::error::Possible hardcoded secrets found"
+            exit 1
+          fi
+          echo "✓ No hardcoded secrets patterns found"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Tests (placeholder - enable when tests exist)
+  # ─────────────────────────────────────────────────────────────────────────────
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.2
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Run tests
+        run: |
+          if [ -d tests ] && [ "$(ls -A tests/*.test.js 2>/dev/null)" ]; then
+            deno test --allow-run --allow-read tests/
+          else
+            echo "No tests found (yet) - skipping"
+          fi
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # All Checks Summary
+  # ─────────────────────────────────────────────────────────────────────────────
+  all-checks:
+    name: All Checks
+    runs-on: ubuntu-latest
+    needs: [lint, spdx, verify-adapters, security, test]
+    steps:
+      - name: All checks passed
+        run: echo "✓ All CI checks passed"

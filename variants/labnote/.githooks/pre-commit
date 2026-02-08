@@ -1,0 +1,29 @@
+#!/bin/bash
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Pre-commit hook for labnote-ssg
+
+set -e
+
+echo "🔍 Running pre-commit checks..."
+
+# Check if deno is available
+if ! command -v deno &> /dev/null; then
+    echo "⚠️  Deno not found, skipping checks"
+    exit 0
+fi
+
+# Format check
+echo "  Checking formatting..."
+if ! deno fmt --check adapters/ 2>/dev/null; then
+    echo "❌ Formatting issues found. Run: deno fmt adapters/"
+    exit 1
+fi
+
+# Lint check
+echo "  Running linter..."
+if ! deno lint adapters/ 2>/dev/null; then
+    echo "❌ Linting issues found. Run: deno lint adapters/"
+    exit 1
+fi
+
+echo "✅ Pre-commit checks passed"

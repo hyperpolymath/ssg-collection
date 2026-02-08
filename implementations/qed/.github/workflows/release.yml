@@ -1,0 +1,83 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# RSR-compliant Release workflow with SHA-pinned actions
+
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+env:
+  DENO_VERSION: "1.40.0"
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.2
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+
+      - name: Run full test suite
+        run: deno test --allow-read --allow-run adapters/
+
+      - name: Build
+        run: deno check adapters/*.js
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # Get commits since last tag
+          LAST_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          if [ -n "$LAST_TAG" ]; then
+            CHANGELOG=$(git log --pretty=format:"- %s (%h)" $LAST_TAG..HEAD)
+          else
+            CHANGELOG=$(git log --pretty=format:"- %s (%h)")
+          fi
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@c95fe1489396fe8a9eb87c0abf8aa5b2ef267fda # v2.2.1
+        with:
+          body: |
+            ## Changes
+
+            ${{ steps.changelog.outputs.changelog }}
+
+            ## Adapters
+
+            This release includes 28 SSG adapters for:
+            - **Rust**: Zola, Cobalt, mdBook
+            - **Haskell**: Hakyll, Ema
+            - **Elixir**: Serum, Tableau, NimblePublisher
+            - **Clojure**: Babashka, Cryogen, Perun
+            - **Julia**: Franklin.jl, Documenter.jl, StaticWebPages.jl
+            - **Scala**: Laika, ScalaTex
+            - **Racket**: Frog, Pollen
+            - And more...
+
+            ## Installation
+
+            ```bash
+            git clone https://github.com/hyperpolymath/qed-ssg
+            cd qed-ssg
+            just setup
+            ```
+          draft: false
+          prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/hyperpolymath/rescribe-ssg/a11y/schema.json",
+  "title": "rescribe-ssg Accessibility Schema",
+  "description": "Schema for accessibility metadata in rescribe-ssg generated sites",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Schema version",
+      "const": "1.0.0"
+    },
+    "signLanguages": {
+      "type": "object",
+      "description": "Sign language support configuration",
+      "properties": {
+        "bsl": { "$ref": "#/$defs/signLanguageConfig" },
+        "gsl": { "$ref": "#/$defs/signLanguageConfig" },
+        "asl": { "$ref": "#/$defs/signLanguageConfig" },
+        "makaton": { "$ref": "#/$defs/makatonConfig" }
+      }
+    },
+    "wcag": {
+      "type": "object",
+      "description": "WCAG compliance settings",
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": ["A", "AA", "AAA"],
+          "default": "AA"
+        },
+        "version": {
+          "type": "string",
+          "enum": ["2.0", "2.1", "2.2"],
+          "default": "2.1"
+        }
+      }
+    },
+    "aria": {
+      "type": "object",
+      "description": "ARIA settings",
+      "properties": {
+        "landmarks": { "type": "boolean", "default": true },
+        "liveRegions": { "type": "boolean", "default": true },
+        "roles": { "type": "boolean", "default": true }
+      }
+    },
+    "alternativeFormats": {
+      "type": "array",
+      "description": "Alternative content formats",
+      "items": {
+        "type": "string",
+        "enum": ["audio", "video", "braille", "easy-read", "sign-language"]
+      }
+    }
+  },
+  "$defs": {
+    "signLanguageConfig": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean", "default": false },
+        "videoFormat": {
+          "type": "string",
+          "enum": ["mp4", "webm"],
+          "default": "mp4"
+        },
+        "embedMethod": {
+          "type": "string",
+          "enum": ["inline", "modal", "link"],
+          "default": "modal"
+        },
+        "glossaryPath": {
+          "type": "string",
+          "description": "Path to sign language glossary"
+        }
+      }
+    },
+    "makatonConfig": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean", "default": false },
+        "symbolSet": {
+          "type": "string",
+          "enum": ["core", "extended"],
+          "default": "core"
+        },
+        "displayMode": {
+          "type": "string",
+          "enum": ["inline", "tooltip", "sidebar"],
+          "default": "tooltip"
+        }
+      }
+    }
+  }
+}

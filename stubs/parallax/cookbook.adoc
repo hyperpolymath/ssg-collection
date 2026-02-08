@@ -1,0 +1,742 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2025 hyperpolymath
+= parallax-ssg Cookbook
+:toc: left
+:toclevels: 3
+:sectnums:
+:source-highlighter: rouge
+:icons: font
+
+The complete recipe book for building, testing, and deploying parallax-ssg.
+
+== Quick Reference
+
+[cols="1,2,3"]
+|===
+|Category |Command |Description
+
+|Build |`just build` |Compile Chapel source
+|Test |`just test-all` |Run all tests
+|Generate |`./parallax-ssg build` |Generate static site
+|CI |`just ci` |Run full CI pipeline
+|===
+
+[[cli]]
+== CLI Commands
+
+Complete command-line interface reference for parallax-ssg.
+
+=== Core SSG Commands
+
+[source,bash]
+----
+# Build the site
+./parallax-ssg build
+
+# Build with custom source directory
+./parallax-ssg build --source=content --output=_site
+
+# Build including draft posts
+./parallax-ssg build --include-drafts
+
+# Build with verbose output
+./parallax-ssg build --verbose
+
+# Show help
+./parallax-ssg --help
+./parallax-ssg help
+----
+
+=== Test Commands
+
+[source,bash]
+----
+# Run all tests
+./parallax-ssg test-full
+
+# Test markdown parser
+./parallax-ssg test-markdown
+
+# Test frontmatter parser
+./parallax-ssg test-frontmatter
+----
+
+=== CLI Combinatorics
+
+All valid command combinations:
+
+[source,bash]
+----
+# Basic builds
+./parallax-ssg build
+./parallax-ssg build --verbose
+./parallax-ssg build --include-drafts
+./parallax-ssg build --verbose --include-drafts
+
+# With custom paths
+./parallax-ssg build --source=src/content
+./parallax-ssg build --output=dist
+./parallax-ssg build --source=src/content --output=dist
+./parallax-ssg build --source=src/content --output=dist --verbose
+./parallax-ssg build --source=src/content --output=dist --include-drafts
+./parallax-ssg build --source=src/content --output=dist --verbose --include-drafts
+
+# Test combinations
+./parallax-ssg test-full
+./parallax-ssg test-markdown
+./parallax-ssg test-frontmatter
+
+# Help
+./parallax-ssg help
+./parallax-ssg --help
+----
+
+[[just]]
+== Just Recipes
+
+Justfile commands for development workflow.
+
+=== Build Recipes
+
+[source,bash]
+----
+# Standard build
+just build
+
+# Debug build (with symbols)
+just build-debug
+
+# Optimized release build
+just build-release
+
+# Clean all artifacts
+just clean
+----
+
+=== Test Recipes
+
+[source,bash]
+----
+# Run all tests
+just test
+
+# Individual test suites
+just test-unit
+just test-markdown
+just test-frontmatter
+
+# End-to-end tests
+just test-e2e
+
+# Everything including E2E
+just test-all
+----
+
+=== Development Recipes
+
+[source,bash]
+----
+# Start development mode
+just dev
+
+# Generate site
+just generate
+
+# Serve locally (requires Python)
+just serve
+----
+
+=== Adapter Recipes
+
+[source,bash]
+----
+# Build MCP adapter
+just adapter-build
+
+# Clean adapter
+just adapter-clean
+
+# Watch for changes
+just adapter-watch
+----
+
+=== Tooling Recipes
+
+[source,bash]
+----
+# Start language server
+just lsp
+
+# Compile specific file
+just compile src/module.chpl
+
+# Syntax check only
+just check
+
+# Format code
+just fmt
+----
+
+=== CI/CD Recipes
+
+[source,bash]
+----
+# Run full CI locally
+just ci
+
+# Security checks
+just security
+
+# Lint code
+just lint
+----
+
+=== Documentation Recipes
+
+[source,bash]
+----
+# Generate docs
+just docs
+
+# Serve docs locally
+just docs-serve
+----
+
+=== Container Recipes
+
+[source,bash]
+----
+# Build container
+just container-build
+
+# Run in container
+just container-run
+----
+
+=== Release Recipes
+
+[source,bash]
+----
+# Create release
+just release 1.2.0
+
+# Tag in git
+just tag 1.2.0
+----
+
+=== Utility Recipes
+
+[source,bash]
+----
+# Show help
+just help
+
+# Show version
+just version
+
+# Environment info
+just info
+----
+
+=== Recipe Permutations
+
+Common workflow combinations:
+
+[source,bash]
+----
+# Full development cycle
+just clean && just build && just test-all
+
+# Quick validation
+just check && just test
+
+# Pre-commit
+just ci
+
+# Release preparation
+just clean && just build-release && just test-all && just tag 1.2.0
+
+# Fresh start
+just clean && just build && just generate && just serve
+----
+
+[[nickel]]
+== Nickel Formulae
+
+Nickel configuration schemas and formulae for parallax-ssg.
+
+=== Site Configuration Schema
+
+[source,nickel]
+----
+# parallax-ssg site configuration schema
+let SiteConfig = {
+  # Required fields
+  title : String,
+  url : String,
+
+  # Optional fields
+  description : String | optional,
+  author : String | optional,
+  language : String | default = "en",
+
+  # Build options
+  build : {
+    source : String | default = "content",
+    output : String | default = "_site",
+    include_drafts : Bool | default = false,
+    verbose : Bool | default = false,
+    parallel : Bool | default = true,
+  },
+
+  # Template options
+  templates : {
+    dir : String | default = "templates",
+    default : String | default = "default.html",
+  },
+}
+in SiteConfig
+----
+
+=== Build Configuration
+
+[source,nickel]
+----
+# Build configuration formula
+let BuildConfig = {
+  chapel : {
+    version : String | default = "1.33.0",
+    flags : {
+      debug : Array String | default = ["-g", "--checks"],
+      release : Array String | default = ["--fast", "--optimize", "--no-checks"],
+    },
+  },
+
+  paths : {
+    source : String | default = "src/parallel-press.chpl",
+    output : String | default = "parallax-ssg",
+  },
+
+  ci : {
+    test_on_build : Bool | default = true,
+    language_check : Bool | default = true,
+  },
+}
+in BuildConfig
+----
+
+=== Language Enforcement Schema
+
+[source,nickel]
+----
+# Language enforcement configuration
+let LanguageEnforcement = {
+  primary : String | default = "Chapel",
+
+  allowed : {
+    src : Array String | default = [".chpl"],
+    adapters : Array String | default = [".res", ".resi"],
+    docs : Array String | default = [".adoc", ".md"],
+    config : Array String | default = [".json", ".yml", ".yaml", ".scm"],
+  },
+
+  forbidden : Array String | default = [
+    ".py", ".js", ".ts", ".jsx", ".tsx",
+    ".rb", ".go", ".java", ".cpp", ".c",
+    ".rs", ".ex", ".exs"
+  ],
+
+  enforcement : String | default = "strict",
+  ci_check : Bool | default = true,
+}
+in LanguageEnforcement
+----
+
+=== Deployment Configuration
+
+[source,nickel]
+----
+# Deployment targets
+let DeployConfig = {
+  github_pages : {
+    enabled : Bool | default = false,
+    branch : String | default = "gh-pages",
+    cname : String | optional,
+  },
+
+  netlify : {
+    enabled : Bool | default = false,
+    site_id : String | optional,
+    publish_dir : String | default = "_site",
+  },
+
+  custom : {
+    enabled : Bool | default = false,
+    command : String | optional,
+  },
+}
+in DeployConfig
+----
+
+=== Formula Combinatorics
+
+Complete configuration example:
+
+[source,nickel]
+----
+# Complete parallax-ssg configuration
+{
+  site = {
+    title = "My Chapel Blog",
+    url = "https://example.com",
+    description = "Built with parallax-ssg",
+    language = "en",
+  },
+
+  build = {
+    chapel_version = "1.33.0",
+    source = "content",
+    output = "_site",
+    parallel = true,
+  },
+
+  language = {
+    primary = "Chapel",
+    enforcement = "strict",
+  },
+
+  deploy = {
+    github_pages = {
+      enabled = true,
+      branch = "gh-pages",
+    },
+  },
+}
+----
+
+[[hooks]]
+== Hooks Configuration
+
+Git hooks and CI/CD hooks for parallax-ssg.
+
+=== Pre-commit Hook
+
+[source,bash]
+----
+#!/bin/sh
+# .git/hooks/pre-commit
+
+echo "Running pre-commit validation..."
+
+# Language enforcement
+forbidden=$(find src/ -type f \( -name "*.py" -o -name "*.js" -o -name "*.ts" \) 2>/dev/null)
+if [ -n "$forbidden" ]; then
+  echo "ERROR: Forbidden language files in src/"
+  echo "$forbidden"
+  exit 1
+fi
+
+# Syntax check
+chpl --syntax-only src/parallel-press.chpl || exit 1
+
+# Run tests
+./parallax-ssg test-full || (chpl src/parallel-press.chpl -o parallax-ssg && ./parallax-ssg test-full) || exit 1
+
+echo "Pre-commit checks passed!"
+----
+
+=== Pre-push Hook
+
+[source,bash]
+----
+#!/bin/sh
+# .git/hooks/pre-push
+
+echo "Running pre-push validation..."
+
+# Full CI checks
+just ci || exit 1
+
+# Security scan
+just security || exit 1
+
+echo "Pre-push checks passed!"
+----
+
+=== Claude Code Hooks
+
+`.claude/hooks/session-start.sh`:
+[source,bash]
+----
+#!/bin/bash
+# Session start hook for Claude Code
+
+echo "parallax-ssg development session"
+echo "================================"
+echo "Language: Chapel (REQUIRED)"
+echo "Forbidden: Python, JavaScript, TypeScript"
+echo ""
+
+# Verify Chapel installation
+if command -v chpl &> /dev/null; then
+  echo "Chapel: $(chpl --version | head -1)"
+else
+  echo "WARNING: Chapel not installed"
+fi
+
+# Check project state
+if [ -f ./parallax-ssg ]; then
+  echo "Binary: ✓ Built"
+else
+  echo "Binary: ✗ Not built (run: just build)"
+fi
+----
+
+=== CI/CD Hooks
+
+GitHub Actions workflow hooks:
+
+[source,yaml]
+----
+# .github/workflows/ci.yml hooks
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  pre-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Language Check Hook
+        run: |
+          forbidden=$(find src/ -type f \( -name "*.py" -o -name "*.js" -o -name "*.ts" \))
+          if [ -n "$forbidden" ]; then
+            echo "::error::Forbidden languages in src/"
+            exit 1
+          fi
+
+  post-build:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify Artifact
+        run: |
+          if [ ! -f ./parallax-ssg ]; then
+            echo "::error::Build artifact missing"
+            exit 1
+          fi
+----
+
+[[mustfile]]
+== Mustfile Recipes
+
+Required validation recipes that MUST pass.
+
+=== Must-Pass Checks
+
+[source,bash]
+----
+# Language compliance
+must language-check
+
+# Syntax validation
+must syntax-check
+
+# Build verification
+must build-check
+
+# Test verification
+must test-check
+
+# Security scan
+must secrets-check
+
+# License compliance
+must license-check
+----
+
+=== Validation Recipes
+
+[source,bash]
+----
+# Run all validations
+validate all
+
+# Quick validation (fast checks only)
+validate quick
+----
+
+=== Assertion Recipes
+
+[source,bash]
+----
+# Assert Chapel installed
+assert chapel-installed
+
+# Assert Node.js available
+assert node-installed
+
+# Assert git hooks configured
+assert hooks-configured
+----
+
+=== Enforcement Recipes
+
+[source,bash]
+----
+# Branch naming enforcement
+enforce branch-naming
+
+# Commit message format
+enforce commit-format
+
+# No force push to main
+enforce no-force-push
+----
+
+=== Compliance Checks
+
+[source,bash]
+----
+# RSR compliance
+compliance rsr
+
+# SPDX license compliance
+compliance spdx
+
+# security.txt compliance
+compliance security-txt
+----
+
+[[workflows]]
+== Complete Workflows
+
+End-to-end workflow examples.
+
+=== New Feature Development
+
+[source,bash]
+----
+# 1. Create feature branch
+git checkout -b feat/new-feature
+
+# 2. Develop with hot reload
+just dev
+
+# 3. Write tests
+# Edit src/parallel-press.chpl to add test functions
+
+# 4. Run tests
+just test-all
+
+# 5. Validate before commit
+just ci
+
+# 6. Commit with conventional message
+git add -A
+git commit -m "feat: add new feature description"
+
+# 7. Push and create PR
+git push -u origin feat/new-feature
+gh pr create --title "feat: add new feature" --body "Description..."
+----
+
+=== Bug Fix Workflow
+
+[source,bash]
+----
+# 1. Create fix branch
+git checkout -b fix/bug-description
+
+# 2. Reproduce the bug
+just test-all  # See failing test
+
+# 3. Fix the bug
+# Edit src/parallel-press.chpl
+
+# 4. Verify fix
+just test-all
+
+# 5. Commit and push
+git commit -am "fix: resolve bug description"
+git push -u origin fix/bug-description
+gh pr create
+----
+
+=== Release Workflow
+
+[source,bash]
+----
+# 1. Ensure clean state
+git checkout main
+git pull origin main
+
+# 2. Run full validation
+just clean
+just ci
+
+# 3. Update version in STATE.scm
+# Edit STATE.scm: (version . "1.2.0")
+
+# 4. Create release build
+just build-release
+
+# 5. Run all tests
+just test-all
+
+# 6. Create tag
+just tag 1.2.0
+
+# 7. Push tag
+git push origin v1.2.0
+
+# 8. Create GitHub release
+gh release create v1.2.0 --title "v1.2.0" --notes "Release notes..."
+----
+
+[[appendix]]
+== Appendix
+
+=== Environment Variables
+
+[cols="1,2,1"]
+|===
+|Variable |Description |Default
+
+|`CHAPEL_HOME` |Chapel installation directory |auto-detected
+|`PARALLAX_SOURCE` |Default content directory |`content`
+|`PARALLAX_OUTPUT` |Default output directory |`_site`
+|`PARALLAX_VERBOSE` |Enable verbose output |`false`
+|===
+
+=== Exit Codes
+
+[cols="1,2"]
+|===
+|Code |Meaning
+
+|0 |Success
+|1 |General error
+|2 |Invalid arguments
+|3 |Build failure
+|4 |Test failure
+|5 |Language violation
+|===
+
+=== File Extensions
+
+[cols="1,2,1"]
+|===
+|Extension |Language |Allowed In
+
+|`.chpl` |Chapel |`src/`
+|`.res` |ReScript |`adapters/`
+|`.adoc` |AsciiDoc |`docs/`, root
+|`.md` |Markdown |`content/`, root
+|`.scm` |Scheme |root
+|`.json` |JSON |config files
+|`.yml` |YAML |config files
+|===

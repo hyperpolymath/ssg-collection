@@ -1,0 +1,45 @@
+#!/bin/bash
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 hyperpolymath
+# Pre-commit hook for Hyperpolymath Language Policy enforcement
+
+set -e
+
+echo "[POLICY] Checking language policy compliance..."
+
+# Check for banned TypeScript files (excluding .d.ts)
+TS_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.tsx?$' | grep -v '\.d\.ts$' || true)
+if [ -n "$TS_FILES" ]; then
+    echo "[POLICY] ERROR: TypeScript files detected (banned - use ReScript instead):"
+    echo "$TS_FILES"
+    echo ""
+    echo "To fix: Convert these to ReScript (.res) files"
+    exit 1
+fi
+
+# Check for banned Go files
+GO_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.go$' || true)
+if [ -n "$GO_FILES" ]; then
+    echo "[POLICY] ERROR: Go files detected (banned - use Rust instead):"
+    echo "$GO_FILES"
+    exit 1
+fi
+
+# Check for banned Node.js lock files
+for f in package-lock.json yarn.lock pnpm-lock.yaml bun.lockb; do
+    if git diff --cached --name-only --diff-filter=ACM | grep -q "^$f$"; then
+        echo "[POLICY] ERROR: Node.js lock file detected (banned - use Deno instead):"
+        echo "$f"
+        exit 1
+    fi
+done
+
+# Check for banned Python files (outside of salt/ directories)
+PY_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.py$' | grep -v '^salt/' | grep -v '^saltstack/' | grep -v '^_salt/' || true)
+if [ -n "$PY_FILES" ]; then
+    echo "[POLICY] ERROR: Python files detected outside SaltStack (banned - use ReScript/Rust):"
+    echo "$PY_FILES"
+    exit 1
+fi
+
+echo "[POLICY] All checks passed!"

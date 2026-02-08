@@ -1,0 +1,77 @@
+= RSR Compliance: hackenbush-ssg
+:toc:
+:sectnums:
+
+== Overview
+
+This document describes the Rhodium Standard Repository (RSR) compliance status for *hackenbush-ssg*.
+
+== Classification
+
+[cols="1,2"]
+|===
+|Attribute |Value
+
+|Project |hackenbush-ssg
+|Primary Language |Conway's Game of Life
+|Host Runtime |Deno/TypeScript (simulation only)
+|MCP Adapter |ReScript
+|RSR Tier |Experimental
+|Compliance Status |Compliant
+|Last Updated |2025-12-17
+|===
+
+== Language Tier Classification
+
+=== Tier 1 Languages (Preferred)
+* Rust
+* Elixir
+* Zig
+* Ada
+* Haskell
+* ReScript
+
+=== Tier 2 Languages (Acceptable)
+* Nickel (configuration)
+* Racket (scripting)
+* Guile Scheme (state management)
+* Nix (derivations)
+
+=== Special Cases
+* Conway's Game of Life - Primary language for hackenbush-ssg SSG logic
+* TypeScript/Deno - Allowed ONLY in runtime/ for host simulator (no SSG logic)
+
+=== Restricted Languages
+* Python - Only allowed in salt/ directories for SaltStack
+* JavaScript - Not allowed for SSG logic
+* CUE - Not permitted, use Nickel or Guile
+
+== Compliance Checklist
+
+[cols="1,1,2"]
+|===
+|Requirement |Status |Notes
+
+|Primary language is Tier 1/2 or Special |✓ |Conway's Game of Life (Turing-complete)
+|No restricted languages outside exemptions |✓ |TypeScript in runtime/ only
+|.editorconfig present |✓ |
+|.well-known/ directory |✓ |
+|justfile present |✓ |
+|LICENSE.txt (AGPL + Palimpsest) |✓ |
+|Containerfile present |✗ |Not yet required
+|flake.nix present |✗ |Using guix.scm instead
+|===
+
+== Exemptions
+
+* TypeScript permitted in `runtime/` directory for host simulation
+
+== Action Items
+
+* Add Containerfile for container builds
+* Expand Life pattern library
+
+== References
+
+* link:https://github.com/hyperpolymath/hackenbush-ssg[hackenbush-ssg Repository]
+* link:CONTRIBUTING.adoc[Contributing Guidelines]

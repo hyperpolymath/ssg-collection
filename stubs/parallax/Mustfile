@@ -1,0 +1,246 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 hyperpolymath
+# parallax-ssg Mustfile - Required build recipes and validation
+#
+# Mustfile defines recipes that MUST pass for the project to be considered valid.
+# These are enforced during CI/CD and pre-commit hooks.
+
+# ============================================================================
+# REQUIRED: These recipes MUST pass
+# ============================================================================
+
+[must]
+# Language enforcement - Chapel only in src/
+language-check = """
+  echo "Checking language compliance..."
+  forbidden=$(find src/ -type f \( -name "*.py" -o -name "*.js" -o -name "*.ts" -o -name "*.rb" -o -name "*.go" -o -name "*.java" -o -name "*.cpp" -o -name "*.c" \) 2>/dev/null || true)
+  if [ -n "$forbidden" ]; then
+    echo "FATAL: Forbidden language files found in src/:"
+    echo "$forbidden"
+    exit 1
+  fi
+  echo "PASS: Only Chapel files in src/"
+"""
+
+# Syntax validation
+syntax-check = """
+  echo "Checking Chapel syntax..."
+  chpl --syntax-only src/parallel-press.chpl
+  echo "PASS: Chapel syntax valid"
+"""
+
+# Build must succeed
+build-check = """
+  echo "Verifying build..."
+  chpl src/parallel-press.chpl -o /tmp/parallax-test --fast
+  rm -f /tmp/parallax-test
+  echo "PASS: Build successful"
+"""
+
+# Tests must pass
+test-check = """
+  echo "Running tests..."
+  chpl src/parallel-press.chpl -o /tmp/parallax-test
+  /tmp/parallax-test test-full
+  rm -f /tmp/parallax-test
+  echo "PASS: All tests passed"
+"""
+
+# Security - no secrets in code
+secrets-check = """
+  echo "Checking for secrets..."
+  if grep -rE "(password|secret|api_key|private_key|token)\\s*=" src/ 2>/dev/null; then
+    echo "WARNING: Possible secrets in source code"
+  fi
+  # Check for .env files that shouldn't be committed
+  if [ -f .env ]; then
+    echo "WARNING: .env file found - ensure not committed"
+  fi
+  echo "PASS: Secrets check complete"
+"""
+
+# License headers
+license-check = """
+  echo "Checking license headers..."
+  for f in src/*.chpl; do
+    if ! head -5 "$f" | grep -q "SPDX-License-Identifier"; then
+      echo "WARNING: Missing SPDX header in $f"
+    fi
+  done
+  echo "PASS: License check complete"
+"""
+
+# ============================================================================
+# VALIDATION: Pre-commit validation
+# ============================================================================
+
+[validate]
+# Run all must-pass checks
+all = """
+  echo "Running all validations..."
+  must language-check
+  must syntax-check
+  must build-check
+  must test-check
+  must secrets-check
+  must license-check
+  echo "ALL VALIDATIONS PASSED"
+"""
+
+# Quick validation (fast checks only)
+quick = """
+  echo "Running quick validation..."
+  must language-check
+  must syntax-check
+  echo "QUICK VALIDATION PASSED"
+"""
+
+# ============================================================================
+# ASSERTIONS: Development-time checks
+# ============================================================================
+
+[assert]
+# Assert Chapel is installed
+chapel-installed = """
+  if ! command -v chpl &> /dev/null; then
+    echo "ASSERT FAILED: Chapel compiler not found"
+    echo "Install: https://chapel-lang.org/download.html"
+    exit 1
+  fi
+  echo "ASSERT PASSED: Chapel installed"
+"""
+
+# Assert Node.js available (for adapter)
+node-installed = """
+  if ! command -v node &> /dev/null; then
+    echo "ASSERT FAILED: Node.js not found"
+    echo "Install: https://nodejs.org/"
+    exit 1
+  fi
+  echo "ASSERT PASSED: Node.js installed"
+"""
+
+# Assert git hooks configured
+hooks-configured = """
+  if [ ! -f .git/hooks/pre-commit ]; then
+    echo "ASSERT FAILED: Pre-commit hook not configured"
+    echo "Run: just hooks-install"
+    exit 1
+  fi
+  echo "ASSERT PASSED: Git hooks configured"
+"""
+
+# ============================================================================
+# ENFORCEMENT: CI/CD enforcement rules
+# ============================================================================
+
+[enforce]
+# Enforce branch naming
+branch-naming = """
+  branch=$(git rev-parse --abbrev-ref HEAD)
+  if [[ ! "$branch" =~ ^(main|develop|feat/|fix/|docs/|test/|refactor/|security/|claude/) ]]; then
+    echo "ENFORCE FAILED: Invalid branch name: $branch"
+    echo "Use: feat/, fix/, docs/, test/, refactor/, security/, or claude/"
+    exit 1
+  fi
+  echo "ENFORCE PASSED: Valid branch name"
+"""
+
+# Enforce commit message format
+commit-format = """
+  msg=$(git log -1 --pretty=%B)
+  if [[ ! "$msg" =~ ^(feat|fix|docs|test|refactor|chore|ci|security|perf): ]]; then
+    echo "ENFORCE FAILED: Invalid commit message format"
+    echo "Use conventional commits: feat:, fix:, docs:, etc."
+    exit 1
+  fi
+  echo "ENFORCE PASSED: Valid commit format"
+"""
+
+# Enforce no force push to main
+no-force-push = """
+  if [ "$GITHUB_REF" = "refs/heads/main" ] && [ "$GITHUB_EVENT_NAME" = "push" ]; then
+    echo "INFO: Push to main detected"
+  fi
+  echo "ENFORCE PASSED: Force push check"
+"""
+
+# ============================================================================
+# HOOKS: Git hook management
+# ============================================================================
+
+[hooks]
+# Install pre-commit hook
+install = """
+  echo "Installing git hooks..."
+  mkdir -p .git/hooks
+  cat > .git/hooks/pre-commit << 'HOOK'
+#!/bin/sh
+# parallax-ssg pre-commit hook
+echo "Running pre-commit validation..."
+
+# Quick language check
+forbidden=$(find src/ -type f \( -name "*.py" -o -name "*.js" -o -name "*.ts" \) 2>/dev/null)
+if [ -n "$forbidden" ]; then
+  echo "ERROR: Forbidden language files in src/"
+  echo "$forbidden"
+  exit 1
+fi
+
+# Syntax check
+chpl --syntax-only src/parallel-press.chpl || exit 1
+
+echo "Pre-commit checks passed!"
+HOOK
+  chmod +x .git/hooks/pre-commit
+  echo "Hooks installed successfully."
+"""
+
+# Uninstall hooks
+uninstall = """
+  echo "Removing git hooks..."
+  rm -f .git/hooks/pre-commit
+  echo "Hooks removed."
+"""
+
+# ============================================================================
+# COMPLIANCE: Standards compliance checks
+# ============================================================================
+
+[compliance]
+# RSR (Rhodium Standard Repositories) compliance
+rsr = """
+  echo "Checking RSR compliance..."
+  required_files=("README.adoc" "LICENSE.txt" "SECURITY.md" "CODE_OF_CONDUCT.md" "CONTRIBUTING.md" ".gitignore" ".gitattributes")
+  for f in "${required_files[@]}"; do
+    if [ ! -f "$f" ]; then
+      echo "RSR MISSING: $f"
+    fi
+  done
+  echo "RSR compliance check complete"
+"""
+
+# SPDX license compliance
+spdx = """
+  echo "Checking SPDX compliance..."
+  for f in src/*.chpl adapters/src/*.res; do
+    if [ -f "$f" ] && ! head -3 "$f" | grep -q "SPDX"; then
+      echo "SPDX MISSING: $f"
+    fi
+  done
+  echo "SPDX compliance check complete"
+"""
+
+# Security.txt compliance
+security-txt = """
+  echo "Checking security.txt..."
+  if [ ! -f ".well-known/security.txt" ]; then
+    echo "MISSING: .well-known/security.txt"
+    exit 1
+  fi
+  if ! grep -q "Contact:" ".well-known/security.txt"; then
+    echo "INVALID: security.txt missing Contact field"
+    exit 1
+  fi
+  echo "security.txt compliance check passed"
+"""

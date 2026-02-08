@@ -1,0 +1,172 @@
+= NoteG SSG Handover Specification
+:author: hyperpolymath
+:revdate: 2025-12-17
+:toc:
+:toclevels: 3
+
+== Project Overview
+
+*NoteG SSG* is a mill-based static site generator within the hyperpolymath ecosystem. It provides accessibility-first site generation with formal verification through Ada/SPARK.
+
+=== Architecture
+
+[source]
+----
+┌─────────────────────────────────────────────────────────────┐
+│                      NoteG SSG                               │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────┐  │
+│  │  Ada/SPARK   │  │   ReScript   │  │   NoteG Lang     │  │
+│  │   Engine     │  │     SSG      │  │   Tooling        │  │
+│  │              │  │              │  │                  │  │
+│  │ • Mill State │  │ • Build.res  │  │ • Lexer          │  │
+│  │ • Op Cards   │  │ • Types.res  │  │ • Parser         │  │
+│  │ • Variables  │  │ • Env.res    │  │ • Compiler       │  │
+│  │ • Templates  │  │              │  │ • Interpreter    │  │
+│  └──────────────┘  └──────────────┘  │ • LSP            │  │
+│                                       └──────────────────┘  │
+│                                                              │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │              Accessibility Layer                      │  │
+│  │                                                       │  │
+│  │  BSL  │  GSL  │  ASL  │  Makaton  │  WCAG 2.1       │  │
+│  └──────────────────────────────────────────────────────┘  │
+│                                                              │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │                 MCP Adapters                          │  │
+│  │                                                       │  │
+│  │  28 SSG adapters via poly-ssg-mcp                    │  │
+│  └──────────────────────────────────────────────────────┘  │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+----
+
+== Component Status
+
+=== 44/44 Components Complete
+
+[cols="1,2,1"]
+|===
+|Category |Components |Status
+
+|Core Engine (4/4)
+|Ada/SPARK Engine, Mill Synthesis, Op-Card Templates, Variable Store
+|Complete
+
+|Build System (4/4)
+|Justfile, Mustfile, Containerfile, asdf
+|Complete
+
+|Site Generation (4/4)
+|Content processing, Templates, Output, Schema
+|Complete
+
+|Adapters (3/3)
+|NoteG-MCP, ReScript, Deno
+|Complete
+
+|Accessibility (5/5)
+|BSL, GSL, ASL, Makaton, Schema
+|Complete
+
+|Testing (4/4)
+|Bernoulli, Unit, E2E, CI/CD
+|Complete
+
+|Documentation (8/8)
+|README, Guides, Specs, Cookbook
+|Complete
+
+|Configuration (3/3)
+|Site schema, Config, Environment
+|Complete
+
+|Language Tooling (6/6)
+|Lexer, Parser, Interpreter, Compiler, Syntax, LSP
+|Complete
+
+|Examples (3/3)
+|Content, Templates, Config
+|Complete
+|===
+
+== Key Files
+
+=== Configuration
+
+* `justfile` - Build system commands
+* `Mustfile` - Invariants and constraints
+* `Containerfile` - Container definition
+* `.tool-versions` - asdf tool versions
+* `noteg.config.json` - Site configuration
+
+=== Core
+
+* `engine/src/noteg_engine.ads` - Ada spec
+* `engine/src/noteg_engine.adb` - Ada implementation
+* `ssg/src/Build.res` - Mill-based build
+* `ssg/src/Types.res` - Type definitions
+
+=== Language
+
+* `noteg-lang/src/Lexer.res` - Tokenizer
+* `noteg-lang/src/Parser.res` - AST parser
+* `noteg-lang/src/Compiler.res` - JS compiler
+* `noteg-lang/src/Interpreter.res` - Direct execution
+* `noteg-lang/src/lsp/Server.res` - Language server
+
+=== Accessibility
+
+* `a11y/schema.json` - A11y metadata schema
+
+=== SCM Files
+
+* `ECOSYSTEM.scm` - Ecosystem position
+* `META.scm` - Architecture decisions
+* `STATE.scm` - Project state
+* `PLAYBOOK.scm` - Operations playbook
+* `AGENTIC.scm` - AI/agent instructions
+* `NEUROSYM.scm` - Neuro-symbolic config
+
+== Commands
+
+[source,bash]
+----
+just build        # Build everything
+just test         # Run tests
+just test-e2e     # E2E tests
+just test-all     # All tests
+just lsp          # Start LSP
+just compile x    # Compile .noteg
+just generate     # Generate site
+just serve        # Local server
+----
+
+== Dependencies
+
+* Ada/GNAT 14.2+
+* SPARK 2022+
+* Node.js 22+
+* Deno 1.39+
+* ReScript 11.1+
+
+== Security Considerations
+
+* All adapters use input sanitization (`adapters/_security.js`)
+* No eval() or dynamic code execution
+* SHA-pinned GitHub Actions
+* CodeQL SAST scanning
+* Dependabot updates
+
+== Next Steps
+
+1. Complete Bernoulli verification suite
+2. Expand NoteG language features
+3. Add more accessibility integrations
+4. Performance optimization
+5. Release automation
+
+== License
+
+SPDX-License-Identifier: MPL-2.0-or-later

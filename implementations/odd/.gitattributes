@@ -1,0 +1,99 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+# RSR-compliant .gitattributes with Language Policy Enforcement
+
+* text=auto eol=lf
+
+# ============================================================================
+# ALLOWED LANGUAGES
+# ============================================================================
+
+# ReScript (primary application code)
+*.res   text eol=lf linguist-language=ReScript
+*.resi  text eol=lf linguist-language=ReScript
+
+# JavaScript (FFI glue only - generated from ReScript)
+*.js    text eol=lf
+*.res.js linguist-generated=true
+
+# Nickel (configuration)
+*.ncl   text eol=lf linguist-language=Nickel
+
+# Shell (scripts, automation)
+*.sh    text eol=lf
+
+# Rust (if needed for performance-critical code)
+*.rs    text eol=lf diff=rust
+
+# Ada (safety-critical systems)
+*.ada   text eol=lf diff=ada
+*.adb   text eol=lf diff=ada
+*.ads   text eol=lf diff=ada
+
+# Other allowed languages per policy
+*.jl    text eol=lf
+*.hs    text eol=lf
+*.scm   text eol=lf
+*.nix   text eol=lf
+*.chpl  text eol=lf
+*.ex    text eol=lf diff=elixir
+*.exs   text eol=lf diff=elixir
+
+# ============================================================================
+# DOCUMENTATION
+# ============================================================================
+
+*.md    text eol=lf diff=markdown
+*.adoc  text eol=lf
+*.txt   text eol=lf
+
+# ============================================================================
+# DATA & CONFIGURATION
+# ============================================================================
+
+*.json  text eol=lf
+*.yaml  text eol=lf
+*.yml   text eol=lf
+*.toml  text eol=lf
+
+# Config files
+.gitignore     text eol=lf
+.gitattributes text eol=lf
+justfile       text eol=lf
+Containerfile  text eol=lf
+
+# ============================================================================
+# BANNED - These should trigger policy check warnings
+# ============================================================================
+
+# TypeScript (banned - use ReScript)
+*.ts    diff=banned
+*.tsx   diff=banned
+*.mts   diff=banned
+*.cts   diff=banned
+
+# Go (banned - use Rust)
+*.go    diff=banned
+
+# Makefile (banned - use justfile)
+# Note: Can't fully block in gitattributes, enforced via pre-commit hook
+
+# ============================================================================
+# BINARY FILES
+# ============================================================================
+
+*.png   binary
+*.jpg   binary
+*.gif   binary
+*.pdf   binary
+*.woff2 binary
+*.zip   binary
+*.gz    binary
+
+# ============================================================================
+# LOCK FILES
+# ============================================================================
+
+Cargo.lock  text eol=lf -diff
+flake.lock  text eol=lf -diff
+deno.lock   text eol=lf -diff

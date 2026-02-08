@@ -1,0 +1,285 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://hyperpolymath.github.io/pharos-ssg/a11y/schema.json",
+  "title": "NoteG Accessibility Schema",
+  "description": "Schema for accessibility metadata in NoteG SSG, supporting BSL, GSL, ASL, and Makaton",
+  "type": "object",
+  "properties": {
+    "bsl": {
+      "$ref": "#/definitions/bslData",
+      "description": "British Sign Language accessibility data"
+    },
+    "gsl": {
+      "$ref": "#/definitions/gslData",
+      "description": "German Sign Language (DGS) accessibility data"
+    },
+    "asl": {
+      "$ref": "#/definitions/aslData",
+      "description": "American Sign Language accessibility data"
+    },
+    "makaton": {
+      "$ref": "#/definitions/makatonData",
+      "description": "Makaton symbol and sign data"
+    },
+    "altText": {
+      "type": "string",
+      "description": "Alternative text description for screen readers",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "readingLevel": {
+      "type": "string",
+      "enum": ["easy-read", "simple", "standard", "technical", "academic"],
+      "description": "Content reading level for cognitive accessibility"
+    },
+    "audioDescription": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL to audio description of visual content"
+    },
+    "wcag": {
+      "$ref": "#/definitions/wcagData",
+      "description": "WCAG 2.1 compliance information"
+    },
+    "captions": {
+      "$ref": "#/definitions/captionData",
+      "description": "Caption/subtitle information"
+    }
+  },
+  "definitions": {
+    "bslData": {
+      "type": "object",
+      "description": "British Sign Language metadata",
+      "properties": {
+        "videoUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to BSL interpretation video"
+        },
+        "glosses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "BSL gloss notation for the content"
+        },
+        "interpreter": {
+          "type": "string",
+          "description": "Name of BSL interpreter"
+        },
+        "signBankRefs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^bsl:[a-z0-9-]+$"
+          },
+          "description": "References to BSL SignBank entries"
+        },
+        "dialect": {
+          "type": "string",
+          "enum": ["standard", "scottish", "welsh", "northern-ireland"],
+          "default": "standard"
+        }
+      }
+    },
+    "gslData": {
+      "type": "object",
+      "description": "German Sign Language (DGS) metadata",
+      "properties": {
+        "videoUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to DGS interpretation video"
+        },
+        "glosses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "DGS gloss notation for the content"
+        },
+        "interpreter": {
+          "type": "string",
+          "description": "Name of DGS interpreter"
+        },
+        "hamburgNotation": {
+          "type": "string",
+          "description": "HamNoSys notation for signs"
+        },
+        "signGramRefs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^dgs:[a-z0-9-]+$"
+          },
+          "description": "References to DGS SignGram entries"
+        }
+      }
+    },
+    "aslData": {
+      "type": "object",
+      "description": "American Sign Language metadata",
+      "properties": {
+        "videoUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to ASL interpretation video"
+        },
+        "glosses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "ASL gloss notation for the content"
+        },
+        "interpreter": {
+          "type": "string",
+          "description": "Name of ASL interpreter"
+        },
+        "signWriting": {
+          "type": "string",
+          "description": "SignWriting notation"
+        },
+        "aslLexRefs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^asl:[a-z0-9-]+$"
+          },
+          "description": "References to ASL-LEX database"
+        },
+        "regional": {
+          "type": "string",
+          "enum": ["standard", "black-asl", "tactile"],
+          "default": "standard"
+        }
+      }
+    },
+    "makatonData": {
+      "type": "object",
+      "description": "Makaton symbol and sign system metadata",
+      "properties": {
+        "symbols": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/makatonSymbol"
+          },
+          "description": "Makaton symbols used in content"
+        },
+        "signs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Makaton signs (based on BSL)"
+        },
+        "coreVocabulary": {
+          "type": "boolean",
+          "default": true,
+          "description": "Uses Makaton Core Vocabulary"
+        },
+        "resourceLevel": {
+          "type": "string",
+          "enum": ["stage1", "stage2", "stage3", "stage4", "additional"],
+          "description": "Makaton vocabulary stage"
+        },
+        "symbolSet": {
+          "type": "string",
+          "enum": ["original", "revised-2018"],
+          "default": "revised-2018"
+        }
+      }
+    },
+    "makatonSymbol": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Makaton symbol identifier"
+        },
+        "meaning": {
+          "type": "string",
+          "description": "Meaning of the symbol"
+        },
+        "imageUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to symbol image"
+        },
+        "stage": {
+          "type": "string",
+          "enum": ["stage1", "stage2", "stage3", "stage4", "additional"]
+        }
+      },
+      "required": ["id", "meaning"]
+    },
+    "wcagData": {
+      "type": "object",
+      "description": "WCAG compliance information",
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": ["A", "AA", "AAA"],
+          "description": "WCAG conformance level"
+        },
+        "version": {
+          "type": "string",
+          "enum": ["2.0", "2.1", "2.2"],
+          "default": "2.1"
+        },
+        "exceptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          },
+          "description": "WCAG success criteria not met"
+        }
+      }
+    },
+    "captionData": {
+      "type": "object",
+      "description": "Caption and subtitle information",
+      "properties": {
+        "available": {
+          "type": "boolean",
+          "description": "Whether captions are available"
+        },
+        "languages": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z]{2}(-[A-Z]{2})?$"
+          },
+          "description": "Available caption languages (ISO 639-1)"
+        },
+        "format": {
+          "type": "string",
+          "enum": ["vtt", "srt", "ttml", "scc"],
+          "description": "Caption file format"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["closed", "open", "sdh"],
+          "description": "Caption type (SDH = subtitles for deaf/hard of hearing)"
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "bsl": {
+        "videoUrl": "https://example.com/content-bsl.mp4",
+        "glosses": ["HELLO", "WORLD", "IX-1"],
+        "interpreter": "Jane Smith",
+        "dialect": "standard"
+      },
+      "altText": "A greeting message displayed in multiple formats",
+      "readingLevel": "simple",
+      "wcag": {
+        "level": "AA",
+        "version": "2.1"
+      }
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+= qed-ssg
+
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/Philosophy-Palimpsest-indigo.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+
+:toc:
+:toc-title: Table of Contents
+:icons: font
+
+**Satellite MCP adapter hub for 28 static site generators.**
+
+"QED" — _Quod Erat Demonstrandum_. A contract-driven SSG integration layer where every adapter is type-safe and formally specified.
+
+== What Is This?
+
+qed-ssg provides MCP (Model Context Protocol) adapters for 28 static site generators across diverse programming languages. It acts as a satellite hub, enabling unified tooling for SSGs written in:
+
+* **Rust**: Zola, Cobalt, mdBook
+* **Haskell**: Hakyll, Ema
+* **Elixir**: Serum, Tableau, Nimble Publisher
+* **Clojure**: Cryogen, Perun, Babashka
+* **Julia**: Franklin.jl, Documenter.jl, StaticWebPages.jl
+* **Scala**: Laika, Scalatex
+* **Racket**: Frog, Pollen
+* **And more**: F#, Kotlin, Crystal, Common Lisp, Nim, D, Swift, Tcl, OCaml, Erlang
+
+== Who Is This For?
+
+* **Polyglot Developers** working across multiple SSG ecosystems
+* **Tool Builders** creating unified workflows for static sites
+* **MCP Integrators** connecting language models to SSG toolchains
+
+== Architecture
+
+[source]
+----
+qed-ssg (satellite hub)
+    │
+    ├── adapters/          # 28 SSG adapters (generated from Nickel formulae)
+    ├── formulae/          # Nickel templates for adapter generation
+    ├── src/               # ReScript source code
+    ├── tests/             # ReScript test suite
+    ├── mustfile.ncl       # Contract-driven deployment specification
+    └── Justfile           # Task automation with policy enforcement
+----
+
+== Quick Start
+
+[source,bash]
+----
+# Setup development environment
+just setup
+
+# Build ReScript sources
+just rescript-build
+
+# Run tests
+just test
+
+# Enforce language policy (no TypeScript/npm/Makefile)
+just enforce-policy
+
+# Run full CI pipeline locally
+just ci
+----
+
+== Language Policy
+
+This project follows the **Hyperpolymath Standard**:
+
+* **ReScript** for application code (not TypeScript)
+* **Deno** for JavaScript runtime (not Node.js/npm/Bun)
+* **Rust** for performance-critical code (not Go)
+* **Justfile** for task automation (not Makefile)
+* **Nickel** for type-safe configuration
+
+See `.claude/CLAUDE.md` and `mustfile.ncl` for full policy details.
+
+== Contract-Driven Development
+
+qed-ssg uses the **hyperpolymath/mustfile** pattern:
+
+* **mustfile.ncl**: Defines language policy, security contracts, and test requirements
+* **Justfile**: Enforces contracts via `just enforce-policy`
+* **CI Workflow**: Blocks PRs that violate language policy
+
+== License
+
+PMPL-1.0-or-later

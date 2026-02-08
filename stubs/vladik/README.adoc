@@ -1,0 +1,154 @@
+= vladik-ssg
+
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+:toc: auto
+:sectnums:
+
+// SPDX-License-Identifier: PMPL-1.0-or-later
+
+image:https://img.shields.io/badge/RSR-Compliant-cd7f32[RSR Compliant]
+image:https://img.shields.io/badge/Phase-Experimental-yellow[Experimental]
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/Language-Anvomidav-purple[Anvomidav]
+
+**Choreography-driven static site generator in Anvomidav.**
+
+_Let sequences flow. Let transitions compile. Let pages perform._
+
+== Who This Is For
+
+* Developers exploring **domain-specific languages** applied to unconventional problems
+* Those who appreciate how **artistic structure** can inform software architecture
+* Programmers curious about **Anvomidav**—the first language for figure skating choreography
+* Anyone seeking a static site generator that treats content as **performance art**
+
+== Rationale
+
+=== Sequences as Programs
+
+In figure skating, a program is a precise sequence of elements—jumps, spins, footwork—each with defined entry and exit transitions. Anvomidav formalizes this: every page build is a _program_, every content transformation a _choreographed element_.
+
+=== Transitions Compile to Links
+
+Choreographers think in transitions—how one element flows into the next. In vladik-ssg, navigation and linking emerge from transition declarations. The connection between pages isn't metadata; it's **choreographic intent**.
+
+=== Scores as Type System
+
+Figure skating judges evaluate technical elements and program components. Anvomidav's type system mirrors this duality: content must satisfy both _technical requirements_ (valid markup, proper structure) and _artistic components_ (flow, coherence, expression).
+
+=== Performance as Output
+
+The final site is a _performance_. Just as a skating program exists only in its execution on ice, a vladik-ssg site exists as the rendered experience. The source choreography compiles to audience-ready pages.
+
+== Quick Start
+
+[source,bash]
+----
+# Clone the repository
+git clone https://github.com/hyperpolymath/vladik-ssg
+cd vladik-ssg
+
+# Enter development environment
+guix shell -D -f guix.scm
+
+# Build the site (compile the program)
+just build
+
+# Serve locally (rehearsal mode)
+just serve
+----
+
+== Architecture
+
+[source]
+----
+                        ┌─────────────┐
+                        │  Notation   │  ← Anvomidav source files
+                        │  (.anvo)    │
+                        └──────┬──────┘
+                               │
+                        ┌──────▼──────┐
+                        │  Compiler   │  ← Parse choreographic notation
+                        │  (Parser)   │
+                        └──────┬──────┘
+                               │
+              ┌────────────────┼────────────────┐
+              │                │                │
+       ┌──────▼──────┐  ┌──────▼──────┐  ┌──────▼──────┐
+       │  Technical  │  │  Artistic   │  │ Transition  │
+       │  Elements   │  │  Component  │  │   Graph     │
+       └──────┬──────┘  └──────┬──────┘  └──────┬──────┘
+              │                │                │
+              └────────────────┼────────────────┘
+                               │
+                        ┌──────▼──────┐
+                        │  Renderer   │  ← Compose final performance
+                        │  (Program)  │
+                        └──────┬──────┘
+                               │
+                        ┌──────▼──────┐
+                        │   Output    │  ← Static site (dist/)
+                        │   (Ice)     │
+                        └─────────────┘
+----
+
+== Features
+
+* **Sequence-driven builds** — Content flows through defined choreographic order
+* **Transition-based navigation** — Links emerge from declared element connections
+* **Dual-score validation** — Technical correctness _and_ artistic coherence checks
+* **Incremental rehearsals** — Fast rebuilds during development
+* **Performance-ready output** — Production builds optimized for audience delivery
+
+== Element Types
+
+[cols="1,2,2"]
+|===
+|Element |Anvomidav Concept |SSG Mapping
+
+|`jump`
+|High-value technical elements
+|Major content pages
+
+|`spin`
+|Sustained position elements
+|Persistent site sections
+
+|`footwork`
+|Connecting sequences
+|Navigation and linking
+
+|`choreographic`
+|Artistic expression moves
+|Styling and presentation
+
+|`transition`
+|Movement between elements
+|Page-to-page flow
+|===
+
+== Requirements
+
+* **Anvomidav** compiler (see https://github.com/hyperpolymath/anvomidav[hyperpolymath/anvomidav])
+* **Guix** package manager (primary) or **Nix** (fallback)
+* **Deno** runtime (for ReScript adapter)
+
+== Integration
+
+vladik-ssg is part of the **poly-ssg** ecosystem:
+
+* https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp] — Unified MCP server for 28 static site generators
+* https://github.com/hyperpolymath/poly-container-mcp[poly-container-mcp] — Container orchestration via MCP
+* https://github.com/hyperpolymath/poly-iac-mcp[poly-iac-mcp] — Infrastructure as Code via MCP
+
+The ReScript adapter enables AI assistants to invoke vladik-ssg builds through the Model Context Protocol.
+
+== License
+
+SPDX-License-Identifier: PMPL-1.0-or-later-or-later
+
+== Links
+
+* https://github.com/hyperpolymath/anvomidav[Anvomidav] — The choreographic programming language
+* https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp] — Unified SSG tooling
+* https://rhodium.sh[Rhodium Standard] — RSR documentation
