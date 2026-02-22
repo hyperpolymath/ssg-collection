@@ -60,3 +60,8 @@ Copyright (c) 2024-2026 Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
 == Origin
 
 This monorepo was consolidated from 52 individual *-ssg repositories plus ssg-fixes on 2026-02-08 to reduce repository sprawl.
+
+
+== Architecture
+
+See link:TOPOLOGY.md[TOPOLOGY.md] for a visual architecture map and completion dashboard.

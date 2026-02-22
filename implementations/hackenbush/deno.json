@@ -1,14 +1,25 @@
 {
   "name": "hackenbush-ssg",
   "version": "1.0.0",
+  "//": "Deno Host Configuration for the Hackenbush SSG engine",
   "exports": "./runtime/Host.res.js",
   "tasks": {
+    "//": "BUILD: Compile the ReScript runtime and test suite",
     "build": "cd runtime && npx rescript && cd ../tests && npx rescript",
+    
+    "//": "EXECUTE: Run the SSG engine on the target content",
     "run": "deno run --allow-read --allow-write runtime/Host.res.js",
+    
+    "//": "EVOLVE: Apply Conway-style evolutionary transformations to the site state",
     "evolve": "deno run --allow-read --allow-write runtime/Host.res.js evolve",
+    
+    "//": "TEST: Execute the verified test suite",
     "test": "deno test --allow-read --allow-write tests/*.res.js",
+    
+    "//": "COMPLIANCE: Verify the codebase adheres to the Rhodium language policy",
+    "check-policy": "deno run --allow-read scripts/check-language-policy.js",
+    
     "lint": "deno lint",
-    "fmt": "deno fmt",
-    "check-policy": "deno run --allow-read scripts/check-language-policy.js"
+    "fmt": "deno fmt"
   }
 }
