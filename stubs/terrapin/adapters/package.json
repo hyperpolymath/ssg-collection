@@ -10,7 +10,7 @@
     "watch": "rescript -w"
   },
   "devDependencies": {
-    "rescript": "^12.0.1"
+    "rescript": "^12.0.0"
   },
   "license": "AGPL-3.0-or-later",
   "author": "Jonathan D.A. Jewell"

@@ -8,7 +8,7 @@
   },
   "imports": {
     "@rescript/core": "npm:@rescript/core@^1.0.0",
-    "rescript": "npm:rescript@^11.0.0",
+    "rescript": "^12.0.0",
     "arangojs": "https://deno.land/x/arangojs@8.0.0/mod.ts"
   }
 }

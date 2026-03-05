@@ -1,0 +1,12 @@
+{
+  "name": "rescribe-ssg-adapter",
+  "version": "0.1.0",
+  "tasks": {
+    "build": "rescript",
+    "clean": "rescript clean",
+    "watch": "rescript -w"
+  },
+  "imports": {
+    "rescript": "^12.0.0"
+  }
+}
