@@ -304,7 +304,7 @@ Recognition includes:
 To stay informed about security updates:
 
 - **Watch this repository**: Click "Watch" → "Custom" → Select "Security alerts"
-- **GitHub Security Advisories**: Published at [Security Advisories](https://github.com/{{OWNER}}/{{REPO}}/security/advisories)
+- **GitHub Security Advisories**: Published at [Security Advisories](https://github.com/hyperpolymath/ssg-collection/security/advisories)
 - **Release notes**: Security fixes noted in [CHANGELOG](CHANGELOG.md)
 
 ### Update Policy
