@@ -12,6 +12,7 @@
 //! - Sitemap generation
 //! - Live reload for development
 
+#![forbid(unsafe_code)]
 mod builder;
 mod config;
 mod content;

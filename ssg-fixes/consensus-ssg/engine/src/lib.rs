@@ -5,6 +5,7 @@
 // Site synthesis via distributed consensus - content only builds when
 // the cluster agrees on its state.
 
+#![forbid(unsafe_code)]
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::PathBuf;
