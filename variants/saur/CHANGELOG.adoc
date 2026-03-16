@@ -70,7 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SPDX headers on all files
 - GitHub configuration (issue templates, Dependabot, CodeQL)
 - SECURITY.md, CODE_OF_CONDUCT.md, CONTRIBUTING.md
-- Dual MIT/AGPL-3.0-or-later licensing
+- Dual MIT/PMPL-1.0-or-later licensing
 
 === Changed
 

@@ -142,7 +142,7 @@ Related projects:
 
 == License
 
-Dual-licensed under MIT and AGPL-3.0-or-later. See link:LICENSE.txt[LICENSE.txt].
+Dual-licensed under MIT and PMPL-1.0-or-later. See link:LICENSE.txt[LICENSE.txt].
 
 == Contributing
 

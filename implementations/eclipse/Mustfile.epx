@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: PMPL-1.0-or-later
 # SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 # Mustfile.epx — Contract of Physical State for eclipse-ssg
 #
@@ -16,7 +16,7 @@
 name = "eclipse-ssg"
 version = "0.2.0"
 description = "Actor-model static site generator in Pony with poly-ssg-mcp satellite integration"
-license = "AGPL-3.0-or-later"
+license = "PMPL-1.0-or-later"
 repository = "https://github.com/hyperpolymath/eclipse-ssg"
 
 # ============================================================

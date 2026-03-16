@@ -12,7 +12,7 @@
     (hub . "poly-ssg-mcp")
     (description . "Bare-metal SSG adapters for 28 static site generators across 18 languages")
     (runtime . "Deno")
-    (license . "AGPL-3.0-or-later")))
+    (license . "PMPL-1.0-or-later")))
 
 ;;; Guidelines for AI-assisted development
 (define ai-guidelines

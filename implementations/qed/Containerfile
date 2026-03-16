@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: PMPL-1.0-or-later
 # SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 # Containerfile — qed-ssg development and runtime container
 
@@ -10,7 +10,7 @@ FROM docker.io/denoland/deno:alpine-1.40.0 AS base
 LABEL org.opencontainers.image.title="qed-ssg"
 LABEL org.opencontainers.image.description="MCP adapters for 28 static site generators"
 LABEL org.opencontainers.image.source="https://github.com/hyperpolymath/qed-ssg"
-LABEL org.opencontainers.image.licenses="MIT OR AGPL-3.0-or-later"
+LABEL org.opencontainers.image.licenses="MIT OR PMPL-1.0-or-later"
 
 WORKDIR /app
 

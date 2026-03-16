@@ -135,4 +135,4 @@ Available tools: `eclipse_init`, `eclipse_build`, `eclipse_serve`
 
 == License
 
-AGPL-3.0-or-later
+PMPL-1.0-or-later

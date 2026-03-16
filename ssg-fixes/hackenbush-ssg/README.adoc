@@ -81,4 +81,4 @@ Named for https://en.wikipedia.org/wiki/Hackenbush[Hackenbush], another combinat
 
 == License
 
-AGPL-3.0-or-later
+PMPL-1.0-or-later

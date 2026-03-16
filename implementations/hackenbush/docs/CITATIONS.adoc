@@ -10,7 +10,7 @@
   title = {hackenbush-ssg: Game of Life Static Site Generator},
   year = {2025},
   url = {https://github.com/hyperpolymath/hackenbush-ssg},
-  license = {AGPL-3.0-or-later}
+  license = {PMPL-1.0-or-later}
 }
 ----
 

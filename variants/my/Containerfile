@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: PMPL-1.0-or-later
 # SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 # Containerfile for my-ssg - SSG Adapter Collection
 
@@ -8,7 +8,7 @@ LABEL org.opencontainers.image.title="my-ssg"
 LABEL org.opencontainers.image.description="SSG Adapter Collection - 28 Static Site Generator adapters via MCP"
 LABEL org.opencontainers.image.version="0.1.0"
 LABEL org.opencontainers.image.authors="Jonathan D.A. Jewell"
-LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
+LABEL org.opencontainers.image.licenses="PMPL-1.0-or-later"
 LABEL org.opencontainers.image.source="https://github.com/hyperpolymath/my-ssg"
 
 WORKDIR /app

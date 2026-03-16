@@ -58,4 +58,4 @@ just check
 `iota-ssg` is part of the **poly-ssg** family of language-native static site generators, unified through MCP integration.
 
 == License
-AGPL-3.0-or-later
+PMPL-1.0-or-later

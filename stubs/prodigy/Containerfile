@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: PMPL-1.0-or-later
 # prodigy-ssg Container Image
 # Build: podman build -t prodigy-ssg:latest .
 # Run:   podman run --rm -v ./content:/app/content:ro -v ./_site:/app/_site prodigy-ssg
@@ -55,4 +55,4 @@ ENTRYPOINT ["swipl", "-g", "consult('src/prodigy.pl'), build_site('_site'), halt
 LABEL org.opencontainers.image.title="prodigy-ssg" \
       org.opencontainers.image.description="Prolog Static Site Generator" \
       org.opencontainers.image.source="https://github.com/hyperpolymath/prodigy-ssg" \
-      org.opencontainers.image.licenses="AGPL-3.0-or-later"
+      org.opencontainers.image.licenses="PMPL-1.0-or-later"

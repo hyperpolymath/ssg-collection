@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: PMPL-1.0-or-later
 # Containerfile for 60-ssg - ALGOL 60 Static Site Generator
 #
 # Build: podman build -t 60-ssg:latest .
@@ -10,7 +10,7 @@ FROM docker.io/library/debian:bookworm-slim
 LABEL org.opencontainers.image.title="60-ssg"
 LABEL org.opencontainers.image.description="ALGOL 60 Static Site Generator"
 LABEL org.opencontainers.image.version="1.0.0"
-LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
+LABEL org.opencontainers.image.licenses="PMPL-1.0-or-later"
 LABEL org.opencontainers.image.source="https://github.com/hyperpolymath/60-ssg"
 
 # Install marst (GNU ALGOL 60 to C translator) and build tools

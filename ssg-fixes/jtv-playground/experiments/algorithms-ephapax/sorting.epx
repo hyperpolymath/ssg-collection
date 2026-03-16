@@ -1,5 +1,5 @@
 -- Comprehensive Sorting Algorithms - Ephapax Implementation
--- SPDX-License-Identifier: AGPL-3.0-or-later
+-- SPDX-License-Identifier: PMPL-1.0-or-later
 --
 -- Demonstrates sorting algorithms with linear/affine types and explicit memory management.
 -- All sorts operate in-place where possible to minimize allocations.

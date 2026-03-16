@@ -1,4 +1,4 @@
-; SPDX-License-Identifier: AGPL-3.0-or-later
+; SPDX-License-Identifier: PMPL-1.0-or-later
 ; terrapin-ssg - A static site generator written in Logo
 ; Run with UCBLogo: logo terrapin-ssg.logo
 

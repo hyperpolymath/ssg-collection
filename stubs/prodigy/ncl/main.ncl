@@ -7,7 +7,7 @@ let Project = {
   version = "1.1.0",
   language = "Prolog",
   interpreter = "swipl",
-  license = "AGPL-3.0-or-later",
+  license = "PMPL-1.0-or-later",
 }
 
 let Paths = {

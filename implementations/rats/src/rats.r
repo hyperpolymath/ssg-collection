@@ -1,4 +1,4 @@
-c SPDX-License-Identifier: AGPL-3.0-or-later
+c SPDX-License-Identifier: PMPL-1.0-or-later
 c SPDX-FileCopyrightText: 2025 hyperpolymath
 c
 c rats-ssg - Ratfor Static Site Generator

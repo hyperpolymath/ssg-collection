@@ -1,4 +1,4 @@
-NB. SPDX-License-Identifier: AGPL-3.0-or-later
+NB. SPDX-License-Identifier: PMPL-1.0-or-later
 NB. SPDX-FileCopyrightText: 2025 hyperpolymath
 NB.
 NB. jura-ssg: J static site generator

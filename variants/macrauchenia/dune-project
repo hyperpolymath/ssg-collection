@@ -1,4 +1,4 @@
-; SPDX-License-Identifier: AGPL-3.0-or-later
+; SPDX-License-Identifier: PMPL-1.0-or-later
 
 (lang dune 3.0)
 (name macrauchenia_ssg)
@@ -7,7 +7,7 @@
 (generate_opam_files true)
 
 (source (github hyperpolymath/macrauchenia-ssg))
-(license AGPL-3.0-or-later)
+(license PMPL-1.0-or-later)
 (authors "Jonathan D.A. Jewell")
 (maintainers "jonathan@hyperpolymath.dev")
 

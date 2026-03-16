@@ -7,7 +7,7 @@
   "version": "0.1.0",
   "dateCreated": "2025-12-10",
   "dateModified": "2025-12-17",
-  "license": "https://spdx.org/licenses/AGPL-3.0-or-later.html",
+  "license": "https://spdx.org/licenses/PMPL-1.0-or-later.html",
   "codeRepository": "https://github.com/hyperpolymath/hackenbush-ssg",
   "issueTracker": "https://github.com/hyperpolymath/hackenbush-ssg/issues",
   "programmingLanguage": ["Conway's Game of Life", "ReScript"],

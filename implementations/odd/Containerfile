@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: PMPL-1.0-or-later
 # SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 # odd-ssg Container Image
 
@@ -39,7 +39,7 @@ FROM docker.io/denoland/deno:2.1.4-distroless
 LABEL org.opencontainers.image.title="odd-ssg"
 LABEL org.opencontainers.image.description="Probabilistic SSG with Mill-Based Synthesis engine and 30 MCP-compatible adapters"
 LABEL org.opencontainers.image.source="https://github.com/hyperpolymath/odd-ssg"
-LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
+LABEL org.opencontainers.image.licenses="PMPL-1.0-or-later"
 LABEL org.opencontainers.image.vendor="hyperpolymath"
 
 WORKDIR /app

@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: PMPL-1.0-or-later
 # SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 # hackenbush-ssg - Container Definition
 # Uses Wolfi base for minimal, secure container
@@ -53,5 +53,5 @@ CMD ["deno", "test", "--allow-read", "--allow-write"]
 LABEL org.opencontainers.image.title="hackenbush-ssg"
 LABEL org.opencontainers.image.description="Game of Life Static Site Generator"
 LABEL org.opencontainers.image.source="https://github.com/hyperpolymath/hackenbush-ssg"
-LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
+LABEL org.opencontainers.image.licenses="PMPL-1.0-or-later"
 LABEL org.opencontainers.image.vendor="hyperpolymath"

@@ -132,6 +132,6 @@ See link:docs/ADDING-ENGINE.md[ADDING-ENGINE.md] for the contract specification 
 
 == License
 
-AGPL-3.0-or-later
+PMPL-1.0-or-later
 
 This ensures all paradigmatic implementations remain open. Your site content is yours; the tools stay free.

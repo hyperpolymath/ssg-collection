@@ -214,7 +214,7 @@ info:
     @echo "Adapters: 28"
     @echo "Languages: Rust, Haskell, Elixir, Julia, Clojure, etc."
     @echo "Runtime: Deno"
-    @echo "License: AGPL-3.0-or-later"
+    @echo "License: PMPL-1.0-or-later"
 
 # Count lines of code
 loc:

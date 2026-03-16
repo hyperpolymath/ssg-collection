@@ -56,4 +56,4 @@ just build-hardware
 `baremetal-ssg` is the hardware-native cornerstone of the **poly-ssg** family.
 
 == License
-AGPL-3.0-or-later
+PMPL-1.0-or-later

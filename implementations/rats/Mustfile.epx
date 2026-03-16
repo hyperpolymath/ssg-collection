@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: PMPL-1.0-or-later
 # SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 # Mustfile.epx - Ephapax deployment contract for rats-ssg
 
@@ -14,7 +14,7 @@ let MustSpec = {
   package = {
     name = "@hyperpolymath/rats-ssg",
     version = "0.2.0",
-    license = "AGPL-3.0-or-later",
+    license = "PMPL-1.0-or-later",
     repository = "https://github.com/hyperpolymath/rats-ssg",
   },
 

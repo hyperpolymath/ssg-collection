@@ -1,5 +1,5 @@
 P3
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: PMPL-1.0-or-later
 # easel-ssg hello world program in Piet (PPM format)
 # Outputs: "Hello"
 # Run with: npiet hello.ppm

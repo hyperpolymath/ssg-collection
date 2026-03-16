@@ -7,7 +7,7 @@ let Project = {
   name = "odd-ssg",
   version = "0.1.0",
   description = "Probabilistic static site generator with Mill-Based Synthesis engine",
-  license = "AGPL-3.0-or-later",
+  license = "PMPL-1.0-or-later",
   repository = "https://github.com/hyperpolymath/odd-ssg",
 } in
 

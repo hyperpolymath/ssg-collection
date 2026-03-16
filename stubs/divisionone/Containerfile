@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: PMPL-1.0-or-later
 # SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 #
 # Containerfile — Division One SSG Development Container
@@ -10,7 +10,7 @@ FROM docker.io/denoland/deno:alpine-2.1.4
 LABEL org.opencontainers.image.title="Division One SSG"
 LABEL org.opencontainers.image.description="28 SSG adapters for the hyperpolymath ecosystem"
 LABEL org.opencontainers.image.source="https://github.com/hyperpolymath/divisionone-ssg"
-LABEL org.opencontainers.image.licenses="MIT OR AGPL-3.0-or-later"
+LABEL org.opencontainers.image.licenses="MIT OR PMPL-1.0-or-later"
 
 # Install additional tools
 RUN apk add --no-cache \

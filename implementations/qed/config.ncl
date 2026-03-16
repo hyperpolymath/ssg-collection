@@ -189,7 +189,7 @@ let HooksConfig = {
     name = "qed-ssg",
     version = "0.1.0",
     description = "Satellite SSG with MCP adapters for 28 static site generators",
-    license = "MIT OR AGPL-3.0-or-later",
+    license = "MIT OR PMPL-1.0-or-later",
     repository = "https://github.com/hyperpolymath/qed-ssg",
   },
 

@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: PMPL-1.0-or-later
 # SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 # Containerfile — sparkle-ssg
 # Multi-stage build for sparkle-ssg satellite
@@ -26,7 +26,7 @@ FROM docker.io/denoland/deno:alpine AS runtime
 LABEL org.opencontainers.image.title="sparkle-ssg"
 LABEL org.opencontainers.image.description="Unified MCP adapters for 28 static site generators"
 LABEL org.opencontainers.image.source="https://github.com/hyperpolymath/sparkle-ssg"
-LABEL org.opencontainers.image.licenses="MIT OR AGPL-3.0-or-later"
+LABEL org.opencontainers.image.licenses="MIT OR PMPL-1.0-or-later"
 LABEL org.opencontainers.image.vendor="hyperpolymath"
 
 WORKDIR /app

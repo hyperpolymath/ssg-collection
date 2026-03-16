@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: PMPL-1.0-or-later
 # SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 # Containerfile — eclipse-ssg container image
 
@@ -7,7 +7,7 @@ FROM docker.io/denoland/deno:alpine-1.40.0 AS base
 LABEL org.opencontainers.image.title="eclipse-ssg"
 LABEL org.opencontainers.image.description="Satellite SSG implementation with 28 adapter support"
 LABEL org.opencontainers.image.source="https://github.com/hyperpolymath/eclipse-ssg"
-LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
+LABEL org.opencontainers.image.licenses="PMPL-1.0-or-later"
 
 WORKDIR /app
 

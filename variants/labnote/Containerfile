@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: PMPL-1.0-or-later
 # SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 # Containerfile for labnote-ssg
 # Build: podman build -t labnote-ssg .
@@ -9,7 +9,7 @@ FROM docker.io/denoland/deno:1.40.0
 LABEL org.opencontainers.image.title="labnote-ssg"
 LABEL org.opencontainers.image.description="MCP adapter hub for 28 static site generators"
 LABEL org.opencontainers.image.source="https://github.com/hyperpolymath/labnote-ssg"
-LABEL org.opencontainers.image.licenses="MIT OR AGPL-3.0-or-later"
+LABEL org.opencontainers.image.licenses="MIT OR PMPL-1.0-or-later"
 
 WORKDIR /app
 

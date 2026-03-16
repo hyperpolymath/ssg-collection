@@ -55,4 +55,4 @@ just build
 `anvil-ssg` is the high-integrity safety member of the **poly-ssg** family.
 
 == License
-AGPL-3.0-or-later
+PMPL-1.0-or-later

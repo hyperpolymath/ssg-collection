@@ -1,5 +1,5 @@
 -- Data Processing Pipeline - Ephapax Implementation
--- SPDX-License-Identifier: AGPL-3.0-or-later
+-- SPDX-License-Identifier: PMPL-1.0-or-later
 --
 -- Demonstrates ETL operations with linear/affine types and regions.
 -- Ensures data ownership is tracked throughout the pipeline.

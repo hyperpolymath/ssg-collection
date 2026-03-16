@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: PMPL-1.0-or-later
 # Containerfile for zigzag-ssg
 # Build: podman build -t zigzag-ssg .
 # Run: podman run --rm -v $(pwd):/site zigzag-ssg build
@@ -52,4 +52,4 @@ CMD ["--help"]
 LABEL org.opencontainers.image.title="zigzag-ssg"
 LABEL org.opencontainers.image.description="High-performance static site generator in Zig"
 LABEL org.opencontainers.image.source="https://github.com/hyperpolymath/zigzag-ssg"
-LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
+LABEL org.opencontainers.image.licenses="PMPL-1.0-or-later"

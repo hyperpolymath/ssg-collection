@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: PMPL-1.0-or-later
 # SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 # Containerfile — rats-ssg MCP SSG Hub (ReScript + Deno)
 
@@ -24,7 +24,7 @@ FROM docker.io/denoland/deno:alpine-2.1.4
 LABEL org.opencontainers.image.title="rats-ssg"
 LABEL org.opencontainers.image.description="MCP SSG Hub - Unified access to 28 static site generators"
 LABEL org.opencontainers.image.vendor="hyperpolymath"
-LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
+LABEL org.opencontainers.image.licenses="PMPL-1.0-or-later"
 LABEL org.opencontainers.image.source="https://github.com/hyperpolymath/rats-ssg"
 
 WORKDIR /app

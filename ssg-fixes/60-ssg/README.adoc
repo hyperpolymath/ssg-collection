@@ -43,4 +43,4 @@ just build
 `60-ssg` is the block-structured ancestor of the **poly-ssg** family.
 
 == License
-AGPL-3.0-or-later
+PMPL-1.0-or-later

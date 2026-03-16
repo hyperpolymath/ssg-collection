@@ -1,5 +1,5 @@
 -- DevTools CLI - Ephapax Implementation
--- SPDX-License-Identifier: AGPL-3.0-or-later
+-- SPDX-License-Identifier: PMPL-1.0-or-later
 --
 -- This is a specification for when Ephapax compiler is ready.
 -- Demonstrates linear/affine types, regions, and WASM compilation.

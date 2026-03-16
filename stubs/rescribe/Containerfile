@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: PMPL-1.0-or-later
 # SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 #
 # Containerfile — rescribe-ssg
@@ -11,7 +11,7 @@ FROM docker.io/library/node:20-alpine AS builder
 
 LABEL org.opencontainers.image.source="https://github.com/hyperpolymath/rescribe-ssg"
 LABEL org.opencontainers.image.description="ReScript Static Site Generator"
-LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
+LABEL org.opencontainers.image.licenses="PMPL-1.0-or-later"
 
 WORKDIR /build
 
@@ -34,7 +34,7 @@ FROM docker.io/library/node:20-alpine AS runtime
 
 LABEL org.opencontainers.image.source="https://github.com/hyperpolymath/rescribe-ssg"
 LABEL org.opencontainers.image.description="ReScript Static Site Generator"
-LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
+LABEL org.opencontainers.image.licenses="PMPL-1.0-or-later"
 
 # Create non-root user
 RUN addgroup -g 1000 rescribe && \

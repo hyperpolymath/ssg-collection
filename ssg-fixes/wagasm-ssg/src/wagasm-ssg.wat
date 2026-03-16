@@ -1,4 +1,4 @@
-;; SPDX-License-Identifier: AGPL-3.0-or-later
+;; SPDX-License-Identifier: PMPL-1.0-or-later
 ;; wagasm-ssg - Pure WebAssembly Text (WAT) static site generator
 ;; EXPERIMENTAL: Pure WAT SSG with host runtime for I/O
 

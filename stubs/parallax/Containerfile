@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: PMPL-1.0-or-later
 # SPDX-FileCopyrightText: 2025 hyperpolymath
 # parallax-ssg Container Image
 
@@ -38,4 +38,4 @@ CMD ["build"]
 LABEL org.opencontainers.image.title="parallax-ssg"
 LABEL org.opencontainers.image.description="Chapel Static Site Generator"
 LABEL org.opencontainers.image.source="https://github.com/hyperpolymath/parallax-ssg"
-LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
+LABEL org.opencontainers.image.licenses="PMPL-1.0-or-later"

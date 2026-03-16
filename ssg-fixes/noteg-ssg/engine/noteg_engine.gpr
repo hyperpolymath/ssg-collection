@@ -1,4 +1,4 @@
--- SPDX-License-Identifier: AGPL-3.0-or-later
+-- SPDX-License-Identifier: PMPL-1.0-or-later
 -- SPDX-FileCopyrightText: 2025 hyperpolymath
 --
 -- noteg-ssg: Static site generator in the spirit of Ada Lovelace
