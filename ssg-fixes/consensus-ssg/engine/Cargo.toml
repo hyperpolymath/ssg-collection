@@ -6,8 +6,8 @@ name = "consensus-ssg"
 version = "0.1.0"
 edition = "2021"
 description = "Consensus-driven static site generation using Raft"
-license = "AGPL-3.0-or-later"
-authors = ["hyperpolymath"]
+license = "PMPL-1.0-or-later"
+authors = ["Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>"]
 
 [dependencies]
 # Raft consensus implementation

@@ -182,7 +182,7 @@ Breakdown:
 ✓ **License:**
 - PMPL-1.0-or-later (Palimpsest License)
 - Proper SPDX headers on all files
-- Author: Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
+- Author: Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 
 ## Next Steps
 

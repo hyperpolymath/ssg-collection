@@ -2,7 +2,7 @@
   "$schema": "https://deno.land/x/deno@v1.40.0/cli/schemas/config-file.v1.json",
   "name": "@hyperpolymath/eclipse-ssg",
   "version": "0.2.0",
-  "license": "AGPL-3.0-or-later",
+  "license": "PMPL-1.0-or-later",
   "tasks": {
     "rescript:build": "npx rescript build -with-deps",
     "rescript:clean": "npx rescript clean",

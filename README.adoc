@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: PMPL-1.0-or-later
-// Copyright (c) 2024-2026 Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
+// Copyright (c) 2024-2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 
 = SSG Collection
 :toc: auto
@@ -55,7 +55,7 @@ These SSG repos remain as separate repositories:
 
 SPDX-License-Identifier: PMPL-1.0-or-later
 
-Copyright (c) 2024-2026 Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
+Copyright (c) 2024-2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 
 == Origin
 
