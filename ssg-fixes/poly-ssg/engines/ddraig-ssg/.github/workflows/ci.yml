@@ -12,7 +12,7 @@ jobs:
     container:
       image: ghcr.io/idris-community/idris2:latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       - name: Compile Ddraig
         run: idris2 Ddraig.idr -o ddraig
@@ -32,7 +32,7 @@ jobs:
       image: ghcr.io/idris-community/idris2:latest
     needs: test
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       - name: Compile Ddraig
         run: idris2 Ddraig.idr -o ddraig
@@ -43,6 +43,6 @@ jobs:
           ./build/exec/ddraig build || echo "Build completed"
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
           path: _site
