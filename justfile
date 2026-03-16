@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: PMPL-1.0-or-later
 # SSG Collection - consolidated monorepo justfile
-# Copyright (c) 2024-2026 Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
+# Copyright (c) 2024-2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 
 # Default recipe: list all available recipes
 default:
