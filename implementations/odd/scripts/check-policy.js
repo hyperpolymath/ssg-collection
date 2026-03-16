@@ -1,5 +1,5 @@
 #!/usr/bin/env -S deno run --allow-read
-// SPDX-License-Identifier: AGPL-3.0-or-later
+// SPDX-License-Identifier: PMPL-1.0-or-later
 // SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 // Language Policy Enforcement Script for odd-ssg
 

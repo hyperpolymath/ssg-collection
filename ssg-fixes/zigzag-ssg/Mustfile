@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: PMPL-1.0-or-later
 # Mustfile for zigzag-ssg - Must-Pass Quality Gates
 # These are NON-NEGOTIABLE requirements that MUST pass before merge/release
 # See: PLAYBOOK.scm for workflow integration

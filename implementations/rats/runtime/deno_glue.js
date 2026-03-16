@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-or-later
+// SPDX-License-Identifier: PMPL-1.0-or-later
 // SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 // deno_glue.js - Minimal Deno runtime interop for ReScript
 // This is the ONLY JavaScript file needed - provides Deno API bridges
