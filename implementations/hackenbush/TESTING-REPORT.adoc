@@ -115,10 +115,10 @@ Checked 4 files
 
 [source]
 ----
-/var/home/hyper/repos/hackenbush-ssg/runtime/host.ts
-/var/home/hyper/repos/hackenbush-ssg/tests/e2e/pattern_evolution_test.ts
-/var/home/hyper/repos/hackenbush-ssg/tests/rle_parser_test.ts
-/var/home/hyper/repos/hackenbush-ssg/tests/simulator_test.ts
+/var$HOME/repos/hackenbush-ssg/runtime/host.ts
+/var$HOME/repos/hackenbush-ssg/tests/e2e/pattern_evolution_test.ts
+/var$HOME/repos/hackenbush-ssg/tests/rle_parser_test.ts
+/var$HOME/repos/hackenbush-ssg/tests/simulator_test.ts
 ----
 
 === Formatting Changes
@@ -282,22 +282,22 @@ NOTE: ReScript compilation was not tested as it requires the ReScript toolchain.
 
 During testing, the following files were modified to fix lint and formatting issues:
 
-1. `/var/home/hyper/repos/hackenbush-ssg/runtime/host.ts`
+1. `/var$HOME/repos/hackenbush-ssg/runtime/host.ts`
    - Renamed `OUTPUT_WIDTH` to `_OUTPUT_WIDTH`
    - Applied deno fmt formatting
 
-2. `/var/home/hyper/repos/hackenbush-ssg/tests/rle_parser_test.ts`
+2. `/var$HOME/repos/hackenbush-ssg/tests/rle_parser_test.ts`
    - Removed unused `assertThrows` import
    - Prefixed unused test variables with underscore
 
-3. `/var/home/hyper/repos/hackenbush-ssg/tests/simulator_test.ts`
+3. `/var$HOME/repos/hackenbush-ssg/tests/simulator_test.ts`
    - Prefixed unused test grid variables with underscore
 
-4. `/var/home/hyper/repos/hackenbush-ssg/tests/e2e/pattern_evolution_test.ts`
+4. `/var$HOME/repos/hackenbush-ssg/tests/e2e/pattern_evolution_test.ts`
    - Removed `async` from synchronous test functions
    - Prefixed unused variables with underscore
 
-5. `/var/home/hyper/repos/hackenbush-ssg/.tool-versions`
+5. `/var$HOME/repos/hackenbush-ssg/.tool-versions`
    - Created with `deno 1.45.0` for asdf version management
 
 == Recommendations

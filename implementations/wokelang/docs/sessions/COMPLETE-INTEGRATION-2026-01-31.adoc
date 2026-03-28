@@ -254,6 +254,6 @@ The SSG is ready for further development and will serve as both the wokelang.org
 
 **Commit:** 85148f9 - feat: create wokelang-ssg - SSG written in WokeLang itself
 **Files Changed:** 108 files, 8,668 insertions(+)
-**Repository:** /var/mnt/eclipse/repos/wokelang-ssg
+**Repository:** /var$REPOS_DIR/wokelang-ssg
 
 **Next Session:** Complete markdown parser, implement template rendering, test build pipeline
