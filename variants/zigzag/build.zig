@@ -11,7 +11,7 @@ pub fn build(b: *std.Build) void {
 
     const exe = b.addExecutable(.{
         .name = "zigzag-ssg",
-        .root_source_file = .{ .path = "src/zigzag.zig" },
+        .root_source_file = b.path("src/zigzag.zig"),
         .target = target,
         .optimize = optimize,
     });
@@ -31,7 +31,7 @@ pub fn build(b: *std.Build) void {
 
     // Unit tests
     const unit_tests = b.addTest(.{
-        .root_source_file = .{ .path = "src/zigzag.zig" },
+        .root_source_file = b.path("src/zigzag.zig"),
         .target = target,
         .optimize = optimize,
     });
