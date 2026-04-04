@@ -4,12 +4,12 @@
     "team"
   ],
   "capabilities": {
-    "primary": {
-      "description": "TODO: describe this service's primary capability",
+    "cli": {
+      "description": "Collection of static site generators spanning multiple languages and paradigms.",
       "panel_compatible": true,
       "protocol": "cli",
       "requires_auth": false,
-      "type": "custom"
+      "type": "cli"
     }
   },
   "consumes": [],
