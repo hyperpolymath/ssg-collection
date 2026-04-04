@@ -1,14 +1,18 @@
 # TEST-NEEDS: ssg-collection
 
+## CRG Grade: C — ACHIEVED 2026-04-04
+
 ## Current State
 
 | Category | Count | Details |
 |----------|-------|---------|
 | **Source modules** | 70+ | ReScript across 3 SSG implementations (rats, odd, eclipse) -- adapters, MCP, parsers, engines, a11y |
 | **Unit tests** | ~6 | Engine_test.res (~32 assertions), Lexer_test.res (~42), Parser_test.res (~45), Adapter_test.res (~16), Bernoulli_test.res (~34), test_utils.js |
-| **Integration tests** | 0 | None |
+| **Property tests** | 1 | eclipse/tests/property/PropertyTest.res (~5 properties, loops over generated inputs) |
+| **Aspect tests (security)** | 1 | eclipse/tests/aspect/SecurityTest.res (~8 tests: XSS, path traversal, URL injection) |
+| **Integration tests** | 1 | eclipse/tests/integration/AdapterIntegrationTest.res (~7 tests: multi-adapter chain) |
 | **E2E tests** | 1 | Adapter_test.res in eclipse/tests/e2e/ (~16 assertions) |
-| **Benchmarks** | 0 | None |
+| **Benchmarks** | 2 | qed/tests/benchmark/AdapterBenchmark.res (existing), SsgBenchmark.res (build throughput + parser throughput, added 2026-04-04) |
 | **Fuzz tests** | 0 | placeholder.txt only |
 
 ## What's Missing
