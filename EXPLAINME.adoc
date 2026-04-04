@@ -1,24 +1,134 @@
 // SPDX-License-Identifier: PMPL-1.0-or-later
+// Copyright (c) 2024-2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 = SSG Collection — Show Me The Receipts
 :toc:
+:toclevels: 3
 :icons: font
 
-The README makes claims. This file backs them up.
+The README makes claims. This file backs them up with code paths, caveats, and honest gaps.
+
+== Claim 1: Consolidated Monorepo — 52 Repos Absorbed, Sprawl Eliminated
 
 [quote, README]
 ____
-A consolidated monorepo of static site generator experiments and implementations from the hyperpolymath ecosystem.
+A consolidated monorepo of static site generator experiments and implementations from the
+hyperpolymath ecosystem. This monorepo was consolidated from 52 individual *-ssg repositories
+plus ssg-fixes on 2026-02-08 to reduce repository sprawl.
 ____
+
+*How it works:* On 2026-02-08, 52 standalone `*-ssg` GitHub repositories and the `ssg-fixes` repo
+were merged into this monorepo. The three-tier taxonomy (`implementations/`, `variants/`, `stubs/`)
+sorts them by maturity: implementations have 7+ source files (minimum viable standalone SSG logic),
+variants have 2-7 (experiments and smaller ideas), and stubs have 0-1 (RSR scaffolding with no
+content yet). The 7 implementations are: `rats` (17 files), `odd` (15), `eclipse` (15),
+`wokelang` (13, Rust/Cargo), `hackenbush` (11), `pharos` (11), `qed` (8). This consolidation
+reduces CI costs, mirrors, and registry entries by ~52x for the stub/variant tier. The two
+canonical SSG frameworks (`poly-ssg` and `casket-ssg`) remain as separate repositories because
+they are production-grade frameworks rather than experiments.
+
+*Honest caveat:* "Absorbed" means the files were moved in; it does not mean the SSGs were
+evaluated, tested, or brought to any common standard. Most stubs and variants are in the state
+they were in when the originating repo was last touched — which may be months-old scaffolding.
+There is no cross-collection test runner that exercises all implementations.
+
+== Claim 2: Language Diversity — Rust, Gleam, and Deno-Targeted SSGs Present
+
+[quote, README]
+____
+Full SSG implementations with meaningful source code: rats (17 files), odd (15), eclipse (15),
+wokelang (13, Rust), hackenbush (11), pharos (11), qed (8). Variants: sparkle (Gleam), zigzag,
+wagasm.
+____
+
+*How it works:* `implementations/wokelang/` contains a `Cargo.toml` workspace and Rust source, making
+it the only implementation in a compiled systems language. `variants/sparkle/` uses Gleam's BEAM
+target. The Deno-targeted SSGs use `deno.json` imports rather than `package.json`. The
+`implementations/rats/` and `implementations/eclipse/` directories contain the most source files
+(17 and 15 respectively) and represent the most complete feature sets within the collection.
+`ssg-fixes/` (also absorbed) contains cross-cutting fixes that were being applied to multiple
+SSGs before the monorepo consolidation.
+
+*Honest caveat:* Language policy compliance is uneven across the collection. Some stubs contain
+`package.json` artifacts from pre-2026 development when TypeScript and npm were still in use.
+The `npm-bun-blocker` and `ts-blocker` CI workflows enforce the policy going forward, but older
+files in stubs and variants have not been audited or cleaned up.
+
+== Dogfooded Across The Account
+
+[cols="1,2,1"]
+|===
+| Repo | How ssg-collection is used | Status
+
+| `poly-ssg`
+| ssg-collection experiments feed design ideas into poly-ssg (the production SSG framework)
+| Conceptual reference
+
+| `casket-ssg`
+| Similarly distinct from the collection; experiments here may inform casket-ssg features
+| Conceptual reference
+
+| `developer-ecosystem`
+| ssg-collection is referenced in the ecosystem's frontend/static-site tooling map
+| Registry entry
+
+| `hypatia`
+| Hypatia's CI rules validated against ssg-collection's RSR workflow conformance
+| Active (CI)
+|===
 
 == File Map
 
-[cols="1,2"]
+[cols="1,3"]
 |===
 | Path | What's There
 
-| `test(s)/` | Test suite
+| `implementations/rats/`
+| 17-file SSG: the most fully developed implementation in the collection
+
+| `implementations/odd/`
+| 15-file SSG implementation
+
+| `implementations/eclipse/`
+| 15-file SSG implementation (note: unrelated to the Eclipse drive)
+
+| `implementations/wokelang/`
+| 13-file Rust SSG: `Cargo.toml`, ABI-FFI-README, Cloudflare integration notes, ffi/ subdir
+
+| `implementations/hackenbush/`
+| 11-file SSG implementation
+
+| `implementations/pharos/`
+| 11-file SSG implementation
+
+| `implementations/qed/`
+| 8-file SSG implementation (minimal proof-of-concept)
+
+| `variants/`
+| 13 smaller SSG experiments (2-7 source files each): baremetal, befunge, consensus, gungir,
+  labnote, macrauchenia, my, orbital, praxis, saur, sparkle (Gleam), wagasm, zigzag
+
+| `stubs/`
+| 32 RSR scaffolding stubs (0-1 source files each): 60, canon, chicxulub, cloudanvil, cpt, dei,
+  divisionone, easel, ephapax, estate, iota, jura, liminal, milk, noteg, parallax, prodigy,
+  redshift, region, reliquary, rescribe, shift, terrapin, tiamat, tripos, tyrano, ultimatum,
+  undo, vindaloo, vladik, warp
+
+| `ssg-fixes/`
+| Absorbed cross-cutting fixes from the now-deleted ssg-fixes repository
+
+| `Justfile`
+| Recipes: `build`, `test`, `check`, `panic` (each applies to implementations where relevant)
+
+| `TOPOLOGY.md`
+| Architecture map: tier definitions, exclusions, consolidation history
+
+| `.github/workflows/`
+| RSR-standard CI: CodeQL, Hypatia, Scorecard, npm-bun-blocker, ts-blocker, mirror workflows
+
+| `tests/`
+| Top-level test directory (per-implementation tests live inside each subdirectory)
 |===
 
 == Questions?
 
-Open an issue or reach out directly — happy to explain anything in more detail.
+Open an issue or reach out to Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>.
