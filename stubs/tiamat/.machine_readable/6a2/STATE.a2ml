@@ -1,19 +1,38 @@
-;; SPDX-License-Identifier: PMPL-1.0-or-later
-;; STATE.scm - Project state
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
+#
+# STATE.a2ml — Tiamat project state
+[metadata]
+project = "tiamat-ssg"
+version = "1.0.0"
+last-updated = "2025-01-18"
+status = "active"
+session = "converted from scheme — 2026-04-11"
 
-(state
-  (metadata
-    (version "1.0.0")
-    (schema-version "1.0")
-    (created "2025-01-18")
-    (updated "2025-01-18")
-    (project "tiamat-ssg")
-    (repo "hyperpolymath/tiamat-ssg"))
-  (project-context
-    (name "tiamat-ssg")
-    (tagline "Static site generator implementation"))
-  (current-position
-    (phase "stable")
-    (overall-completion 100))
-  (critical-next-actions
-    (immediate ("Maintenance and updates"))))
+[project-context]
+name = "Tiamat Ssg"
+purpose = """Static site generator implementation"""
+completion-percentage = 100
+
+[position]
+phase = "stable"   # design | implementation | testing | maintenance | archived
+maturity = "experimental"  # experimental | alpha | beta | production | lts
+
+[route-to-mvp]
+milestones = [
+  # No milestones recorded
+]
+
+[blockers-and-issues]
+issues = [
+  # No blockers recorded
+]
+
+[critical-next-actions]
+actions = [
+  "Maintenance and updates",
+]
+
+[maintenance-status]
+last-run-utc = "2025-01-18T00:00:00Z"
+last-result = "unknown"  # unknown | pass | warn | fail

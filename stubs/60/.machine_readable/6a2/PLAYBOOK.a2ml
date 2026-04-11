@@ -1,32 +1,26 @@
-;; SPDX-License-Identifier: PMPL-1.0-or-later
-;; PLAYBOOK.scm - Operational runbook for 60-ssg
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
+#
+# PLAYBOOK.a2ml — Operational playbook
+[metadata]
+version = "0.1.0"
+last-updated = "2026-04-11"
 
-(define playbook
-  `((version . "1.0.0")
-    (procedures
-      ((deploy
-         (("step-1" . "just clean")
-          ("step-2" . "just build")
-          ("step-3" . "just test")
-          ("step-4" . "just validate")
-          ("step-5" . "Copy _site/ to deployment target")))
-       (rollback
-         (("step-1" . "Identify previous known-good commit")
-          ("step-2" . "git checkout <commit-sha>")
-          ("step-3" . "just clean && just build")
-          ("step-4" . "Verify site generation succeeds")
-          ("step-5" . "Redeploy from clean build")))
-       (debug
-         (("check-engine" . "Verify engine/src/sixty.alg exists and is valid ALGOL 60")
-          ("check-output" . "Inspect _site/ directory for generated files")
-          ("check-policy" . "just lint to verify language policy compliance")
-          ("check-blocks" . "just fmt to verify begin/end block balance")
-          ("verbose-build" . "Run build steps manually with output inspection")))))
-    (alerts
-      (("build-failure" . "Site generation failed - check ALGOL 60 syntax")
-       ("policy-violation" . "Banned language detected in codebase")
-       ("test-failure" . "Validation tests did not pass")))
-    (contacts
-      (("maintainer" . "See MAINTAINERS.adoc")
-       ("security" . "See SECURITY.md")
-       ("issues" . "https://github.com/hyperpolymath/60-ssg/issues")))))
+[deployment]
+# method = "gitops"  # gitops | manual | ci-triggered
+# target = "container"  # container | binary | library | wasm
+
+[incident-response]
+# 1. Check .machine_readable/STATE.a2ml for current status
+# 2. Review recent commits and CI results
+# 3. Run `just validate` to check compliance
+# 4. Run `just security` to audit for vulnerabilities
+
+[release-process]
+# 1. Update version in STATE.a2ml, META.a2ml
+# 2. Run `just release-preflight` (validate + quality + security + maint-hard-pass)
+# 3. Tag and push
+
+[maintenance-operations]
+# Baseline audit: just maint-audit
+# Hard release gate: just maint-hard-pass

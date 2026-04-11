@@ -1,13 +1,20 @@
-;; SPDX-License-Identifier: PMPL-1.0-or-later
-;; ECOSYSTEM.scm - Ecosystem positioning
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
+#
+# ECOSYSTEM.a2ml — Shift ecosystem position
+[metadata]
+version = "1.0.0"
+last-updated = "2026-04-11"
 
-(ecosystem
-  ((version . "1.0.0")
-   (name . "shift-ssg")
-   (type . "satellite")
-   (purpose . "SSG implementation for poly-ssg ecosystem")
-   (position-in-ecosystem . "satellite")
-   (related-projects
-     ((poly-ssg-mcp . "hub-adapter")))
-   (what-this-is . ("Static site generator implementation"))
-   (what-this-is-not . ())))
+[project]
+name = "Shift"
+purpose = "SSG implementation for poly-ssg ecosystem"
+role = "satellite"
+
+[position-in-ecosystem]
+category = ""
+
+[related-projects]
+projects = [
+  # No related projects recorded
+]
