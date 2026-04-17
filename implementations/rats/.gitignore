@@ -88,3 +88,11 @@ htmlcov/
 # *.ts - use ReScript
 # package-lock.json - use deno
 # bun.lockb - use deno
+target/
+node_modules/
+_build/
+deps/
+.elixir_ls/
+.cache/
+build/
+dist/

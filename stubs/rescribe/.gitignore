@@ -78,3 +78,10 @@ htmlcov/
 /tmp/
 *.tmp
 *.bak
+target/
+_build/
+deps/
+.elixir_ls/
+.cache/
+build/
+dist/
