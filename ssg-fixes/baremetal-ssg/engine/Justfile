@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Justfile for baremetal-ssg engine
+
+set shell := ["bash", "-euo", "pipefail", "-c"]
+
+default:
+    @just --list --unsorted
+
+build:
+    mkdir -p build
+
+all: build
+    riscv64-linux-gnu-as -march=rv64i -mabi=lp64 -o build/baremetal.o src/baremetal.s
+    riscv64-linux-gnu-ld -static -o build/baremetal build/baremetal.o
+
+bin: all
+    riscv64-linux-gnu-objcopy -O binary build/baremetal build/baremetal.bin
+
+clean:
+    rm -rf build _site
+
+qemu: all
+    qemu-riscv64 build/baremetal
+
+run: all
+    ./build/baremetal
