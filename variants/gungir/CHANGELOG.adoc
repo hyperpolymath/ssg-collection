@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 === Added
 - Complete SCM file suite (META, ECOSYSTEM, STATE, PLAYBOOK, AGENTIC, NEUROSYM)
-- Build system with justfile (25+ recipes)
+- Build system with Justfile (25+ recipes)
 - Mustfile for mandatory pre-merge checks
 - CI workflow with SHA-pinned actions
 - Comprehensive cookbook.adoc documentation

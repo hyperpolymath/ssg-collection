@@ -143,7 +143,7 @@ lambda_ir.ml    wasm_env.ml          wasm_types.ml
 ```
 engines/rescript-wasm/
 ├── dune-project          # Dune build configuration
-├── justfile              # Task runner commands
+├── Justfile              # Task runner commands
 ├── lib/
 │   ├── lambda_ir.ml      # Lambda IR types and analysis
 │   ├── wasm_types.ml     # WASM-GC type definitions

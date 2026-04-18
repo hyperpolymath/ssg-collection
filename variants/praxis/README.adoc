@@ -95,7 +95,7 @@ praxis-ssg/
 │   └── api/            # API reference
 ├── .github/            # GitHub configuration
 │   └── workflows/      # CI/CD pipelines
-├── justfile            # Task automation
+├── Justfile            # Task automation
 ├── Mustfile            # Mandatory gates
 ├── cookbook.adoc       # CLI/Just/Nickel reference
 ├── META.scm            # Architecture decisions

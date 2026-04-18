@@ -36,7 +36,7 @@ Designed for the link:https://github.com/hyperpolymath[Hyperpolymath] ecosystem 
 | Deno 2.1+
 
 | Task Runner
-| Just (justfile)
+| Just (Justfile)
 
 | Deployment
 | Must (Mustfile.epx)
