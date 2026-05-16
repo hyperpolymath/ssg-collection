@@ -84,7 +84,7 @@ policy:
     - name: no_typescript
       pattern: "**/*.ts"
       expected: 0
-      message: "TypeScript files are banned - use ReScript instead"
+      message: "TypeScript files are banned - use AffineScript instead"
 
     - name: no_package_json
       pattern: "package.json"

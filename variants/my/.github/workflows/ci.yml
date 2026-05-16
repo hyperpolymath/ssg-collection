@@ -31,7 +31,7 @@ jobs:
         run: |
           echo "Checking for banned TypeScript files..."
           if find . -name "*.ts" -o -name "*.tsx" | grep -v node_modules | grep -q .; then
-            echo "FAIL: TypeScript files found - use ReScript instead"
+            echo "FAIL: TypeScript files found - use AffineScript instead"
             find . -name "*.ts" -o -name "*.tsx" | grep -v node_modules
             exit 1
           else

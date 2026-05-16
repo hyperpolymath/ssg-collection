@@ -71,7 +71,7 @@ let LanguagePolicy = {
     typescript = {
       extensions = [".ts", ".tsx", ".mts", ".cts"],
       replacement = "rescript",
-      error = "TypeScript is banned. Use ReScript instead.",
+      error = "TypeScript is banned. Use AffineScript instead.",
     },
     nodejs = {
       files = ["package.json", "package-lock.json", ".npmrc"],

@@ -33,7 +33,7 @@ jobs:
         run: |
           if find . -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.mts" -o -name "*.cts" \) \
               -not -path "./node_modules/*" -not -path "./.git/*" 2>/dev/null | grep -q .; then
-            echo "ERROR: TypeScript files detected. Use ReScript instead."
+            echo "ERROR: TypeScript files detected. Use AffineScript instead."
             find . -type f \( -name "*.ts" -o -name "*.tsx" \) -not -path "./node_modules/*" -not -path "./.git/*"
             exit 1
           fi
