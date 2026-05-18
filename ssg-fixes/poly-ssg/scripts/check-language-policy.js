@@ -3,7 +3,7 @@
 // Language Policy Enforcement Script
 //
 // This script enforces the Hyperpolymath Language Policy:
-// - TypeScript is BANNED (use ReScript instead)
+// - TypeScript is BANNED (use AffineScript instead)
 // - Node.js/npm is BANNED (use Deno instead)
 // - Go is BANNED (use Rust instead)
 // - Python is BANNED except for SaltStack

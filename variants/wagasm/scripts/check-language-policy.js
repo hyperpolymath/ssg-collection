@@ -65,7 +65,7 @@ async function checkPolicy() {
     // Check banned extensions
     for (const ext of BANNED_EXTENSIONS) {
       if (file.endsWith(ext) && !file.endsWith(".d.ts")) {
-        let fix = "Use ReScript instead";
+        let fix = "Use AffineScript instead";
         if (ext === ".go") fix = "Use Rust instead";
         if (ext === ".as") fix = "FORBIDDEN: AssemblyScript not allowed. Write pure WAT.";
         if (ext === ".ts") fix = "Write pure WAT for SSG logic, ReScript for host only";

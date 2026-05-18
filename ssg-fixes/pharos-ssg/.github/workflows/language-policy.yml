@@ -29,7 +29,7 @@ jobs:
             ! -path "./node_modules/*" \
             ! -path "./_site/*" | head -20)
           if [ -n "$VIOLATIONS" ]; then
-            echo "ERROR: TypeScript files found (banned - use ReScript instead):"
+            echo "ERROR: TypeScript files found (banned - use AffineScript instead):"
             echo "$VIOLATIONS"
             exit 1
           fi

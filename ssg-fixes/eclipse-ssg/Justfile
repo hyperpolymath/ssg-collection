@@ -23,7 +23,7 @@ policy-check:
     @echo "Checking language policy compliance..."
     @# No TypeScript files (except .d.ts)
     @if find . -name "*.ts" -not -name "*.d.ts" -not -path "./node_modules/*" | grep -q .; then \
-        echo "ERROR: TypeScript files found. Use ReScript instead."; \
+        echo "ERROR: TypeScript files found. Use AffineScript instead."; \
         find . -name "*.ts" -not -name "*.d.ts" -not -path "./node_modules/*"; \
         exit 1; \
     fi

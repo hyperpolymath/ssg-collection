@@ -18,7 +18,7 @@ echo "Checking language policy..."
 
 # No TypeScript files (except .d.ts)
 if find . -name "*.ts" -not -name "*.d.ts" -not -path "./node_modules/*" -not -path "./.git/*" | grep -q .; then
-    echo "ERROR: TypeScript files found. Use ReScript instead."
+    echo "ERROR: TypeScript files found. Use AffineScript instead."
     find . -name "*.ts" -not -name "*.d.ts" -not -path "./node_modules/*" -not -path "./.git/*"
     exit 1
 fi

@@ -64,7 +64,7 @@ async function checkPolicy() {
         violations.push({
           file: relPath,
           reason: `Banned extension ${ext}`,
-          fix: ext === ".go" ? "Use Rust instead" : "Use ReScript instead",
+          fix: ext === ".go" ? "Use Rust instead" : "Use AffineScript instead",
         });
       }
     }

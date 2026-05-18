@@ -6,7 +6,7 @@
 const BANNED_PATTERNS = {
   typescript: {
     extensions: [".ts", ".tsx", ".mts", ".cts"],
-    message: "TypeScript files are banned. Use ReScript instead.",
+    message: "TypeScript files are banned. Use AffineScript instead.",
   },
   nodejs: {
     files: ["package.json", "package-lock.json"],

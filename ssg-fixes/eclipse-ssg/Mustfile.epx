@@ -38,7 +38,7 @@ allowed = [
 
 # Banned - automatic rejection
 banned = [
-  "typescript",   # Use ReScript instead
+  "typescript",   # Use AffineScript instead
   "nodejs",       # Use Deno instead
   "npm",          # Use Deno instead
   "bun",          # Use Deno instead

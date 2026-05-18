@@ -10,7 +10,7 @@ echo "[POLICY] Checking language policy compliance..."
 # Check for banned TypeScript files (excluding .d.ts)
 TS_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.tsx?$' | grep -v '\.d\.ts$' || true)
 if [ -n "$TS_FILES" ]; then
-    echo "[POLICY] ERROR: TypeScript files detected (banned - use ReScript instead):"
+    echo "[POLICY] ERROR: TypeScript files detected (banned - use AffineScript instead):"
     echo "$TS_FILES"
     echo ""
     echo "To fix: Convert these to ReScript (.res) files"

@@ -40,7 +40,7 @@ jobs:
         run: |
           echo "Checking for TypeScript files..."
           if find . -name "*.ts" -not -name "*.d.ts" -not -path "./node_modules/*" | grep -q .; then
-            echo "::error::TypeScript files found. Use ReScript instead."
+            echo "::error::TypeScript files found. Use AffineScript instead."
             find . -name "*.ts" -not -name "*.d.ts" -not -path "./node_modules/*"
             exit 1
           fi

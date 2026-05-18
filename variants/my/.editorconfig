@@ -51,6 +51,6 @@ indent_size = 4
 # BANNED FILE TYPES (enforcement via IDE)
 # Configure your editor to warn on these file types
 # ============================================================================
-# TypeScript: *.ts, *.tsx (use ReScript instead)
+# TypeScript: *.ts, *.tsx (use AffineScript instead)
 # Go: *.go (use Rust instead)
 # Python (non-Salt): *.py (use ReScript/Rust instead)
