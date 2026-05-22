@@ -1,5 +1,5 @@
 image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 // SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 = Gungir-SSG
 
@@ -125,7 +125,7 @@ The poly-mcp portfolio (https://github.com/hyperpolymath[hyperpolymath]) provide
 
 == Licence
 
-PMPL-1.0-or-later — See link:LICENSE.txt[LICENSE.txt]
+MPL-2.0 — See link:LICENSE.txt[LICENSE.txt]
 
 Copyright (C) 2025 Jonathan D.A. Jewell
 

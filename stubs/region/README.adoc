@@ -46,4 +46,4 @@ just build --region "[1..1000, 1..50]"
 `region-ssg` provides the high-performance parallel array tier of the **poly-ssg** family.
 
 == License
-PMPL-1.0-or-later
+MPL-2.0

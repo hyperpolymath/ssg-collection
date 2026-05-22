@@ -335,6 +335,6 @@ Check that the language server is running with `just lsp`.
 
 == License
 
-SPDX-License-Identifier: PMPL-1.0-or-later-or-later
+SPDX-License-Identifier: MPL-2.0-or-later
 
 Copyright 2025 hyperpolymath

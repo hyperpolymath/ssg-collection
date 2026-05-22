@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 // SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 = praxis-ssg
 :toc: left
@@ -297,7 +297,7 @@ See link:STATE.scm[STATE.scm] for the complete roadmap. Current milestones:
 
 Dual licensed under:
 
-* link:LICENSE.txt[PMPL-1.0-or-later]
+* link:LICENSE.txt[MPL-2.0]
 * MIT (with Palimpsest License philosophical overlay)
 
 == Acknowledgments

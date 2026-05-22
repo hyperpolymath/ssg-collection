@@ -1,7 +1,7 @@
 ||| Ephapax SSG - Main Entry Point
 ||| A static site generator written in Idris2 with formal verification
 |||
-||| SPDX-License-Identifier: PMPL-1.0-or-later
+||| SPDX-License-Identifier: MPL-2.0
 
 module Main
 

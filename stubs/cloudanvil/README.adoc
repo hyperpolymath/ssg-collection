@@ -96,4 +96,4 @@ engine/src/
 The standard mode implementation was merged from https://github.com/hyperpolymath/noteg-ssg[noteg-ssg] to consolidate Ada SSG efforts into a single, well-maintained repository with both SPARK verification and full functionality.
 
 == License
-PMPL-1.0-or-later
+MPL-2.0

@@ -5,7 +5,7 @@
 :sectlinks:
 :icons: font
 
-SPDX-License-Identifier: PMPL-1.0-or-later-or-later
+SPDX-License-Identifier: MPL-2.0-or-later
 
 Comprehensive recipes for building, testing, and deploying terrapin-ssg.
 
@@ -392,7 +392,7 @@ Git hooks and CI hooks for terrapin-ssg.
 ----
 #!/bin/bash
 # .git/hooks/pre-commit
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 
 set -e
 
@@ -420,7 +420,7 @@ echo "✓ Pre-commit passed"
 ----
 #!/bin/bash
 # .git/hooks/pre-push
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 
 set -e
 

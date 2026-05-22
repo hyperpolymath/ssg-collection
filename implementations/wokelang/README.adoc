@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 = WokeLang SSG - General-Purpose Static Site Generator
 :toc:
 :toclevels: 3
@@ -183,7 +183,7 @@ when buildFailed {
 
 == License
 
-PMPL-1.0-or-later (Palimpsest License)
+MPL-2.0 (Palimpsest License)
 
 Copyright (c) 2026 Jonathan D.A. Jewell
 

@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 # prodigy-ssg Nickel Configuration
 # RSR Gold compliant configuration schema
 
@@ -7,7 +7,7 @@ let Project = {
   version = "1.1.0",
   language = "Prolog",
   interpreter = "swipl",
-  license = "PMPL-1.0-or-later",
+  license = "MPL-2.0",
 }
 
 let Paths = {

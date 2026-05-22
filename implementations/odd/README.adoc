@@ -136,6 +136,6 @@ The ReScript adapter exposes odd-ssg to AI assistants via Model Context Protocol
 
 == License
 
-PMPL-1.0-or-later
+MPL-2.0
 
 Copyright 2025 Jonathan D.A. Jewell

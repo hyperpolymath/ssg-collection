@@ -180,7 +180,7 @@ Breakdown:
 - Follows hyperpolymath standard exactly
 
 ✓ **License:**
-- PMPL-1.0-or-later (Palimpsest License)
+- MPL-2.0 (Palimpsest License)
 - Proper SPDX headers on all files
 - Author: Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 

@@ -1,5 +1,5 @@
 // ArangoDB Bindings for ReScript
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 
 type cursor<'a>
 type collection

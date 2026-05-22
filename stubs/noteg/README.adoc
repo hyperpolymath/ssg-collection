@@ -1,11 +1,11 @@
 = noteg-ssg
 
-image:https://img.shields.io/badge/License-PMPL_1.0-blue.svg[PMPL-1.0-or-later,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/License-PMPL_1.0-blue.svg[MPL-2.0,link="https://github.com/hyperpolymath/palimpsest-license"]
 image:https://img.shields.io/badge/Philosophy-Palimpsest-indigo.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-license"]
 
 == License & Philosophy
 
-This project is licensed under **PMPL-1.0-or-later**.
+This project is licensed under **MPL-2.0**.
 
 Philosophy: **Palimpsest**. See the palimpsest-license repository for details.
 
@@ -180,7 +180,7 @@ This project honors that legacy by implementing her algorithmic concepts as a mo
 
 == License
 
-PMPL-1.0-or-later. See link:LICENSE[LICENSE].
+MPL-2.0. See link:LICENSE[LICENSE].
 
 == Contributing
 

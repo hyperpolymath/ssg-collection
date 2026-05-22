@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 // SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 = labnote-ssg
 :toc: macro
@@ -137,4 +137,4 @@ See link:CONTRIBUTING.md[CONTRIBUTING.md] for development guidelines.
 
 == License
 
-Dual licensed under MIT OR PMPL-1.0-or-later. See link:LICENSE.txt[LICENSE.txt] for details.
+Dual licensed under MIT OR MPL-2.0. See link:LICENSE.txt[LICENSE.txt] for details.

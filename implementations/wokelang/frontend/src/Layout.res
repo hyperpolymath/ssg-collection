@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 // WokeLang SSG Frontend - Layout with a2ml positioning
 
 open Tea.Html
@@ -276,7 +276,7 @@ let footer = (): html<App.msg> => {
     [
       p(
         [Style.color("var(--color-text-secondary)")],
-        [text("© 2026 Jonathan D.A. Jewell. Released under PMPL-1.0-or-later.")],
+        [text("© 2026 Jonathan D.A. Jewell. Released under MPL-2.0.")],
       ),
     ],
   )

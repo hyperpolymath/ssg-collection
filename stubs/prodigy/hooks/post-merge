@@ -1,5 +1,5 @@
 #!/bin/bash
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 # prodigy-ssg post-merge hook
 # Install: cp hooks/post-merge .git/hooks/post-merge && chmod +x .git/hooks/post-merge
 

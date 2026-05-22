@@ -135,4 +135,4 @@ Available tools: `eclipse_init`, `eclipse_build`, `eclipse_serve`
 
 == License
 
-PMPL-1.0-or-later
+MPL-2.0

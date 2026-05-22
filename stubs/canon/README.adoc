@@ -56,4 +56,4 @@ just check
 `canon-ssg` is the formally specified functional member of the **poly-ssg** family.
 
 == License
-PMPL-1.0-or-later
+MPL-2.0

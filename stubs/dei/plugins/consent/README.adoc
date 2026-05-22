@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 = Consent Plugin
 :toc:
 
@@ -79,4 +79,4 @@ This plugin is designed for use across all poly-ssg satellites. Import it via th
 
 == License
 
-PMPL-1.0-or-later
+MPL-2.0

@@ -97,6 +97,6 @@ type-safe, nickel, just, containerized, podman
 
 == License
 
-PMPL-1.0-or-later
+MPL-2.0
 
 See link:LICENSE.txt[LICENSE.txt] for full text.

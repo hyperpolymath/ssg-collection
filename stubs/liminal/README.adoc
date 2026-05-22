@@ -58,4 +58,4 @@ just build-backward
 `january-ssg` is the reversible, structured member of the **poly-ssg** family, unified through **MCP** integration.
 
 == License
-PMPL-1.0-or-later
+MPL-2.0

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 // SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell
 
 //! Site builder - orchestrates the build process
@@ -83,7 +83,7 @@ Learn more in the [documentation](/docs/getting-started).
         {{ page.html | safe }}
     </main>
     <footer>
-        <p>&copy; 2026 {{ site.author }}. Released under PMPL-1.0-or-later.</p>
+        <p>&copy; 2026 {{ site.author }}. Released under MPL-2.0.</p>
     </footer>
 </body>
 </html>

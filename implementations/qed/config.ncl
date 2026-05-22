@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 # SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 # config.ncl — qed-ssg Nickel configuration schema
 
@@ -189,7 +189,7 @@ let HooksConfig = {
     name = "qed-ssg",
     version = "0.1.0",
     description = "Satellite SSG with MCP adapters for 28 static site generators",
-    license = "MIT OR PMPL-1.0-or-later",
+    license = "MIT OR MPL-2.0",
     repository = "https://github.com/hyperpolymath/qed-ssg",
   },
 

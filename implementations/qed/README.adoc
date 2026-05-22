@@ -87,4 +87,4 @@ qed-ssg uses the **hyperpolymath/mustfile** pattern:
 
 == License
 
-PMPL-1.0-or-later
+MPL-2.0

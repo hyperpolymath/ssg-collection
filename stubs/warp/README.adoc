@@ -46,4 +46,4 @@ just build
 `warp-ssg` is the concatenative representative of the **poly-ssg** family.
 
 == License
-PMPL-1.0-or-later
+MPL-2.0

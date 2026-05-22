@@ -54,4 +54,4 @@ just build
 `shift-ssg` is the full-stack, paradigm-shifting member of the **poly-ssg** family.
 
 == License
-PMPL-1.0-or-later
+MPL-2.0

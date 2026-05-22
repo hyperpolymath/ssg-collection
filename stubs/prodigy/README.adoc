@@ -82,4 +82,4 @@ prodigy-ssg is part of the https://github.com/hyperpolymath/poly-ssg[poly-ssg] f
 
 == License
 
-PMPL-1.0-or-later
+MPL-2.0

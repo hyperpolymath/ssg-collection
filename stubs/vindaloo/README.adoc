@@ -58,4 +58,4 @@ just check
 `vindaloo-ssg` provides the constraint-logic and non-deterministic tier of the **poly-ssg** family.
 
 == License
-PMPL-1.0-or-later
+MPL-2.0

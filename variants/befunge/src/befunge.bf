@@ -1,4 +1,4 @@
-v SPDX-License-Identifier: PMPL-1.0-or-later
+v SPDX-License-Identifier: MPL-2.0
 > SPDX-FileCopyrightText: 2025 hyperpolymath
 >
 > befunge-ssg - Befunge-93 Static Site Generator

@@ -44,4 +44,4 @@ just build-headless
 `pharos-ssg` is the interactive, image-based member of the **poly-ssg** family.
 
 == License
-PMPL-1.0-or-later
+MPL-2.0

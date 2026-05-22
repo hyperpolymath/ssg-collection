@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 // hackenbush-ssg - RLE Pattern Parser (ReScript)
 //
 // This module consumes tokens from the Lexer and constructs a logical 

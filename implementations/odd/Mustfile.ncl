@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 # SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 # Mustfile.ncl - Contract of Physical State for odd-ssg
 # Authority-First Deployment System using Nickel
@@ -7,7 +7,7 @@ let Project = {
   name = "odd-ssg",
   version = "0.1.0",
   description = "Probabilistic static site generator with Mill-Based Synthesis engine",
-  license = "PMPL-1.0-or-later",
+  license = "MPL-2.0",
   repository = "https://github.com/hyperpolymath/odd-ssg",
 } in
 

@@ -1,7 +1,7 @@
 = Contributing to hackenbush-ssg
 :toc:
 :toc-placement: preamble
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 // SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 
 Thank you for your interest in contributing to hackenbush-ssg! This document provides guidelines for contributing to the project.
@@ -97,4 +97,4 @@ Open an issue or discussion on GitHub. We're happy to explain the project's phil
 
 == License
 
-By contributing, you agree that your contributions will be licensed under the PMPL-1.0-or-later license.
+By contributing, you agree that your contributions will be licensed under the MPL-2.0 license.

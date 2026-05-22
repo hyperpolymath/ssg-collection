@@ -132,6 +132,6 @@ Integration via MCP enables:
 
 == License
 
-SPDX-License-Identifier: PMPL-1.0-or-later-or-later
+SPDX-License-Identifier: MPL-2.0-or-later
 
-Dual-licensed under PMPL-1.0-or-later for open source use.
+Dual-licensed under MPL-2.0 for open source use.
