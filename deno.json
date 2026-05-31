@@ -1,0 +1,51 @@
+{
+  "$schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
+  "name": "@hyperpolymath/ssg-collection",
+  "version": "0.1.0",
+  "license": "MPL-2.0",
+  "workspace": [
+    "./implementations/eclipse",
+    "./implementations/hackenbush",
+    "./implementations/hackenbush/adapters",
+    "./implementations/odd",
+    "./implementations/qed",
+    "./implementations/rats",
+    "./implementations/wokelang/frontend",
+    "./ssg-fixes/baremetal-ssg",
+    "./ssg-fixes/eclipse-ssg",
+    "./ssg-fixes/hackenbush-ssg",
+    "./ssg-fixes/hackenbush-ssg/adapters",
+    "./ssg-fixes/jtv-playground/experiments/api-demos/rest-api-rescript",
+    "./ssg-fixes/jtv-playground/experiments/api-demos/websocket-chat-rescript",
+    "./ssg-fixes/jtv-playground/experiments/database-demos/arangodb-demo-rescript",
+    "./ssg-fixes/jtv-playground/experiments/utilities/form-validation-rescript",
+    "./ssg-fixes/wagasm-ssg/adapters",
+    "./ssg-fixes/zigzag-ssg/adapters",
+    "./stubs/milk/adapters",
+    "./stubs/parallax/adapters",
+    "./stubs/prodigy/adapters",
+    "./stubs/rescribe/adapters",
+    "./stubs/terrapin/adapters",
+    "./variants/baremetal",
+    "./variants/befunge",
+    "./variants/gungir",
+    "./variants/labnote",
+    "./variants/my",
+    "./variants/orbital",
+    "./variants/praxis",
+    "./variants/saur",
+    "./variants/wagasm/adapters",
+    "./variants/zigzag/adapters"
+  ],
+  "tasks": {
+    "build-all": "deno task --recursive build",
+    "test-all": "deno task --recursive test",
+    "fmt": "deno fmt",
+    "lint": "deno lint"
+  },
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 100,
+    "indentWidth": 2
+  }
+}
