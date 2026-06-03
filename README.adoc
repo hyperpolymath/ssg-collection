@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: MPL-2.0
-// Copyright (c) 2024-2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
-
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 = SSG Collection
+image:https://img.shields.io/badge/OpenSSF-Best_Practices-green?logo=openssourcesecurity[OpenSSF Best Practices,link="https://www.bestpractices.dev/en/projects/new?repo_url=https://github.com/hyperpolymath/ssg-collection"]
+
+image:https://img.shields.io/badge/License-MPL_2.0-blue.svg[License: MPL-2.0,link="https://opensource.org/licenses/MPL-2.0"]
+
 :toc: auto
 :toclevels: 2
 
@@ -53,9 +56,9 @@ These SSG repos remain as separate repositories:
 
 == License
 
-SPDX-License-Identifier: MPL-2.0
+This project is licensed under the Mozilla Public License, v. 2.0. See the `LICENSE` file for details.
 
-Copyright (c) 2024-2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+SPDX-License-Identifier: MPL-2.0
 
 == Origin
 
