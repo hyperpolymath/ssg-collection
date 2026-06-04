@@ -34,6 +34,7 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -67,6 +68,7 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: lint
     steps:
       - name: Checkout repository
@@ -96,6 +98,7 @@ jobs:
   security:
     name: Security Scan
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: lint
     permissions:
       security-events: write
@@ -147,6 +150,7 @@ jobs:
   validate-adapters:
     name: Validate Adapters
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [lint, security]
     steps:
       - name: Checkout repository
@@ -221,6 +225,7 @@ jobs:
   ci-status:
     name: CI Status
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [lint, test, security, validate-adapters]
     if: always()
     steps:

@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: MPL-2.0
+Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+-->
 # ReScript WASM-GC Backend
 
 [![Build Status](https://github.com/hyperpolymath/poly-ssg/actions/workflows/ci.yml/badge.svg)](https://github.com/hyperpolymath/poly-ssg/actions)

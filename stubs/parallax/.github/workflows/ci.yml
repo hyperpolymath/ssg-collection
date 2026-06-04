@@ -21,6 +21,7 @@ jobs:
   language-check:
     name: Language Enforcement
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
 
@@ -75,6 +76,7 @@ jobs:
   build:
     name: Build Chapel
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: language-check
 
     steps:
@@ -135,6 +137,7 @@ jobs:
   test:
     name: Test Suite
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: build
 
     steps:
@@ -199,6 +202,7 @@ jobs:
   security:
     name: Security Scan
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: language-check
 
     steps:
@@ -258,6 +262,7 @@ jobs:
   adapter:
     name: Build Adapter
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: language-check
 
     steps:

@@ -20,6 +20,7 @@ jobs:
   language-enforcement:
     name: Language Enforcement
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
@@ -53,6 +54,7 @@ jobs:
   syntax-check:
     name: COW Syntax Check
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v4
 
@@ -80,6 +82,7 @@ jobs:
   spdx-check:
     name: SPDX Headers
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
@@ -108,6 +111,7 @@ jobs:
   security-check:
     name: Security Validation
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v4
 
@@ -148,6 +152,7 @@ jobs:
   adapter-build:
     name: Build Adapter
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
@@ -181,6 +186,7 @@ jobs:
   e2e-test:
     name: E2E Validation
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [language-enforcement, syntax-check]
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
@@ -222,6 +228,7 @@ jobs:
   ci-complete:
     name: CI Complete
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [language-enforcement, syntax-check, spdx-check, security-check, adapter-build, e2e-test]
     steps:
       - name: All checks passed

@@ -29,6 +29,7 @@ jobs:
   policy:
     name: Policy Check
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
 
@@ -74,6 +75,7 @@ jobs:
   lint:
     name: Lint & Format
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [policy]
     permissions:
       contents: read
@@ -117,6 +119,7 @@ jobs:
   test:
     name: Test (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
     needs: [lint]
     permissions:
       contents: read
@@ -158,6 +161,7 @@ jobs:
   test-e2e:
     name: E2E Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [test]
     if: github.event.inputs.run_e2e != 'false'
     permissions:
@@ -181,6 +185,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [test]
     permissions:
       contents: read
@@ -225,6 +230,7 @@ jobs:
   coverage:
     name: Coverage
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [test]
     permissions:
       contents: read
@@ -260,6 +266,7 @@ jobs:
   security:
     name: Security Scan
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
       security-events: write
@@ -298,6 +305,7 @@ jobs:
   adapters:
     name: Validate Adapters
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [lint]
     permissions:
       contents: read
@@ -333,6 +341,7 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [build, test-e2e, security, adapters]
     if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
     permissions:

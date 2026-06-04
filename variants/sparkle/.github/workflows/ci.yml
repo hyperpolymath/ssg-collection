@@ -23,6 +23,7 @@ jobs:
   lint:
     name: Lint & Format
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -47,6 +48,7 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -77,6 +79,7 @@ jobs:
   security:
     name: Security Scan
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       security-events: write
     steps:
@@ -107,6 +110,7 @@ jobs:
   build:
     name: Build Verification
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [lint, test]
     steps:
       - name: Checkout
@@ -161,6 +165,7 @@ jobs:
   container:
     name: Container Build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [build, security]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
@@ -187,6 +192,7 @@ jobs:
   summary:
     name: CI Summary
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [lint, test, security, build]
     if: always()
     steps:

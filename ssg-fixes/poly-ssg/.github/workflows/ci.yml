@@ -21,6 +21,7 @@ jobs:
   rescript-wasm:
     name: ReScript WASM-GC Backend
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
     permissions:
       contents: read
 
@@ -91,6 +92,7 @@ jobs:
   forth-estate:
     name: Forth Estate SSG
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
 
@@ -112,6 +114,7 @@ jobs:
   lint:
     name: Lint & Format (Strict)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
 
@@ -182,6 +185,7 @@ jobs:
   security:
     name: Security Checks
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       security-events: write
       contents: read
@@ -228,6 +232,7 @@ jobs:
   validate:
     name: Final Validation
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
     needs: [rescript-wasm, forth-estate, lint, security]

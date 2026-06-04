@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 // SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 // deno_glue.js - Minimal Deno runtime interop for ReScript
 // This is the ONLY JavaScript file needed - provides Deno API bridges

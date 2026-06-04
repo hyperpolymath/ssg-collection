@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: MPL-2.0
+Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+-->
 # Data Processing Pipeline - Ephapax Implementation
 
 A comprehensive ETL data pipeline demonstrating Ephapax's linear type system for safe data processing.

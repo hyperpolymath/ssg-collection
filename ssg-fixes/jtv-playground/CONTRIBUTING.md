@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: MPL-2.0
+Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+-->
 # Contributing to JTV Playground
 
 Thank you for your interest in contributing! This project uses the **Tri-Perimeter Contribution Framework (TPCF)** to create a graduated trust model that balances openness with security.

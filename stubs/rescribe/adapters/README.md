@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: MPL-2.0
+Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+-->
 # MCP Adapter for rescribe-ssg
 
 This directory contains the **ReScript MCP adapter** that connects rescribe-ssg to the poly-ssg-mcp hub.

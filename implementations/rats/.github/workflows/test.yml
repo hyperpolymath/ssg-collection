@@ -17,6 +17,7 @@ jobs:
   language-policy:
     name: Language Policy
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
 
@@ -65,6 +66,7 @@ jobs:
   build:
     name: Build (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
     needs: language-policy
     permissions:
       contents: read
@@ -121,6 +123,7 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: build
     permissions:
       contents: read
@@ -151,6 +154,7 @@ jobs:
   lint-security:
     name: Security Lint
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
 
@@ -201,6 +205,7 @@ jobs:
   adapter-validation:
     name: Adapter Validation
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
 

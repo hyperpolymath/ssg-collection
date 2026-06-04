@@ -22,6 +22,7 @@ jobs:
   enforce-policy:
     name: Language Policy
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
 
@@ -85,6 +86,7 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [enforce-policy]
     permissions:
       contents: read
@@ -136,6 +138,7 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [enforce-policy]
     permissions:
       contents: read
@@ -179,6 +182,7 @@ jobs:
   security:
     name: Security Audit
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [enforce-policy]
     permissions:
       contents: read
@@ -233,6 +237,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [lint, test, security]
     permissions:
       contents: read
@@ -278,6 +283,7 @@ jobs:
   e2e:
     name: E2E Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [build]
     if: github.ref == 'refs/heads/main'
     permissions:

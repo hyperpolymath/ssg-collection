@@ -23,6 +23,7 @@ jobs:
   policy-check:
     name: Policy Enforcement
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -97,6 +98,7 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: policy-check
     steps:
       - name: Checkout
@@ -116,6 +118,7 @@ jobs:
   test-unit:
     name: Unit Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: lint
     steps:
       - name: Checkout
@@ -147,6 +150,7 @@ jobs:
   test-adapters:
     name: Adapter Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: lint
     steps:
       - name: Checkout
@@ -196,6 +200,7 @@ jobs:
   security-check:
     name: Security Check
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: policy-check
     steps:
       - name: Checkout
@@ -241,6 +246,7 @@ jobs:
   build:
     name: Build Verification
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [test-unit, test-adapters]
     steps:
       - name: Checkout
@@ -266,6 +272,7 @@ jobs:
   container-build:
     name: Container Build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: build
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
@@ -281,6 +288,7 @@ jobs:
   all-checks:
     name: All Checks Passed
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [policy-check, lint, test-unit, test-adapters, build, security-check]
     steps:
       - name: Summary

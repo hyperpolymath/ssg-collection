@@ -22,6 +22,7 @@ jobs:
   lint:
     name: Lint & Format
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
 
@@ -46,6 +47,7 @@ jobs:
   typecheck:
     name: Type Check
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
 
@@ -67,6 +69,7 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [lint, typecheck]
     permissions:
       contents: read
@@ -104,6 +107,7 @@ jobs:
   security:
     name: Security Checks
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
 
@@ -152,6 +156,7 @@ jobs:
   validate-adapters:
     name: Validate Adapters
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [lint]
     permissions:
       contents: read
@@ -205,6 +210,7 @@ jobs:
   ci-success:
     name: CI Success
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [lint, typecheck, test, security, validate-adapters]
     if: always()
     permissions:

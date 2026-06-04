@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: MPL-2.0
+Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+-->
 # REST API - ReScript + Deno
 
 A RESTful API implementation using ReScript compiled to JavaScript and run with Deno.

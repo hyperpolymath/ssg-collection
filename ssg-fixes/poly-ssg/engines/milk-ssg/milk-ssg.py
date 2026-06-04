@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MPL-2.0
+# Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 #!/usr/bin/env python3
 """
 milk-ssg - COW esoteric language powered static site generator

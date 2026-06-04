@@ -24,6 +24,7 @@ jobs:
   language-compliance:
     name: Language Compliance
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
@@ -78,6 +79,7 @@ jobs:
   build:
     name: Build & Validate
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: language-compliance
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
@@ -144,6 +146,7 @@ jobs:
   e2e-tests:
     name: E2E Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: build
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
@@ -185,6 +188,7 @@ jobs:
   security:
     name: Security Checks
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
@@ -231,6 +235,7 @@ jobs:
   adapter:
     name: Build Adapter
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     if: ${{ hashFiles('adapters/package.json') != '' }}
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1

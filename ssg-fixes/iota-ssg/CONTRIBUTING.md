@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: MPL-2.0
+Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+-->
 # Contributing to iota-ssg
 
 Thank you for your interest in contributing to iota-ssg! This document provides guidelines and information for contributors.

@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: MPL-2.0
+Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+-->
 # DevTools CLI - Ephapax Implementation
 
 A command-line developer utilities tool written in Ephapax.

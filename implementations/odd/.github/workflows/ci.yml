@@ -16,6 +16,7 @@ jobs:
   lint:
     name: Lint & Format
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout repository
@@ -38,6 +39,7 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: lint
 
     steps:
@@ -69,6 +71,7 @@ jobs:
   adapter-check:
     name: Adapter Validation
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: lint
 
     steps:
@@ -103,6 +106,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [test, adapter-check]
 
     steps:
@@ -129,6 +133,7 @@ jobs:
   container:
     name: Container Build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: build
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 

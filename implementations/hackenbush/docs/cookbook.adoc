@@ -1,9 +1,10 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 = hackenbush-ssg Cookbook
 :toc: left
 :toclevels: 4
 :sectnums:
 :source-highlighter: rouge
-// SPDX-License-Identifier: MPL-2.0
 // SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 
 This cookbook provides comprehensive recipes for hackenbush-ssg operations, covering CLI commands, Justfile recipes, Nickel configuration, and combinatoric patterns.

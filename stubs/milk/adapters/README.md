@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: MPL-2.0
+Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+-->
 # MCP Adapter for milk-ssg
 
 This directory contains the **ReScript MCP adapter** that connects milk-ssg to the poly-ssg-mcp hub.

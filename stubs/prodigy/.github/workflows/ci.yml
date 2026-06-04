@@ -24,6 +24,7 @@ jobs:
   # ============================================================================
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     name: Build & Syntax Check
 
     steps:
@@ -59,6 +60,7 @@ jobs:
   # ============================================================================
   language-check:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     name: Language Enforcement
 
     steps:
@@ -105,6 +107,7 @@ jobs:
   # ============================================================================
   security:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     name: Security Audit
 
     steps:
@@ -150,6 +153,7 @@ jobs:
   # ============================================================================
   rsr-compliance:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     name: RSR Compliance
 
     steps:
@@ -200,6 +204,7 @@ jobs:
   # ============================================================================
   adapter-build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     name: Build Adapter
 
     steps:

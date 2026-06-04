@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: MPL-2.0
+Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+-->
 # Git Hooks for rescribe-ssg
 
 This directory contains git hook templates for rescribe-ssg development.

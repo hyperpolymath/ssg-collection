@@ -1,7 +1,8 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 = Contributing to hackenbush-ssg
 :toc:
 :toc-placement: preamble
-// SPDX-License-Identifier: MPL-2.0-or-later
 // SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 
 Thank you for your interest in contributing to hackenbush-ssg! This document provides guidelines for contributing to the project.

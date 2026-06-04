@@ -1,10 +1,11 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 = vladik-ssg
 
 image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
 :toc: auto
 :sectnums:
 
-// SPDX-License-Identifier: MPL-2.0
 
 image:https://img.shields.io/badge/RSR-Compliant-cd7f32[RSR Compliant]
 image:https://img.shields.io/badge/Phase-Experimental-yellow[Experimental]

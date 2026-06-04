@@ -1,6 +1,7 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 = hackenbush-ssg Pattern Library
 :toc:
-// SPDX-License-Identifier: MPL-2.0-or-later
 // SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 
 This directory contains the Game of Life pattern components used by hackenbush-ssg.

@@ -1,3 +1,5 @@
+-- SPDX-License-Identifier: MPL-2.0
+-- Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 -- Ddraig.idr - Dependently typed static site generator in Idris 2
 --
 -- "Ddraig" (Welsh for Dragon) - Types that breathe fire

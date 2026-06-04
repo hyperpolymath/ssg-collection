@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: MPL-2.0
+Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+-->
 # Creational Design Patterns - Ephapax Implementation
 
 Design patterns adapted for linear type systems, demonstrating how ownership semantics affect traditional OOP patterns.

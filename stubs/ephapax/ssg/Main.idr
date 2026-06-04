@@ -1,3 +1,5 @@
+-- SPDX-License-Identifier: MPL-2.0
+-- Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 ||| Ephapax SSG - Main Entry Point
 ||| A static site generator written in Idris2 with formal verification
 |||
