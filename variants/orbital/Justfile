@@ -228,3 +228,6 @@ verify:
     @command -v just >/dev/null && echo "✅ just" || echo "❌ just not found"
     @command -v podman >/dev/null && echo "✅ podman" || echo "❌ podman not found"
     @command -v git >/dev/null && echo "✅ git" || echo "❌ git not found"
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

@@ -225,3 +225,6 @@ alias r := run
 alias f := fmt
 alias c := check
 alias w := watch
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

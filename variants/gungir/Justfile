@@ -251,3 +251,6 @@ hooks-install:
 hooks-uninstall:
     rm -f .git/hooks/pre-commit .git/hooks/pre-push
     @echo "✓ Git hooks uninstalled"
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

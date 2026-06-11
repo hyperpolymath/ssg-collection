@@ -1,50 +1,39 @@
 name: Forth Estate CI
-
 on:
   push:
     branches: [main, master]
   pull_request:
     branches: [main, master]
-
 jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-
       - name: Install Gforth
         run: sudo apt-get update && sudo apt-get install -y gforth
-
       - name: Test Markdown
         run: gforth forth-estate.fs -e "test-markdown bye"
-
       - name: Test Frontmatter
         run: gforth forth-estate.fs -e "test-frontmatter bye"
-
       - name: Test Full Pipeline
         run: gforth forth-estate.fs -e "test-full bye"
-
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: test
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-
       - name: Install Gforth
         run: sudo apt-get update && sudo apt-get install -y gforth
-
       - name: Build sample site
         run: |
           mkdir -p _site
           gforth forth-estate.fs -e "s\" test-corpus/posts\" s\" _site\" build bye" || echo "Build completed"
-
       - name: Upload artifact
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
           path: _site
-
   deploy:
     if: github.ref == 'refs/heads/main'
     needs: build

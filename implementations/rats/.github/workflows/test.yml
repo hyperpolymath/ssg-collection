@@ -3,15 +3,12 @@
 # RSR-compliant test workflow with SHA-pinned actions (ReScript + Deno)
 
 name: "Test"
-
 on:
   push:
     branches: ["main"]
   pull_request:
     branches: ["main"]
-
 permissions: read-all
-
 jobs:
   # Language policy enforcement - runs first
   language-policy:
@@ -20,11 +17,9 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
       - name: Check for banned TypeScript files
         run: |
           echo "Checking for TypeScript files..."
@@ -34,7 +29,6 @@ jobs:
             exit 1
           fi
           echo "✅ No TypeScript files found"
-
       - name: Check for banned TSX files
         run: |
           echo "Checking for TSX files..."
@@ -43,7 +37,6 @@ jobs:
             exit 1
           fi
           echo "✅ No TSX files found"
-
       - name: Check for Makefile
         run: |
           echo "Checking for Makefile..."
@@ -52,7 +45,6 @@ jobs:
             exit 1
           fi
           echo "✅ No Makefile found"
-
       - name: Verify ReScript sources exist
         run: |
           echo "Checking for ReScript files..."
@@ -62,7 +54,6 @@ jobs:
             echo "✅ ReScript sources found"
             find src -name "*.res" | wc -l
           fi
-
   build:
     name: Build (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
@@ -70,33 +61,27 @@ jobs:
     needs: language-policy
     permissions:
       contents: read
-
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
         deno-version: ["v2.x"]
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
       - name: Setup Node.js (for ReScript)
         uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
         with:
           node-version: "20"
-
       - name: Setup Deno
         uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.2
         with:
           deno-version: ${{ matrix.deno-version }}
-
       - name: Verify installations
         run: |
           deno --version
           node --version
           npm --version
-
       - name: Cache dependencies
         uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
         with:
@@ -107,19 +92,14 @@ jobs:
           key: ${{ runner.os }}-deps-${{ hashFiles('**/deno.json', '**/rescript.json', '**/package.json') }}
           restore-keys: |
             ${{ runner.os }}-deps-
-
       - name: Install ReScript
         run: npm install rescript@11
-
       - name: Build ReScript
         run: npx rescript build
-
       - name: Check JS formatting
         run: deno fmt --check runtime/*.js *.js || true
-
       - name: Run linter
         run: deno lint runtime/*.js *.js || true
-
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -127,55 +107,44 @@ jobs:
     needs: build
     permissions:
       contents: read
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
       - name: Setup Node.js (for ReScript)
         uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
         with:
           node-version: "20"
-
       - name: Setup Deno
         uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.2
         with:
           deno-version: "v2.x"
-
       - name: Install ReScript
         run: npm install rescript@11
-
       - name: Build ReScript
         run: npx rescript build
-
       - name: Run tests
         run: deno test --allow-all lib/es6/test/ || echo "Tests pending"
-
   lint-security:
     name: Security Lint
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
       contents: read
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
       - name: Check for hardcoded secrets
         run: |
           echo "Scanning for potential secrets..."
           ! grep -rE "(password|secret|api.key)\s*[:=]\s*['\"]" --include="*.js" --include="*.res" src/ runtime/ adapters/ 2>/dev/null || \
             (echo "WARNING: Potential secrets found" && exit 1)
           echo "✅ No hardcoded secrets found"
-
       - name: Check for eval usage
         run: |
           echo "Scanning for eval usage..."
           ! grep -rE "eval\(|Function\(" --include="*.js" --include="*.res" src/ runtime/ 2>/dev/null || \
             (echo "WARNING: eval or Function constructor found" && exit 1)
           echo "✅ No eval usage found"
-
       - name: Verify SPDX headers in ReScript
         run: |
           echo "Checking SPDX headers in ReScript files..."
@@ -188,7 +157,6 @@ jobs:
             fi
           done
           echo "✅ All ReScript files have SPDX headers"
-
       - name: Verify SPDX headers in JS glue
         run: |
           echo "Checking SPDX headers in JS glue..."
@@ -201,23 +169,19 @@ jobs:
             fi
           done
           echo "✅ All JS glue files have SPDX headers"
-
   adapter-validation:
     name: Adapter Validation
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
       contents: read
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
       - name: Setup Deno
         uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.2
         with:
           deno-version: "v2.x"
-
       - name: Validate adapter exports
         run: |
           if [ -d adapters ] && ls adapters/*.js 1>/dev/null 2>&1; then
@@ -241,7 +205,6 @@ jobs:
           else
             echo "No adapters directory or no JS files - skipping validation"
           fi
-
       - name: Count adapters
         run: |
           if [ -d adapters ] && ls adapters/*.js 1>/dev/null 2>&1; then

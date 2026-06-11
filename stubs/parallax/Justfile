@@ -284,3 +284,6 @@ info:
     @echo ""
     @echo "Container Runtime:"
     @podman --version 2>/dev/null || docker --version 2>/dev/null || echo "  None installed"
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

@@ -1,53 +1,42 @@
 name: ParallelPress CI
-
 on:
   push:
     branches: [main, master]
   pull_request:
     branches: [main, master]
-
 jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-
       - name: Install Chapel
         run: |
           wget -q https://github.com/chapel-lang/chapel/releases/download/2.3.0/chapel-2.3.0-1.ubuntu22.amd64.deb
           sudo dpkg -i chapel-2.3.0-1.ubuntu22.amd64.deb || sudo apt-get install -f -y
-
       - name: Compile ParallelPress
         run: chpl parallel-press.chpl -o parallel-press
-
       - name: Test Markdown
         run: ./parallel-press --test=markdown
-
       - name: Test Frontmatter
         run: ./parallel-press --test=frontmatter
-
       - name: Test Full Pipeline
         run: ./parallel-press --test=full
-
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: test
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-
       - name: Install Chapel
         run: |
           wget -q https://github.com/chapel-lang/chapel/releases/download/2.3.0/chapel-2.3.0-1.ubuntu22.amd64.deb
           sudo dpkg -i chapel-2.3.0-1.ubuntu22.amd64.deb || sudo apt-get install -f -y
-
       - name: Compile and build site
         run: |
           chpl parallel-press.chpl -o parallel-press
           mkdir -p _site
           ./parallel-press --build || echo "Build completed"
-
       - name: Upload artifact
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:

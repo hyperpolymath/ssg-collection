@@ -237,3 +237,6 @@ help:
     @echo "  just list          # List adapters"
     @echo ""
     @echo "Run 'just --list' for all commands"
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

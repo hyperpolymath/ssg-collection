@@ -251,3 +251,6 @@ qa: fmt lint check test audit
 prepare-release version: qa test-e2e docs
     @echo "📋 Preparing release {{version}}..."
     @echo "✅ Ready for release"
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

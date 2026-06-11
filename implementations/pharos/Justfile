@@ -226,3 +226,6 @@ docs:
 # Serve documentation
 docs-serve: docs
     cd {{output_dir}}/docs && python3 -m http.server 8081
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

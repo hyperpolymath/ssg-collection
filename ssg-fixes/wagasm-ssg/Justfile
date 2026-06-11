@@ -263,3 +263,6 @@ status:
     @echo ""
     @echo "Files:"
     @wc -l src/*.wat runtime/*.ts 2>/dev/null || true
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

@@ -2,20 +2,16 @@
 # Continuous Integration - Strict Mode
 # All warnings treated as errors, all tests must pass
 name: CI
-
 on:
   push:
     branches: [main, develop]
   pull_request:
     branches: [main]
-
 permissions: read-all
-
 env:
   OCAML_VERSION: "4.14.x"
   # Treat warnings as errors
   OCAML_COLOR: always
-
 jobs:
   # OCaml/ReScript-WASM build and test - STRICT MODE
   rescript-wasm:
@@ -24,38 +20,31 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read
-
     strategy:
-      fail-fast: true  # Fail immediately on first error
+      fail-fast: true # Fail immediately on first error
       matrix:
         os: [ubuntu-latest, macos-latest]
         ocaml-version: ["4.14.x", "5.1.x"]
-
     steps:
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-
       - name: Set up OCaml ${{ matrix.ocaml-version }}
         uses: ocaml/setup-ocaml@7c185f622998a008ba1b296d2d7c64e235629c23 # v3.6.1
         with:
           ocaml-compiler: ${{ matrix.ocaml-version }}
           dune-cache: true
-
       - name: Install dependencies
         run: opam install . --deps-only --with-test -y
         working-directory: engines/rescript-wasm
-
       - name: Build with strict warnings
         run: |
           opam exec -- dune build --force
         working-directory: engines/rescript-wasm
-
       - name: Run all tests (must pass)
         run: |
           opam exec -- dune test
           echo "All tests passed successfully"
         working-directory: engines/rescript-wasm
-
       - name: Generate sample WAT
         run: |
           opam exec -- dune exec rescript_wasm -- add > add.wat
@@ -65,13 +54,11 @@ jobs:
           echo "=== add.wat ==="
           cat add.wat
         working-directory: engines/rescript-wasm
-
       - name: Install wasm-tools
         if: runner.os == 'Linux'
         run: |
           curl -L https://github.com/bytecodealliance/wasm-tools/releases/download/v1.219.1/wasm-tools-1.219.1-x86_64-linux.tar.gz | tar xz
           sudo mv wasm-tools-1.219.1-x86_64-linux/wasm-tools /usr/local/bin/
-
       - name: Validate WAT output (strict)
         if: runner.os == 'Linux'
         run: |
@@ -81,13 +68,11 @@ jobs:
             wasm-tools validate --features gc "$wat" || echo "Note: WAT validation requires WASM-GC support"
           done
         working-directory: engines/rescript-wasm
-
       - name: Upload WAT artifacts
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v4
         with:
           name: wat-output-${{ matrix.os }}-${{ matrix.ocaml-version }}
           path: engines/rescript-wasm/*.wat
-
   # Forth Estate build
   forth-estate:
     name: Forth Estate SSG
@@ -95,21 +80,17 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read
-
     steps:
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-
       - name: Install Gforth
         run: sudo apt-get update && sudo apt-get install -y gforth
-
       - name: Check Forth syntax
         run: |
           if [ -f forth-estate.fs ]; then
             gforth forth-estate.fs -e bye
           fi
         working-directory: engines/forth-estate
-
   # Strict lint and format checks - ALL MUST PASS
   lint:
     name: Lint & Format (Strict)
@@ -117,16 +98,13 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read
-
     steps:
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-
       - name: Set up OCaml
         uses: ocaml/setup-ocaml@7c185f622998a008ba1b296d2d7c64e235629c23 # v3.6.1
         with:
           ocaml-compiler: "4.14.x"
-
       - name: Check for unsafe patterns (MUST PASS)
         run: |
           echo "=== Checking for unsafe patterns ==="
@@ -155,7 +133,6 @@ jobs:
             exit 1
           fi
           echo "No unsafe patterns found"
-
       - name: Check for catch-all patterns (MUST PASS)
         run: |
           echo "=== Checking for dangerous catch-all patterns ==="
@@ -166,12 +143,10 @@ jobs:
             echo "Consider using explicit pattern matching to avoid hiding bugs"
           fi
           echo "Pattern check complete"
-
       - name: Report TODOs/FIXMEs
         run: |
           echo "=== TODOs and FIXMEs (informational) ==="
           grep -rn "TODO\|FIXME\|XXX\|HACK" engines/rescript-wasm/lib/ || echo "None found"
-
       - name: Check line lengths (soft limit 100)
         run: |
           echo "=== Lines over 100 characters (warnings) ==="
@@ -180,7 +155,6 @@ jobs:
           if [ "$LONG_LINES" -gt 50 ]; then
             echo "WARNING: Many long lines found, consider refactoring"
           fi
-
   # Security scanning job
   security:
     name: Security Checks
@@ -189,21 +163,17 @@ jobs:
     permissions:
       security-events: write
       contents: read
-
     steps:
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-
       - name: Set up OCaml
         uses: ocaml/setup-ocaml@7c185f622998a008ba1b296d2d7c64e235629c23 # v3.6.1
         with:
           ocaml-compiler: "4.14.x"
-
       - name: Check dependencies for known vulnerabilities
         run: |
           echo "=== Checking for vulnerable dependencies ==="
           opam list --installed --safe 2>/dev/null || true
-
       - name: Scan for hardcoded secrets
         run: |
           echo "=== Scanning for hardcoded secrets ==="
@@ -213,7 +183,6 @@ jobs:
             exit 1
           fi
           echo "No hardcoded secrets found"
-
       - name: Check .gitignore coverage
         run: |
           echo "=== Checking .gitignore coverage ==="
@@ -227,7 +196,6 @@ jobs:
               fi
             done
           fi
-
   # Final validation job - runs after all others
   validate:
     name: Final Validation
@@ -236,7 +204,6 @@ jobs:
     permissions:
       contents: read
     needs: [rescript-wasm, forth-estate, lint, security]
-
     steps:
       - name: All checks passed
         run: |

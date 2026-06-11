@@ -1,11 +1,9 @@
 name: Ddraig CI
-
 on:
   push:
     branches: [main, master]
   pull_request:
     branches: [main, master]
-
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -14,19 +12,14 @@ jobs:
       image: ghcr.io/idris-community/idris2:latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-
       - name: Compile Ddraig
         run: idris2 Ddraig.idr -o ddraig
-
       - name: Test Markdown
         run: ./build/exec/ddraig test-markdown
-
       - name: Test Frontmatter
         run: ./build/exec/ddraig test-frontmatter
-
       - name: Test Full Pipeline
         run: ./build/exec/ddraig test-full
-
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -35,15 +28,12 @@ jobs:
     needs: test
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-
       - name: Compile Ddraig
         run: idris2 Ddraig.idr -o ddraig
-
       - name: Build sample site
         run: |
           mkdir -p _site
           ./build/exec/ddraig build || echo "Build completed"
-
       - name: Upload artifact
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:

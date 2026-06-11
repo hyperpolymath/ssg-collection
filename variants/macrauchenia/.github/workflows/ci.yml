@@ -2,20 +2,16 @@
 # RSR-compliant CI workflow with SHA-pinned actions
 
 name: CI
-
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
   workflow_dispatch:
-
 permissions:
   contents: read
-
 env:
   DENO_VERSION: v2.x
-
 jobs:
   lint:
     name: Lint
@@ -24,15 +20,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-
       - name: Setup Deno
         uses: denoland/setup-deno@e95548e56dfa95d4e1a28d6f422fafe75c4c26fb # v2.0.0
         with:
           deno-version: ${{ env.DENO_VERSION }}
-
       - name: Run linter
         run: deno lint adapters/
-
   format:
     name: Format Check
     runs-on: ubuntu-latest
@@ -40,15 +33,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-
       - name: Setup Deno
         uses: denoland/setup-deno@e95548e56dfa95d4e1a28d6f422fafe75c4c26fb # v2.0.0
         with:
           deno-version: ${{ env.DENO_VERSION }}
-
       - name: Check formatting
         run: deno fmt --check adapters/
-
   typecheck:
     name: Type Check
     runs-on: ubuntu-latest
@@ -56,15 +46,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-
       - name: Setup Deno
         uses: denoland/setup-deno@e95548e56dfa95d4e1a28d6f422fafe75c4c26fb # v2.0.0
         with:
           deno-version: ${{ env.DENO_VERSION }}
-
       - name: Type check adapters
         run: deno check adapters/*.js
-
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -73,24 +60,19 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-
       - name: Setup Deno
         uses: denoland/setup-deno@e95548e56dfa95d4e1a28d6f422fafe75c4c26fb # v2.0.0
         with:
           deno-version: ${{ env.DENO_VERSION }}
-
       - name: Run unit tests
         run: deno test --allow-read --allow-run --coverage=coverage tests/
-
       - name: Generate coverage report
         run: deno coverage coverage --lcov > coverage.lcov
-
       - name: Upload coverage
         uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
         with:
           file: coverage.lcov
           fail_ci_if_error: false
-
   security:
     name: Security Checks
     runs-on: ubuntu-latest
@@ -98,12 +80,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-
       - name: Setup Deno
         uses: denoland/setup-deno@e95548e56dfa95d4e1a28d6f422fafe75c4c26fb # v2.0.0
         with:
           deno-version: ${{ env.DENO_VERSION }}
-
       - name: Check for eval usage
         run: |
           if grep -rE 'eval\s*\(|new\s+Function\s*\(' adapters/; then
@@ -111,7 +91,6 @@ jobs:
             exit 1
           fi
           echo "No eval/Function usage found"
-
       - name: Check for hardcoded secrets
         run: |
           if grep -rEi '(password|secret|api_key)\s*[:=]\s*["\x27]' adapters/; then
@@ -119,7 +98,6 @@ jobs:
             exit 1
           fi
           echo "No hardcoded secrets found"
-
       - name: Verify input validation
         run: |
           for f in adapters/wub.js adapters/coleslaw.js adapters/documenter.js adapters/franklin.js adapters/staticwebpages.js adapters/scalatex.js; do
@@ -129,7 +107,6 @@ jobs:
             fi
           done
           echo "Input validation present in critical adapters"
-
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -138,12 +115,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-
       - name: Setup Deno
         uses: denoland/setup-deno@e95548e56dfa95d4e1a28d6f422fafe75c4c26fb # v2.0.0
         with:
           deno-version: ${{ env.DENO_VERSION }}
-
       - name: Build check all adapters
         run: |
           echo "Checking all 28 adapters..."
@@ -151,7 +126,6 @@ jobs:
             deno check "$f" && echo "✓ $f" || exit 1
           done
           echo "All adapters validated successfully"
-
   validate-exports:
     name: Validate Exports
     runs-on: ubuntu-latest
@@ -160,12 +134,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-
       - name: Setup Deno
         uses: denoland/setup-deno@e95548e56dfa95d4e1a28d6f422fafe75c4c26fb # v2.0.0
         with:
           deno-version: ${{ env.DENO_VERSION }}
-
       - name: Verify adapter exports
         run: |
           deno eval "

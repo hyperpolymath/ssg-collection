@@ -1,22 +1,17 @@
 # SPDX-License-Identifier: MPL-2.0-or-later
 name: Game of Life CI
-
 permissions: read-all
-
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
-
 jobs:
   validate:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v4
-
       - name: Validate RLE pattern file exists
         run: |
           if [ -f src/hackenbush.rle ]; then
@@ -26,21 +21,17 @@ jobs:
             echo "ERROR: src/hackenbush.rle not found!"
             exit 1
           fi
-
       - name: Setup Deno
         uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
-
       - name: Validate host runtime syntax
         run: deno check runtime/host.ts
-
   language-check:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v4
-
       - name: Verify Life patterns only in src/
         run: |
           echo "Checking for FORBIDDEN languages in src/..."
@@ -54,7 +45,6 @@ jobs:
             exit 1
           fi
           echo "OK: Only Life pattern files in src/"
-
       - name: Verify host runtime is I/O only
         run: |
           echo "Checking host runtime doesn't contain SSG logic..."

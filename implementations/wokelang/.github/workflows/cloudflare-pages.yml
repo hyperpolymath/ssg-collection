@@ -1,13 +1,10 @@
 # SPDX-License-Identifier: MPL-2.0
 name: Deploy to Cloudflare Pages
-
 permissions: read-all
-
 on:
   push:
     branches: [main]
   workflow_dispatch:
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -15,21 +12,17 @@ jobs:
     permissions:
       contents: read
       deployments: write
-
     steps:
       - name: Checkout repository
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4
-
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
       - name: Setup Deno
-        uses: denoland/setup-deno@5e01c016a857a4dbb5afe9d0f9733cd472cba985  # v2
+        uses: denoland/setup-deno@5e01c016a857a4dbb5afe9d0f9733cd472cba985 # v2
         with:
           deno-version: v2.x
-
       - name: Build SSG
         run: ./scripts/build.sh
-
       - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@9681c2997648301493e78cacbfb790a9f19c833f  # v3
+        uses: cloudflare/wrangler-action@9681c2997648301493e78cacbfb790a9f19c833f # v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

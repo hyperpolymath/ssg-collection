@@ -323,3 +323,6 @@ mustfile-status:
     @echo ""
     @echo "Policy Status:"
     @just policy-check
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

@@ -1,58 +1,46 @@
 name: ZigZag CI
-
 on:
   push:
     branches: [main, master]
   pull_request:
     branches: [main, master]
-
 jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-
       - name: Set up Zig
         uses: goto-bus-stop/setup-zig@v2
         with:
           version: '0.13.0'
-
       - name: Compile ZigZag
         run: zig build-exe zigzag.zig -O ReleaseSafe
-
       - name: Test Markdown
         run: ./zigzag test-markdown
-
       - name: Test Frontmatter
         run: ./zigzag test-frontmatter
-
       - name: Test Full Pipeline
         run: ./zigzag test-full
-
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: test
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-
       - name: Set up Zig
         uses: goto-bus-stop/setup-zig@v2
         with:
           version: '0.13.0'
-
       - name: Compile and build site
         run: |
           zig build-exe zigzag.zig -O ReleaseSafe
           mkdir -p _site
           ./zigzag build || echo "Build completed"
-
       - name: Upload artifact
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
           path: _site
-
   deploy:
     if: github.ref == 'refs/heads/main'
     needs: build

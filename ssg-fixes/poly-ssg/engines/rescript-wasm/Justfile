@@ -39,3 +39,6 @@ run-wasm file:
 quick-test:
     dune build
     dune exec rescript_wasm -- --test
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

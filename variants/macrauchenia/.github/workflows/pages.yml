@@ -1,20 +1,16 @@
 # SPDX-License-Identifier: MPL-2.0
 name: GitHub Pages
-
 on:
   push:
     branches: [main]
   workflow_dispatch:
-
 permissions:
   contents: read
   pages: write
   id-token: write
-
 concurrency:
   group: "pages"
   cancel-in-progress: false
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -22,18 +18,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v4
-
       - name: Setup Deno
         uses: denoland/setup-deno@e95548e56dfa95d4e1a28d6f422fafe75c4c26fb # v1
         with:
           deno-version: v1.x
-
       - name: Cache Deno
         uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v4
         with:
           path: ~/.cache/deno
           key: ${{ runner.os }}-deno-${{ hashFiles('deno.json', 'deno.lock') }}
-
       - name: Build site
         run: |
           mkdir -p site _site
@@ -53,15 +46,12 @@ jobs:
           elif [ -f mod.js ]; then deno run -A mod.js build site _site
           elif [ -f main.js ]; then deno run -A main.js build site _site
           else deno task build site _site || echo "No build command found"; fi
-
       - name: Setup Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
-
       - name: Upload artifact
         uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v3
         with:
           path: '_site'
-
   deploy:
     environment:
       name: github-pages

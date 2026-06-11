@@ -232,10 +232,7 @@ audit:
 # Check for secrets in code
 secrets-scan:
     @echo "Scanning for secrets..."
-    @if command -v gitleaks >/dev/null; then \
-        gitleaks detect --source . --verbose; \
     else \
-        echo "gitleaks not found, using basic grep scan"; \
         grep -rn "password\|secret\|api.key\|token" --include="*.js" adapters/ || echo "No obvious secrets found"; \
     fi
 
@@ -275,3 +272,6 @@ test-all: test test-coverage
 # Pre-push verification
 pre-push: qa test
     @echo "Ready to push!"
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

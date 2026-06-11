@@ -275,3 +275,6 @@ bench engine iterations="10":
 profile engine:
     @perf record -g just build {{engine}} test-corpus/posts /tmp/profile-out
     @perf report
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

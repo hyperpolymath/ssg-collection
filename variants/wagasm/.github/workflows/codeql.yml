@@ -2,7 +2,6 @@
 # RSR-compliant CodeQL workflow with SHA-pinned actions
 
 name: "CodeQL"
-
 on:
   push:
     branches: ["main"]
@@ -10,10 +9,7 @@ on:
     branches: ["main"]
   schedule:
     - cron: '42 20 * * 0'
-
-
 permissions: read-all
-
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
@@ -24,7 +20,6 @@ jobs:
       packages: read
       actions: read
       contents: read
-
     strategy:
       fail-fast: false
       matrix:
@@ -38,19 +33,16 @@ jobs:
           #   build-mode: autobuild
           - language: javascript-typescript
             build-mode: none
-          # - language: python
-          #   build-mode: none
-
+            # - language: python
+            #   build-mode: none
     steps:
       - name: Checkout repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-
       - name: Initialize CodeQL
         uses: github/codeql-action/init@ea9e4e37992a54ee68a9571571f9a567d8f90f78 # v3.28.0
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
-
       - name: Build (manual mode)
         if: matrix.build-mode == 'manual'
         shell: bash
@@ -59,7 +51,6 @@ jobs:
           # cargo build --release
           # mix compile
           exit 1
-
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@ea9e4e37992a54ee68a9571571f9a567d8f90f78 # v3.28.0
         with:

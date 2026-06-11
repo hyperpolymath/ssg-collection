@@ -24,3 +24,6 @@ qemu: all
 
 run: all
     ./build/baremetal
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

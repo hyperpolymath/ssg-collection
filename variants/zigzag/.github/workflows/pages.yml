@@ -1,20 +1,16 @@
 # SPDX-License-Identifier: MPL-2.0
 name: GitHub Pages
-
 on:
   push:
     branches: [main]
   workflow_dispatch:
-
 permissions:
   contents: read
   pages: write
   id-token: write
-
 concurrency:
   group: "pages"
   cancel-in-progress: false
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -22,15 +18,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v4
-
       - name: Setup Zig
         uses: goto-bus-stop/setup-zig@abea47f85e598557f500fa1fd2ab7464fcb39406 # v2
         with:
           version: 0.13.0
-
       - name: Build SSG
         run: zig build -Doptimize=ReleaseFast
-
       - name: Build site
         run: |
           mkdir -p site _site
@@ -44,15 +37,12 @@ jobs:
             else echo "# $(basename $PWD)" >> site/index.md; fi
           fi
           ./zig-out/bin/zigzag-ssg build site _site || ./zig-out/bin/* build site _site
-
       - name: Setup Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
-
       - name: Upload artifact
         uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v3
         with:
           path: '_site'
-
   deploy:
     environment:
       name: github-pages

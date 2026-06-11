@@ -257,3 +257,6 @@ bootstrap:
 # Run all quality checks
 all: check lint test audit
     @echo "All quality checks passed!"
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

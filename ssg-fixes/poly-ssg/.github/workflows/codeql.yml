@@ -3,7 +3,6 @@
 # https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors
 
 name: "CodeQL Security Analysis"
-
 on:
   push:
     branches: [main, develop]
@@ -13,12 +12,10 @@ on:
     # Run daily at 00:00 UTC for thorough security coverage
     - cron: "0 0 * * *"
   workflow_dispatch:
-
 permissions:
   actions: read
   contents: read
   security-events: write
-
 jobs:
   analyze:
     name: CodeQL Analysis
@@ -27,35 +24,29 @@ jobs:
     permissions:
       security-events: write
       contents: read
-
     strategy:
-      fail-fast: true  # Fail immediately on security issues
+      fail-fast: true # Fail immediately on security issues
       matrix:
         include:
           - language: actions
             build-mode: none
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-
       - name: Initialize CodeQL
         uses: github/codeql-action/init@5d4e8d1aca955e8d8589aabd499c5cae939e33c7 # v3
         with:
           languages: ${{ matrix.language }}
           # Maximum security coverage
           queries: +security-extended,security-and-quality,security-experimental
-
       - name: Autobuild
         uses: github/codeql-action/autobuild@5d4e8d1aca955e8d8589aabd499c5cae939e33c7 # v3
-
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@5d4e8d1aca955e8d8589aabd499c5cae939e33c7 # v3
         with:
           category: "/language:${{ matrix.language }}"
           # Fail on any high or critical severity issues
           upload: true
-
   # OCaml-specific security checks - STRICT MODE
   ocaml-security:
     name: OCaml Security Checks (Strict)
@@ -63,31 +54,25 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-
       - name: Set up OCaml
         uses: ocaml/setup-ocaml@7c185f622998a008ba1b296d2d7c64e235629c23 # v3.6.1
         with:
           ocaml-compiler: "4.14.x"
-
       - name: Install dependencies
         run: |
           opam install . --deps-only --with-test -y
         working-directory: engines/rescript-wasm
-
       - name: Build with strict warnings
         run: |
           opam exec -- dune build @all --force
         working-directory: engines/rescript-wasm
-
       - name: Run all tests (must pass)
         run: |
           opam exec -- dune test
         working-directory: engines/rescript-wasm
-
       - name: Security audit - unsafe patterns (MUST PASS)
         run: |
           echo "========================================="
@@ -134,7 +119,6 @@ jobs:
           echo "========================================="
           echo "PASSED: No critical security issues found"
           echo "========================================="
-
       - name: Security audit - integer overflow risks
         run: |
           echo "=== Checking for integer overflow risks ==="
@@ -143,7 +127,6 @@ jobs:
             echo "::warning::Large integer constants found - verify i31 bounds"
           fi
           echo "Integer check complete"
-
       - name: Security audit - resource leaks
         run: |
           echo "=== Checking for potential resource leaks ==="
@@ -155,7 +138,6 @@ jobs:
             echo "::warning::Potential resource leak - more opens than closes"
           fi
           echo "Resource check complete"
-
       - name: Security audit - exception handling
         run: |
           echo "=== Checking exception handling ==="
@@ -164,7 +146,6 @@ jobs:
             echo "::warning::Found catch-all exception handlers - may hide errors"
           fi
           echo "Exception check complete"
-
   # Dependency vulnerability scanning
   dependency-scan:
     name: Dependency Vulnerability Scan
@@ -172,16 +153,13 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-
       - name: Set up OCaml
         uses: ocaml/setup-ocaml@7c185f622998a008ba1b296d2d7c64e235629c23 # v3.6.1
         with:
           ocaml-compiler: "4.14.x"
-
       - name: List dependencies
         run: |
           echo "=== OCaml Dependencies ==="
@@ -192,7 +170,6 @@ jobs:
           echo ""
           echo "=== Installed packages ==="
           opam list --installed 2>/dev/null || true
-
       - name: Check for known vulnerabilities
         run: |
           echo "=== Vulnerability Check ==="

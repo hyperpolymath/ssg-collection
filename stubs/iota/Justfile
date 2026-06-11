@@ -255,3 +255,6 @@ help:
     @echo ""
     @echo "All Recipes:"
     @just --list
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

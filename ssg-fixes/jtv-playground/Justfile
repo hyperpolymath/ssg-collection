@@ -428,3 +428,6 @@ dump:
     @just version
     @echo ""
     @just stats
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

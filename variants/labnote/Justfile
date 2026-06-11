@@ -166,3 +166,6 @@ release-prep version:
     @echo "  2. Commit: git commit -am 'chore(release): {{version}}'"
     @echo "  3. Tag: git tag v{{version}}"
     @echo "  4. Push: git push --tags"
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

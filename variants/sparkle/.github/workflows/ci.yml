@@ -3,19 +3,15 @@
 # RSR-compliant CI/CD workflow with SHA-pinned actions
 
 name: CI
-
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
   workflow_dispatch:
-
 permissions: read-all
-
 env:
   DENO_VERSION: "1.40.0"
-
 jobs:
   # ═══════════════════════════════════════════════════════════════════════════
   # Lint & Format
@@ -27,21 +23,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
       - name: Setup Deno
         uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.0
         with:
           deno-version: ${{ env.DENO_VERSION }}
-
       - name: Lint
         run: deno lint adapters/
-
       - name: Format Check
         run: deno fmt --check adapters/
-
       - name: Type Check
         run: deno check adapters/*.js
-
   # ═══════════════════════════════════════════════════════════════════════════
   # Tests
   # ═══════════════════════════════════════════════════════════════════════════
@@ -52,27 +43,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
       - name: Setup Deno
         uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.0
         with:
           deno-version: ${{ env.DENO_VERSION }}
-
       - name: Run Tests
         run: deno test tests/ --allow-read --allow-run
-
       - name: Run Tests with Coverage
         run: |
           deno test --coverage=coverage/ tests/ --allow-all || true
           deno coverage coverage/ --lcov > coverage/lcov.info || true
-
       - name: Upload Coverage
         uses: codecov/codecov-action@1e68e06f1dbfde0e4cefc87efeba9e4643565f39 # v5.1.2
         if: always()
         with:
           file: coverage/lcov.info
           fail_ci_if_error: false
-
   # ═══════════════════════════════════════════════════════════════════════════
   # Security
   # ═══════════════════════════════════════════════════════════════════════════
@@ -85,25 +71,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
       - name: Initialize CodeQL
         uses: github/codeql-action/init@ea9e4e37992a54ee68a9571571f9a567d8f90f78 # v3.28.0
         with:
           languages: javascript-typescript
           build-mode: none
-
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@ea9e4e37992a54ee68a9571571f9a567d8f90f78 # v3.28.0
         with:
           category: "/language:javascript-typescript"
-
       - name: Security Pattern Check
         run: |
           echo "Checking for dangerous patterns..."
           ! grep -rn "eval\s*(" adapters/*.js || echo "⚠️ eval() usage detected"
           ! grep -rn "new Function" adapters/*.js || echo "⚠️ new Function() detected"
           echo "✓ Security pattern check complete"
-
   # ═══════════════════════════════════════════════════════════════════════════
   # Build Verification
   # ═══════════════════════════════════════════════════════════════════════════
@@ -115,12 +97,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
       - name: Setup Deno
         uses: denoland/setup-deno@5fae568d37c3b73449009674875529a984555dd1 # v2.0.0
         with:
           deno-version: ${{ env.DENO_VERSION }}
-
       - name: Verify Module Entry
         run: |
           deno eval "
@@ -133,7 +113,6 @@ jobs:
           }
           console.log('✓ Build verification passed');
           "
-
       - name: Verify All Adapters Load
         run: |
           deno eval "
@@ -158,7 +137,6 @@ jobs:
           if (failed > 0) Deno.exit(1);
           console.log('✓ All adapters load successfully');
           "
-
   # ═══════════════════════════════════════════════════════════════════════════
   # Container Build (Optional)
   # ═══════════════════════════════════════════════════════════════════════════
@@ -171,21 +149,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
       - name: Build Container
         run: |
           docker build -t sparkle-ssg:${{ github.sha }} -f Containerfile . || {
             echo "⚠️ Container build failed (non-blocking)"
             exit 0
           }
-
       - name: Test Container
         run: |
           docker run --rm sparkle-ssg:${{ github.sha }} || {
             echo "⚠️ Container test failed (non-blocking)"
             exit 0
           }
-
   # ═══════════════════════════════════════════════════════════════════════════
   # Summary
   # ═══════════════════════════════════════════════════════════════════════════

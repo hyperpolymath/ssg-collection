@@ -1,58 +1,46 @@
 name: Casket CI
-
 on:
   push:
     branches: [main, master]
   pull_request:
     branches: [main, master]
-
 jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-
       - name: Set up Haskell
         uses: haskell-actions/setup@v2
         with:
           ghc-version: '9.4'
-
       - name: Compile Casket
         run: ghc -o casket Casket.hs
-
       - name: Test Markdown
         run: ./casket test-markdown
-
       - name: Test Frontmatter
         run: ./casket test-frontmatter
-
       - name: Test Full Pipeline
         run: ./casket test-full
-
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: test
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-
       - name: Set up Haskell
         uses: haskell-actions/setup@v2
         with:
           ghc-version: '9.4'
-
       - name: Compile and build site
         run: |
           ghc -o casket Casket.hs
           mkdir -p _site
           ./casket build || echo "Build completed"
-
       - name: Upload artifact
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
           path: _site
-
   deploy:
     if: github.ref == 'refs/heads/main'
     needs: build

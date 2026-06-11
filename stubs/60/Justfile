@@ -75,3 +75,6 @@ validate:
         grep -q "SPDX-License-Identifier" "$$f" && echo "  ✓ SPDX header" || echo "  ✗ Missing SPDX header"; \
     done
     @echo "60-ssg: Validation complete"
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

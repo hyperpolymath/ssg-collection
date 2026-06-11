@@ -205,3 +205,6 @@ lock:
 # Run arbitrary deno command
 deno +args:
     deno {{args}}
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

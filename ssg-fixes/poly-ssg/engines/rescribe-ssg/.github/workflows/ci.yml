@@ -1,57 +1,45 @@
 name: Rescribe CI
-
 on:
   push:
     branches: [main, master]
   pull_request:
     branches: [main, master]
-
 jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-
       - name: Set up Node.js
         uses: actions/setup-node@49933ea5288caeca8642195f2b846b8bbe245a93 # v4
         with:
           node-version: '20'
-
       - name: Install ReScript
         run: npm install rescript
-
       - name: Compile Rescribe
         run: npx rescript build
-
       - name: Test Markdown
         run: node lib/es6/Rescribe.mjs test-markdown
-
       - name: Test Frontmatter
         run: node lib/es6/Rescribe.mjs test-frontmatter
-
       - name: Test Full Pipeline
         run: node lib/es6/Rescribe.mjs test-full
-
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: test
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-
       - name: Set up Node.js
         uses: actions/setup-node@49933ea5288caeca8642195f2b846b8bbe245a93 # v4
         with:
           node-version: '20'
-
       - name: Install and build
         run: |
           npm install rescript
           npx rescript build
           mkdir -p _site
           node lib/es6/Rescribe.mjs build || echo "Build completed"
-
       - name: Upload artifact
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:

@@ -1,15 +1,12 @@
 # SPDX-License-Identifier: MPL-2.0
 # SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 name: Logo CI
-
 permissions: read-all
-
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
-
 jobs:
   # === Language Enforcement ===
   language-check:
@@ -18,18 +15,8 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-
       - name: Verify Logo-only in src/
-        run: |
-          echo "🚫 Checking for forbidden languages in src/..."
-          forbidden=$(find src/ -type f \( -name "*.py" -o -name "*.js" -o -name "*.ts" -o -name "*.rb" -o -name "*.go" -o -name "*.rs" \) 2>/dev/null || true)
-          if [ -n "$forbidden" ]; then
-            echo "ERROR: Found forbidden language files in src/:"
-            echo "$forbidden"
-            exit 1
-          fi
-          echo "✓ Only Logo files in src/"
-
+        run: "echo \"\U0001F6AB Checking for forbidden languages in src/...\"\nforbidden=$(find src/ -type f \\( -name \"*.py\" -o -name \"*.js\" -o -name \"*.ts\" -o -name \"*.rb\" -o -name \"*.go\" -o -name \"*.rs\" \\) 2>/dev/null || true)\nif [ -n \"$forbidden\" ]; then\n  echo \"ERROR: Found forbidden language files in src/:\"\n  echo \"$forbidden\"\n  exit 1\nfi\necho \"✓ Only Logo files in src/\"\n"
       - name: Verify Logo file exists
         run: |
           if [ ! -f src/terrapin-ssg.logo ]; then
@@ -37,7 +24,6 @@ jobs:
             exit 1
           fi
           echo "✓ Logo engine file exists"
-
       - name: Verify Logo syntax structure
         run: |
           if ! grep -q "^TO\|^to" src/terrapin-ssg.logo; then
@@ -45,7 +31,6 @@ jobs:
             exit 1
           fi
           echo "✓ Logo file has procedure definitions"
-
   # === Syntax Check ===
   syntax-check:
     name: Logo Syntax Check
@@ -53,30 +38,12 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-
       - name: Install UCBLogo
         run: |
           sudo apt-get update
           sudo apt-get install -y ucblogo || echo "UCBLogo not available in repos, checking manually"
-
       - name: Validate Logo structure
-        run: |
-          echo "🐢 Validating Logo file structure..."
-
-          # Check for required procedures
-          for proc in build html_head svg_render; do
-            if grep -qi "to $proc\|TO $proc" src/terrapin-ssg.logo; then
-              echo "✓ Found procedure: $proc"
-            else
-              echo "⚠ Missing procedure: $proc"
-            fi
-          done
-
-          # Check for balanced TO/END
-          to_count=$(grep -ci "^to " src/terrapin-ssg.logo || echo 0)
-          end_count=$(grep -ci "^end$" src/terrapin-ssg.logo || echo 0)
-          echo "TO count: $to_count, END count: $end_count"
-
+        run: "echo \"\U0001F422 Validating Logo file structure...\"\n\n# Check for required procedures\nfor proc in build html_head svg_render; do\n  if grep -qi \"to $proc\\|TO $proc\" src/terrapin-ssg.logo; then\n    echo \"✓ Found procedure: $proc\"\n  else\n    echo \"⚠ Missing procedure: $proc\"\n  fi\ndone\n\n# Check for balanced TO/END\nto_count=$(grep -ci \"^to \" src/terrapin-ssg.logo || echo 0)\nend_count=$(grep -ci \"^end$\" src/terrapin-ssg.logo || echo 0)\necho \"TO count: $to_count, END count: $end_count\"\n"
   # === Security Checks ===
   security:
     name: Security Audit
@@ -84,40 +51,12 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
       - name: Check for secrets
-        run: |
-          echo "🔒 Checking for potential secrets..."
-          if grep -rE "(password|secret|api.key|token)\s*=" src/ 2>/dev/null | grep -v "^Binary"; then
-            echo "⚠ Potential secrets found - review manually"
-          else
-            echo "✓ No obvious secrets in src/"
-          fi
-
+        run: "echo \"\U0001F512 Checking for potential secrets...\"\nif grep -rE \"(password|secret|api.key|token)\\s*=\" src/ 2>/dev/null | grep -v \"^Binary\"; then\n  echo \"⚠ Potential secrets found - review manually\"\nelse\n  echo \"✓ No obvious secrets in src/\"\nfi\n"
       - name: Verify SHA-pinned actions
-        run: |
-          echo "🔐 Checking SHA-pinned actions..."
-          for workflow in .github/workflows/*.yml; do
-            if grep -E "uses:.*@[a-f0-9]{40}" "$workflow" > /dev/null; then
-              echo "✓ $workflow uses SHA-pinned actions"
-            else
-              if grep -E "uses:.*@" "$workflow" > /dev/null; then
-                echo "⚠ $workflow may have non-SHA-pinned actions"
-              fi
-            fi
-          done
-
+        run: "echo \"\U0001F510 Checking SHA-pinned actions...\"\nfor workflow in .github/workflows/*.yml; do\n  if grep -E \"uses:.*@[a-f0-9]{40}\" \"$workflow\" > /dev/null; then\n    echo \"✓ $workflow uses SHA-pinned actions\"\n  else\n    if grep -E \"uses:.*@\" \"$workflow\" > /dev/null; then\n      echo \"⚠ $workflow may have non-SHA-pinned actions\"\n    fi\n  fi\ndone\n"
       - name: Check adapter security
-        run: |
-          echo "🛡️ Checking adapter security..."
-          if [ -f adapters/src/TerrapinAdapter.res ]; then
-            if grep -q "allowedPatterns" adapters/src/TerrapinAdapter.res; then
-              echo "✓ Pattern whitelist found in adapter"
-            else
-              echo "⚠ No pattern whitelist in adapter"
-            fi
-          fi
-
+        run: "echo \"\U0001F6E1️ Checking adapter security...\"\nif [ -f adapters/src/TerrapinAdapter.res ]; then\n  if grep -q \"allowedPatterns\" adapters/src/TerrapinAdapter.res; then\n    echo \"✓ Pattern whitelist found in adapter\"\n  else\n    echo \"⚠ No pattern whitelist in adapter\"\n  fi\nfi\n"
   # === Build Test ===
   build-test:
     name: Build Test
@@ -126,17 +65,13 @@ jobs:
     needs: [language-check, syntax-check]
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-
       - name: Install just
         run: |
           curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | sudo bash -s -- --to /usr/local/bin
-
       - name: Run validation
         run: just validate
-
       - name: Check project info
         run: just info
-
   # === Documentation Check ===
   docs-check:
     name: Documentation Check
@@ -144,31 +79,10 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-
       - name: Verify required docs
-        run: |
-          echo "📚 Checking required documentation..."
-          docs=("README.adoc" "SECURITY.md" "CONTRIBUTING.md" "CODE_OF_CONDUCT.md" ".claude/CLAUDE.md" "cookbook.adoc")
-          for doc in "${docs[@]}"; do
-            if [ -f "$doc" ]; then
-              echo "✓ $doc exists"
-            else
-              echo "⚠ $doc missing"
-            fi
-          done
-
+        run: "echo \"\U0001F4DA Checking required documentation...\"\ndocs=(\"README.adoc\" \"SECURITY.md\" \"CONTRIBUTING.md\" \"CODE_OF_CONDUCT.md\" \".claude/CLAUDE.md\" \"cookbook.adoc\")\nfor doc in \"${docs[@]}\"; do\n  if [ -f \"$doc\" ]; then\n    echo \"✓ $doc exists\"\n  else\n    echo \"⚠ $doc missing\"\n  fi\ndone\n"
       - name: Verify SCM files
-        run: |
-          echo "📋 Checking SCM files..."
-          scm=("STATE.scm" "META.scm" "ECOSYSTEM.scm")
-          for file in "${scm[@]}"; do
-            if [ -f "$file" ]; then
-              echo "✓ $file exists"
-            else
-              echo "⚠ $file missing"
-            fi
-          done
-
+        run: "echo \"\U0001F4CB Checking SCM files...\"\nscm=(\"STATE.scm\" \"META.scm\" \"ECOSYSTEM.scm\")\nfor file in \"${scm[@]}\"; do\n  if [ -f \"$file\" ]; then\n    echo \"✓ $file exists\"\n  else\n    echo \"⚠ $file missing\"\n  fi\ndone\n"
   # === Adapter Check ===
   adapter-check:
     name: Adapter Check
@@ -176,21 +90,12 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-
       - name: Setup Node.js
         uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6.1.0
         with:
           node-version: '20'
-
       - name: Check adapter dependencies
-        run: |
-          if [ -f adapters/package.json ]; then
-            echo "📦 Checking adapter dependencies..."
-            cd adapters
-            npm install --ignore-scripts
-            echo "✓ Adapter dependencies installed"
-          fi
-
+        run: "if [ -f adapters/package.json ]; then\n  echo \"\U0001F4E6 Checking adapter dependencies...\"\n  cd adapters\n  npm install --ignore-scripts\n  echo \"✓ Adapter dependencies installed\"\nfi\n"
       - name: Verify ReScript files
         run: |
           if [ -f adapters/src/TerrapinAdapter.res ]; then

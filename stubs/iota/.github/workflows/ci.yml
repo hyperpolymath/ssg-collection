@@ -3,16 +3,13 @@
 # CI Workflow — iota-ssg
 
 name: CI
-
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
-
 permissions:
   contents: read
-
 jobs:
   lint:
     name: Lint & Format Check
@@ -21,12 +18,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
       - name: Setup Deno
         uses: denoland/setup-deno@e95548e56dfa95d4e0a7d90f9eaae48e5a29528a # v2.0.2
         with:
           deno-version: v1.x
-
       - name: Check adapter syntax
         run: |
           echo "Checking adapter syntax..."
@@ -34,11 +29,9 @@ jobs:
             echo "Checking $f..."
             deno check "$f" || echo "Note: $f may need type annotations"
           done
-
       - name: Lint with deno
         run: |
           deno lint adapters/*.js || echo "Lint warnings found"
-
   validate-adapters:
     name: Validate Adapters
     runs-on: ubuntu-latest
@@ -46,12 +39,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
       - name: Setup Deno
         uses: denoland/setup-deno@e95548e56dfa95d4e0a7d90f9eaae48e5a29528a # v2.0.2
         with:
           deno-version: v1.x
-
       - name: Validate adapter interfaces
         run: |
           echo "Validating adapter interfaces..."
@@ -77,7 +68,6 @@ jobs:
             fi
           done
           exit $FAILED
-
       - name: Count adapters
         run: |
           count=$(ls -1 adapters/*.js | grep -v README | wc -l)
@@ -85,7 +75,6 @@ jobs:
           if [ "$count" -lt 28 ]; then
             echo "Warning: Expected 28 adapters, found $count"
           fi
-
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -94,12 +83,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
       - name: Setup Deno
         uses: denoland/setup-deno@e95548e56dfa95d4e0a7d90f9eaae48e5a29528a # v2.0.2
         with:
           deno-version: v1.x
-
       - name: Run tests
         run: |
           if [ -d "tests" ]; then
@@ -107,7 +94,6 @@ jobs:
           else
             echo "No tests directory yet (planned for v0.4)"
           fi
-
   docs-check:
     name: Documentation Check
     runs-on: ubuntu-latest
@@ -115,7 +101,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
       - name: Check required docs exist
         run: |
           required="README.adoc SECURITY.md CONTRIBUTING.md CODE_OF_CONDUCT.md"
@@ -130,7 +115,6 @@ jobs:
             fi
             echo "✓ $doc exists"
           done
-
       - name: Check SCM files exist
         run: |
           scm_files="META.scm ECOSYSTEM.scm STATE.scm PLAYBOOK.scm AGENTIC.scm NEUROSYM.scm"
@@ -141,7 +125,6 @@ jobs:
             fi
             echo "✓ $scm exists"
           done
-
   security-check:
     name: Security Check
     runs-on: ubuntu-latest
@@ -149,7 +132,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
       - name: Check for secrets
         run: |
           echo "Checking for potential secrets..."
@@ -158,7 +140,6 @@ jobs:
             exit 1
           fi
           echo "✓ No hardcoded secrets detected"
-
       - name: Check .env not tracked
         run: |
           if [ -f ".env" ] && git ls-files --error-unmatch .env 2>/dev/null; then
@@ -166,7 +147,6 @@ jobs:
             exit 1
           fi
           echo "✓ No .env in git"
-
   all-checks:
     name: All Checks Passed
     runs-on: ubuntu-latest

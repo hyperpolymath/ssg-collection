@@ -366,3 +366,6 @@ enforce-policy: lint-banned
     @echo "  - No Makefile"
     @echo "  - ReScript for application code"
     @echo "  - Minimal JS glue for Deno APIs"
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

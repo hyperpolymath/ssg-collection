@@ -325,3 +325,6 @@ info:
     @echo "Source:     ReScript -> JavaScript"
     @echo "Testing:    Deno Test"
     @echo "Container:  Podman"
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true
