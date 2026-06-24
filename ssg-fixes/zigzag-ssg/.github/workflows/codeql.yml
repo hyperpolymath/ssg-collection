@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: MPL-2.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 # CodeQL workflow for zigzag-ssg
 #
 # Note: CodeQL does not support Zig. This workflow scans

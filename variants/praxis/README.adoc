@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: CC-BY-SA-4.0
 // Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 // SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 = praxis-ssg
@@ -13,7 +13,7 @@ A satellite SSG (Static Site Generator) implementation in the hyperpolymath ecos
 
 image:https://img.shields.io/badge/RSR-Gold-gold[RSR Gold]
 image:https://img.shields.io/badge/adapters-28-blue[28 Adapters]
-image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/License-MPL--2.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
 
 == Overview
 

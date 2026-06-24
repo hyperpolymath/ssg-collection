@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: MPL-2.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 # Comprehensive CI/CD workflow for zigzag-ssg
 name: Zig CI
 permissions: read-all
