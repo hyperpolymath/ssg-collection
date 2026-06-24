@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: MPL-2.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 # Continuous Integration - Strict Mode
 # All warnings treated as errors, all tests must pass
 name: CI

@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: CC-BY-SA-4.0
 // Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 = tyrano-ssg
 
-image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/License-MPL--2.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
 :toc:
 :toc-placement!:
 :icons: font
@@ -13,7 +13,7 @@ _Say it clear. Parse with precision. Let pages render._
 
 image:https://img.shields.io/badge/Language-REXX-orange[REXX]
 image:https://img.shields.io/badge/Status-Experimental-yellow[Status]
-image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/License-MPL--2.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
 image:https://img.shields.io/badge/poly--ssg--mcp-integrated-purple[poly-ssg-mcp]
 
 toc::[]
@@ -148,7 +148,7 @@ Named for the dinosaur, not the despot. REXX has mainframe heritage dating to 19
 
 == License
 
-SPDX-License-Identifier: MPL-2.0-or-later
+SPDX-License-Identifier: CC-BY-SA-4.0
 
 == Links
 

@@ -1,5 +1,5 @@
 #!/bin/sh
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 # Pre-push hook for rescribe-ssg
 #
 # Install: cp .hooks/pre-push .git/hooks/pre-push && chmod +x .git/hooks/pre-push

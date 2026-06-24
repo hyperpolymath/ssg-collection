@@ -1,15 +1,15 @@
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: CC-BY-SA-4.0
 // Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 = vladik-ssg
 
-image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/License-MPL--2.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
 :toc: auto
 :sectnums:
 
 
 image:https://img.shields.io/badge/RSR-Compliant-cd7f32[RSR Compliant]
 image:https://img.shields.io/badge/Phase-Experimental-yellow[Experimental]
-image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/License-MPL--2.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
 image:https://img.shields.io/badge/Language-Anvomidav-purple[Anvomidav]
 
 **Choreography-driven static site generator in Anvomidav.**
@@ -146,7 +146,7 @@ The ReScript adapter enables AI assistants to invoke vladik-ssg builds through t
 
 == License
 
-SPDX-License-Identifier: MPL-2.0-or-later
+SPDX-License-Identifier: CC-BY-SA-4.0
 
 == Links
 
