@@ -52,7 +52,7 @@ SSGs before the monorepo consolidation.
 
 *Honest caveat:* Language policy compliance is uneven across the collection. Some stubs contain
 `package.json` artifacts from pre-2026 development when TypeScript and npm were still in use.
-The `npm-bun-blocker` and `ts-blocker` CI workflows enforce the policy going forward, but older
+The `runtime-policy` CI workflow enforce the policy going forward, but older
 files in stubs and variants have not been audited or cleaned up.
 
 == Dogfooded Across The Account
@@ -125,7 +125,7 @@ files in stubs and variants have not been audited or cleaned up.
 | Architecture map: tier definitions, exclusions, consolidation history
 
 | `.github/workflows/`
-| RSR-standard CI: CodeQL, Hypatia, Scorecard, npm-bun-blocker, ts-blocker, mirror workflows
+| RSR-standard CI: CodeQL, Hypatia, Scorecard, runtime-policy, mirror workflows
 
 | `tests/`
 | Top-level test directory (per-implementation tests live inside each subdirectory)
