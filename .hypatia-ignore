@@ -1,0 +1,169 @@
+# Banned-language exemption ledger — hypatia / governance-reusable.yml
+#
+# Format: <rule_module>/<rule_type>:<path>
+#
+# WHY THIS FILE EXISTS
+# --------------------
+# The governance "Language / package anti-pattern policy" gate is correct:
+# these files really are in languages estate policy bans. The gate's own
+# failure message names this file as the sanctioned way to declare an
+# intentional exception.
+#
+# These exemptions HOLD THE LINE WHILE MIGRATION IS IN PROGRESS. Each entry
+# is removed as the matching file is ported or deleted. This follows the
+# precedent set in hyperpolymath/echidna.
+#
+# EVERY PATH IS LISTED INDIVIDUALLY — deliberately. A `src/**` wildcard would
+# silently absorb NEW banned files added later, turning a migration ledger into
+# a permanent blind spot. Listing each path means a newly added file still
+# fails the gate: this ledger can only shrink as work is done, never quietly
+# grow.
+#
+# Inventory taken 2026-08-06 across all 424 estate repositories.
+# Files covered: 143 rescript, 2 python
+
+cicd_rules/banned_language_file:implementations/eclipse/a11y/Validate.res
+cicd_rules/banned_language_file:implementations/eclipse/noteg-lang/src/Compiler.res
+cicd_rules/banned_language_file:implementations/eclipse/noteg-lang/src/Interpreter.res
+cicd_rules/banned_language_file:implementations/eclipse/noteg-lang/src/Lexer.res
+cicd_rules/banned_language_file:implementations/eclipse/noteg-lang/src/Parser.res
+cicd_rules/banned_language_file:implementations/eclipse/noteg-lang/src/lsp/Server.res
+cicd_rules/banned_language_file:implementations/eclipse/ssg/src/build.res
+cicd_rules/banned_language_file:implementations/eclipse/ssg/src/env.res
+cicd_rules/banned_language_file:implementations/eclipse/ssg/src/types.res
+cicd_rules/banned_language_file:implementations/eclipse/tests/Lexer_test.res
+cicd_rules/banned_language_file:implementations/eclipse/tests/Parser_test.res
+cicd_rules/banned_language_file:implementations/eclipse/tests/aspect/SecurityTest.res
+cicd_rules/banned_language_file:implementations/eclipse/tests/e2e/Adapter_test.res
+cicd_rules/banned_language_file:implementations/eclipse/tests/integration/AdapterIntegrationTest.res
+cicd_rules/banned_language_file:implementations/eclipse/tests/property/PropertyTest.res
+cicd_rules/banned_language_file:implementations/eclipse/tests/verify/Bernoulli_test.res
+cicd_rules/banned_language_file:implementations/hackenbush/adapters/src/HackenbushAdapter.res
+cicd_rules/banned_language_file:implementations/hackenbush/life-lang/src/compiler.res
+cicd_rules/banned_language_file:implementations/hackenbush/life-lang/src/interpreter.res
+cicd_rules/banned_language_file:implementations/hackenbush/life-lang/src/lexer.res
+cicd_rules/banned_language_file:implementations/hackenbush/life-lang/src/lsp/server.res
+cicd_rules/banned_language_file:implementations/hackenbush/life-lang/src/parser.res
+cicd_rules/banned_language_file:implementations/hackenbush/runtime/Deno.res
+cicd_rules/banned_language_file:implementations/hackenbush/runtime/Host.res
+cicd_rules/banned_language_file:implementations/hackenbush/tests/RleParserTest.res
+cicd_rules/banned_language_file:implementations/hackenbush/tests/SimulatorTest.res
+cicd_rules/banned_language_file:implementations/odd/src/Mod.res
+cicd_rules/banned_language_file:implementations/odd/src/engine/Core.res
+cicd_rules/banned_language_file:implementations/odd/src/noteg-lang/Lexer.res
+cicd_rules/banned_language_file:implementations/odd/src/noteg-lang/Parser.res
+cicd_rules/banned_language_file:implementations/odd/src/noteg-lang/lsp/Server.res
+cicd_rules/banned_language_file:implementations/odd/src/noteg-mcp/Server.res
+cicd_rules/banned_language_file:implementations/odd/src/ssg/Build.res
+cicd_rules/banned_language_file:implementations/odd/src/ssg/Types.res
+cicd_rules/banned_language_file:implementations/odd/src/tests/Engine_test.res
+cicd_rules/banned_language_file:implementations/pharos/noteg-lang/src/Compiler.res
+cicd_rules/banned_language_file:implementations/pharos/noteg-lang/src/Interpreter.res
+cicd_rules/banned_language_file:implementations/pharos/noteg-lang/src/Lexer.res
+cicd_rules/banned_language_file:implementations/pharos/noteg-lang/src/Parser.res
+cicd_rules/banned_language_file:implementations/pharos/noteg-lang/src/lsp/Server.res
+cicd_rules/banned_language_file:implementations/pharos/ssg/src/Build.res
+cicd_rules/banned_language_file:implementations/pharos/ssg/src/Env.res
+cicd_rules/banned_language_file:implementations/pharos/ssg/src/Types.res
+cicd_rules/banned_language_file:implementations/pharos/ssg/tests/Build_test.res
+cicd_rules/banned_language_file:implementations/pharos/tests/e2e/BuildTest.res
+cicd_rules/banned_language_file:implementations/qed/src/bindings/Deno.res
+cicd_rules/banned_language_file:implementations/qed/src/bindings/DenoTest.res
+cicd_rules/banned_language_file:implementations/qed/src/lib/Adapter.res
+cicd_rules/banned_language_file:implementations/qed/tests/benchmark/AdapterBenchmark.res
+cicd_rules/banned_language_file:implementations/qed/tests/benchmark/SsgBenchmark.res
+cicd_rules/banned_language_file:implementations/qed/tests/e2e/FullWorkflowTest.res
+cicd_rules/banned_language_file:implementations/qed/tests/e2e/PlaceholderTest.res
+cicd_rules/banned_language_file:implementations/qed/tests/integration/AdapterIntegrationTest.res
+cicd_rules/banned_language_file:implementations/qed/tests/unit/AdapterTest.res
+cicd_rules/banned_language_file:implementations/rats/src/AdapterLoader.res
+cicd_rules/banned_language_file:implementations/rats/src/AdapterRegistry.res
+cicd_rules/banned_language_file:implementations/rats/src/Bindings/Deno.res
+cicd_rules/banned_language_file:implementations/rats/src/Config.res
+cicd_rules/banned_language_file:implementations/rats/src/HttpServer.res
+cicd_rules/banned_language_file:implementations/rats/src/Logger.res
+cicd_rules/banned_language_file:implementations/rats/src/Main.res
+cicd_rules/banned_language_file:implementations/rats/src/Mcp/Handler.res
+cicd_rules/banned_language_file:implementations/rats/src/Mcp/Protocol.res
+cicd_rules/banned_language_file:implementations/rats/src/Mcp/ToolCall.res
+cicd_rules/banned_language_file:implementations/rats/src/StdioServer.res
+cicd_rules/banned_language_file:implementations/rats/src/Types.res
+cicd_rules/banned_language_file:implementations/rats/test/e2e/McpTest.res
+cicd_rules/banned_language_file:implementations/rats/test/unit/AdapterTest.res
+cicd_rules/banned_language_file:implementations/rats/test/unit/ServerTest.res
+cicd_rules/banned_language_file:implementations/wokelang/frontend/src/App.res
+cicd_rules/banned_language_file:implementations/wokelang/frontend/src/Layout.res
+cicd_rules/banned_language_file:implementations/wokelang/frontend/src/Router.res
+cicd_rules/banned_language_file:ssg-fixes/eclipse-ssg/a11y/Validate.res
+cicd_rules/banned_language_file:ssg-fixes/eclipse-ssg/noteg-lang/src/Compiler.res
+cicd_rules/banned_language_file:ssg-fixes/eclipse-ssg/noteg-lang/src/Interpreter.res
+cicd_rules/banned_language_file:ssg-fixes/eclipse-ssg/noteg-lang/src/Lexer.res
+cicd_rules/banned_language_file:ssg-fixes/eclipse-ssg/noteg-lang/src/Parser.res
+cicd_rules/banned_language_file:ssg-fixes/eclipse-ssg/noteg-lang/src/lsp/Server.res
+cicd_rules/banned_language_file:ssg-fixes/eclipse-ssg/ssg/src/build.res
+cicd_rules/banned_language_file:ssg-fixes/eclipse-ssg/ssg/src/env.res
+cicd_rules/banned_language_file:ssg-fixes/eclipse-ssg/ssg/src/types.res
+cicd_rules/banned_language_file:ssg-fixes/eclipse-ssg/tests/Lexer_test.res
+cicd_rules/banned_language_file:ssg-fixes/eclipse-ssg/tests/Parser_test.res
+cicd_rules/banned_language_file:ssg-fixes/eclipse-ssg/tests/e2e/Adapter_test.res
+cicd_rules/banned_language_file:ssg-fixes/eclipse-ssg/tests/verify/Bernoulli_test.res
+cicd_rules/banned_language_file:ssg-fixes/hackenbush-ssg/adapters/src/HackenbushAdapter.res
+cicd_rules/banned_language_file:ssg-fixes/hackenbush-ssg/life-lang/src/compiler.res
+cicd_rules/banned_language_file:ssg-fixes/hackenbush-ssg/life-lang/src/interpreter.res
+cicd_rules/banned_language_file:ssg-fixes/hackenbush-ssg/life-lang/src/lexer.res
+cicd_rules/banned_language_file:ssg-fixes/hackenbush-ssg/life-lang/src/lsp/server.res
+cicd_rules/banned_language_file:ssg-fixes/hackenbush-ssg/life-lang/src/parser.res
+cicd_rules/banned_language_file:ssg-fixes/hackenbush-ssg/runtime/Deno.res
+cicd_rules/banned_language_file:ssg-fixes/hackenbush-ssg/runtime/Host.res
+cicd_rules/banned_language_file:ssg-fixes/hackenbush-ssg/tests/RleParserTest.res
+cicd_rules/banned_language_file:ssg-fixes/hackenbush-ssg/tests/SimulatorTest.res
+cicd_rules/banned_language_file:ssg-fixes/jtv-playground/experiments/api-demos/rest-api-rescript/src/Router.res
+cicd_rules/banned_language_file:ssg-fixes/jtv-playground/experiments/api-demos/rest-api-rescript/src/Server.res
+cicd_rules/banned_language_file:ssg-fixes/jtv-playground/experiments/api-demos/rest-api-rescript/src/bindings/Deno.res
+cicd_rules/banned_language_file:ssg-fixes/jtv-playground/experiments/api-demos/websocket-chat-rescript/src/Server.res
+cicd_rules/banned_language_file:ssg-fixes/jtv-playground/experiments/api-demos/websocket-chat-rescript/src/bindings/WebSocket.res
+cicd_rules/banned_language_file:ssg-fixes/jtv-playground/experiments/database-demos/arangodb-demo-rescript/src/ArangoDemo.res
+cicd_rules/banned_language_file:ssg-fixes/jtv-playground/experiments/database-demos/arangodb-demo-rescript/src/bindings/ArangoDB.res
+cicd_rules/banned_language_file:ssg-fixes/jtv-playground/experiments/utilities/form-validation-rescript/src/Demo.res
+cicd_rules/banned_language_file:ssg-fixes/jtv-playground/experiments/utilities/form-validation-rescript/src/Validator.res
+cicd_rules/banned_language_file:ssg-fixes/pharos-ssg/noteg-lang/src/Compiler.res
+cicd_rules/banned_language_file:ssg-fixes/pharos-ssg/noteg-lang/src/Interpreter.res
+cicd_rules/banned_language_file:ssg-fixes/pharos-ssg/noteg-lang/src/Lexer.res
+cicd_rules/banned_language_file:ssg-fixes/pharos-ssg/noteg-lang/src/lsp/Server.res
+cicd_rules/banned_language_file:ssg-fixes/pharos-ssg/ssg/src/Build.res
+cicd_rules/banned_language_file:ssg-fixes/pharos-ssg/ssg/src/Env.res
+cicd_rules/banned_language_file:ssg-fixes/pharos-ssg/ssg/src/Types.res
+cicd_rules/banned_language_file:ssg-fixes/pharos-ssg/ssg/tests/Build_test.res
+cicd_rules/banned_language_file:ssg-fixes/pharos-ssg/tests/e2e/BuildTest.res
+cicd_rules/banned_language_file:ssg-fixes/poly-ssg/engines/milk-ssg/milk-ssg.py
+cicd_rules/banned_language_file:ssg-fixes/poly-ssg/engines/rescribe-ssg/Rescribe.res
+cicd_rules/banned_language_file:ssg-fixes/poly-ssg/engines/terrapin-ssg/terrapin-ssg.py
+cicd_rules/banned_language_file:ssg-fixes/wagasm-ssg/adapters/src/WagasmAdapter.res
+cicd_rules/banned_language_file:ssg-fixes/wagasm-ssg/runtime/Deno.res
+cicd_rules/banned_language_file:ssg-fixes/wagasm-ssg/runtime/Host.res
+cicd_rules/banned_language_file:ssg-fixes/zigzag-ssg/adapters/src/ZigzagAdapter.res
+cicd_rules/banned_language_file:stubs/dei/plugins/consent/src/Consent.res
+cicd_rules/banned_language_file:stubs/milk/adapters/src/MilkAdapter.res
+cicd_rules/banned_language_file:stubs/parallax/adapters/src/ParallaxAdapter.res
+cicd_rules/banned_language_file:stubs/prodigy/adapters/src/ProdigyAdapter.res
+cicd_rules/banned_language_file:stubs/rescribe/adapters/src/RescribeAdapter.res
+cicd_rules/banned_language_file:stubs/rescribe/src/Rescribe.res
+cicd_rules/banned_language_file:stubs/terrapin/adapters/src/TerrapinAdapter.res
+cicd_rules/banned_language_file:variants/baremetal/src/Main.res
+cicd_rules/banned_language_file:variants/befunge/rs/src/Adapter.res
+cicd_rules/banned_language_file:variants/befunge/rs/src/Html.res
+cicd_rules/banned_language_file:variants/befunge/rs/src/Render.res
+cicd_rules/banned_language_file:variants/befunge/rs/src/Slug.res
+cicd_rules/banned_language_file:variants/gungir/src/Gungir.res
+cicd_rules/banned_language_file:variants/gungir/src/Main.res
+cicd_rules/banned_language_file:variants/my/src/Adapter.res
+cicd_rules/banned_language_file:variants/my/src/Deno.res
+cicd_rules/banned_language_file:variants/my/tests/e2e/SiteGenerationTest.res
+cicd_rules/banned_language_file:variants/my/tests/unit/AdaptersTest.res
+cicd_rules/banned_language_file:variants/orbital/src/Main.res
+cicd_rules/banned_language_file:variants/praxis/src/Main.res
+cicd_rules/banned_language_file:variants/saur/src/Main.res
+cicd_rules/banned_language_file:variants/wagasm/adapters/src/WagasmAdapter.res
+cicd_rules/banned_language_file:variants/wagasm/runtime/Deno.res
+cicd_rules/banned_language_file:variants/wagasm/runtime/Host.res
+cicd_rules/banned_language_file:variants/zigzag/adapters/src/ZigzagAdapter.res
