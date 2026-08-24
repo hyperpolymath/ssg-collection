@@ -1,101 +1,109 @@
-// SPDX-License-Identifier: CC-BY-SA-4.0
-// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
-= Contributing to hackenbush-ssg
-:toc:
-:toc-placement: preamble
-// SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+== Clone the repository
 
-Thank you for your interest in contributing to hackenbush-ssg! This document provides guidelines for contributing to the project.
+git clone https://github.com/hyperpolymath/hackenbush-ssg.git cd
+hackenbush-ssg
 
-== Understanding the Project
+== Using Nix (recommended for reproducibility)
 
-hackenbush-ssg is an *experimental* static site generator where the core SSG logic is encoded in Conway's Game of Life patterns. This is not a conventional codebase.
+nix develop
 
-=== Key Principle
+== Or using toolbox/distrobox
 
-**The Life pattern IS the program.** The host runtime provides ONLY simulation and I/O.
+toolbox create hackenbush-ssg-dev toolbox enter hackenbush-ssg-dev #
+Install dependencies manually
 
-=== Project Structure
+== Verify setup
 
-[source]
-----
-hackenbush-ssg/
-├── src/
-│   └── hackenbush.rle        # THE SSG - Life pattern file (core logic)
-├── patterns/                  # Reusable pattern components
-│   ├── glider-gun.rle        # Gosper glider gun
-│   └── logic-gates.rle       # AND, OR, NOT gates
-├── runtime/
-│   └── host.ts               # ONLY simulation + I/O (Deno/TypeScript)
-├── adapters/                  # MCP adapter (ReScript only)
-└── .claude/CLAUDE.md         # AI assistant guidelines
-----
+just check # or: cargo check / mix compile / etc. just test # Run test
+suite
 
-== What You Can Contribute
+....
 
-=== Life Patterns (Encouraged)
+### Repository Structure
+....
 
-* New pattern components for computation
-* Optimized versions of existing patterns
-* Documentation of pattern behavior
-* Pattern libraries for specific operations
+hackenbush-ssg/ ├── src/ # Source code (Perimeter 1-2) ├── lib/ #
+Library code (Perimeter 1-2) ├── extensions/ # Extensions (Perimeter 2)
+├── plugins/ # Plugins (Perimeter 2) ├── tools/ # Tooling (Perimeter 2)
+├── docs/ # Documentation (Perimeter 3) │ ├── architecture/ # ADRs,
+specs (Perimeter 2) │ └── proposals/ # RFCs (Perimeter 3) ├── examples/
+# Examples (Perimeter 3) ├── spec/ # Spec tests (Perimeter 3) ├── tests/
+# Test suite (Perimeter 2-3) ├── .well-known/ # Protocol files
+(Perimeter 1-3) ├── .github/ # GitHub config (Perimeter 1) │ ├──
+ISSUE_TEMPLATE/ │ └── workflows/ ├── CHANGELOG.md ├── CODE_OF_CONDUCT.md
+├── CONTRIBUTING.md # This file ├── GOVERNANCE.md ├── LICENSE ├──
+MAINTAINERS.md ├── README.adoc ├── SECURITY.md ├── flake.nix # Nix flake
+(Perimeter 1) └── Justfile # Task runner (Perimeter 1)
 
-=== Host Runtime (Limited)
+....
 
-The host runtime (`runtime/host.ts`) should ONLY be modified for:
+---
 
-* Bug fixes in the Life simulator
-* Performance improvements to simulation
-* I/O improvements (file reading/writing)
-* Better RLE parsing
+## How to Contribute
 
-**NEVER** add SSG logic to the host runtime.
+### Reporting Bugs
 
-=== MCP Adapter (ReScript Only)
+**Before reporting**:
+1. Search existing issues
+2. Check if it's already fixed in `main`
+3. Determine which perimeter the bug affects
 
-The MCP adapter must be written in ReScript. Contributions welcome for:
+**When reporting**:
 
-* Better poly-ssg hub integration
-* Additional MCP capabilities
-* Documentation improvements
+Use the [bug report template](.github/ISSUE_TEMPLATE/bug_report.md) and include:
 
-=== Documentation
+- Clear, descriptive title
+- Environment details (OS, versions, toolchain)
+- Steps to reproduce
+- Expected vs actual behaviour
+- Logs, screenshots, or minimal reproduction
 
-* README improvements
-* Pattern documentation
-* Usage examples
-* Research notes on Life-based computation
+### Suggesting Features
 
-== What NOT to Contribute
+**Before suggesting**:
+1. Check the [roadmap](ROADMAP.md) if available
+2. Search existing issues and discussions
+3. Consider which perimeter the feature belongs to
 
-The following will be **rejected without discussion**:
+**When suggesting**:
 
-* JavaScript/TypeScript SSG logic (use Life patterns instead)
-* Python, Go, Ruby, or other conventional language implementations
-* "Practical" rewrites that abandon the Life pattern approach
-* HTML generation in the host runtime
-* Markdown parsing in the host runtime
-* Template processing in the host runtime
+Use the [feature request template](.github/ISSUE_TEMPLATE/feature_request.md) and include:
 
-== Code of Conduct
+- Problem statement (what pain point does this solve?)
+- Proposed solution
+- Alternatives considered
+- Which perimeter this affects
 
-* Be respectful and constructive
-* Focus on technical merit
-* Accept that this project has unusual constraints by design
-* Understand that "impractical" is not a valid criticism - the project exists to prove a concept
+### Your First Contribution
 
-== How to Submit
+Look for issues labelled:
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Ensure CI passes (especially the Game of Life pattern validation)
-5. Submit a pull request with clear description
+- [`good first issue`](https://github.com/hyperpolymath/hackenbush-ssg/labels/good%20first%20issue) — Simple Perimeter 3 tasks
+- [`help wanted`](https://github.com/hyperpolymath/hackenbush-ssg/labels/help%20wanted) — Community help needed
+- [`documentation`](https://github.com/hyperpolymath/hackenbush-ssg/labels/documentation) — Docs improvements
+- [`perimeter-3`](https://github.com/hyperpolymath/hackenbush-ssg/labels/perimeter-3) — Community sandbox scope
 
-== Questions?
+---
 
-Open an issue or discussion on GitHub. We're happy to explain the project's philosophy and help you understand how to contribute effectively.
+## Development Workflow
 
-== License
+### Branch Naming
+....
 
-By contributing, you agree that your contributions will be licensed under the MPL-2.0 license.
+docs/short-description # Documentation (P3) test/what-added # Test
+additions (P3) feat/short-description # New features (P2)
+fix/issue-number-description # Bug fixes (P2) refactor/what-changed #
+Code improvements (P2) security/what-fixed # Security fixes (P1-2)
+
+....
+
+### Commit Messages
+
+We follow [Conventional Commits](https://www.conventionalcommits.org/):
+....
+
+():
+
+{empty}[optional body]
+
+{empty}[optional footer]

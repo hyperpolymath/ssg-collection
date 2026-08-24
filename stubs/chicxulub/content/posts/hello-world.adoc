@@ -1,0 +1,16 @@
+== Hello, World!
+
+This is the first post on my chicxulub-ssg site.
+
+=== Code Example
+
+Here’s a simple example in Bash:
+
+[source,bash]
+----
+#!/usr/bin/env bash
+
+echo "Hello, World!"
+----
+
+Happy building!

@@ -1,0 +1,70 @@
+== 多言語テスト (Multilingual Test)
+
+=== 日本語 (Japanese)
+
+これは日本語のテストです。**太字**と__斜体__もテストします。
+
+=== 中文 (Chinese)
+
+这是中文测试。包含**粗体**和__斜体__。
+
+=== 한국어 (Korean)
+
+이것은 한국어 테스트입니다. **굵게**와 _기울임_.
+
+=== العربية (Arabic - RTL)
+
+هذا اختبار باللغة العربية. *غامق* و _مائل_.
+
+=== עברית (Hebrew - RTL)
+
+זוהי בדיקה בעברית. *מודגש* ו__נטוי__.
+
+=== Ελληνικά (Greek)
+
+Αυτό είναι ένα ελληνικό τεστ. *Έντονα* και _πλάγια_.
+
+=== Русский (Russian)
+
+Это тест на русском языке. *Жирный* и _курсив_.
+
+=== Emoji Test 🎉
+
+* 🔥 Fire
+* 💯 100
+* 🚀 Rocket
+* 🎨 Art
+* 🐛 Bug
+* ✨ Sparkles
+* 🔧 Wrench
+* 📝 Memo
+
+=== Mixed Scripts
+
+English with 日本語 and Ελληνικά mixed together.
+
+*Bold 太字 굵게* and _italic 斜体 기울임_.
+
+=== Combining Characters
+
+é = e + ́ (combining acute) ñ = n + ̃ (combining tilde) ü = u + ̈
+(combining diaeresis)
+
+Ω̃ (omega with tilde) Å (A with ring)
+
+=== Zero Width Characters
+
+Zero​Width​Joiner (ZWJ between words) Zero‌Width‌Non‌Joiner (ZWNJ between
+words)
+
+=== Bidirectional Text
+
+Hello שלום World עולם Test בדיקה!
+
+=== Math Symbols
+
+∀x ∈ ℝ: x² ≥ 0 ∑(i=1 to n) = n(n+1)/2 ∫₀^∞ e^(-x²) dx = √π/2
+
+=== Special Unicode
+
+→ ← ↑ ↓ ↔ ⇒ ⇐ ⇔ © ® ™ § ¶ † ‡ • ‣ ♠ ♣ ♥ ♦ ♪ ♫ ☀ ☁ ☂ ☃ ★ ☆

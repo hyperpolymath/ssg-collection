@@ -1,0 +1,14 @@
+== Hello, World!
+
+This is the first post on my Parallax-SSG site.
+
+=== Code Example
+
+Here’s a simple example in Chapel:
+
+[source,chapel]
+----
+writeln("Hello, World!");
+----
+
+Happy building!

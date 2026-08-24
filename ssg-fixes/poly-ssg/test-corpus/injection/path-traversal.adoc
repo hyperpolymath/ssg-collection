@@ -1,0 +1,21 @@
+== Path Traversal Tests
+
+image:../../../etc/passwd[Image] image:....//....//etc/passwd[Image]
+image:..%2f..%2f..%2fetc%2fpasswd[Image]
+image:..%252f..%252f..%252fetc%252fpasswd[Image]
+
+file:///etc/passwd[Link] file://localhost/etc/passwd[Link]
+
+image:/etc/passwd[Image] image:C:\Windows\System32\config\SAM[Image]
+image:\server\share\file[Image]
+
+=== Null Bytes
+
+image:../../../etc/passwd%00.png[Image]
+link:../../../etc/passwd%00.html[Link]
+
+=== URL Encoding Tricks
+
+image:%2e%2e%2f%2e%2e%2f%2e%2e%2fetc%2fpasswd[Image]
+image:..%c0%af..%c0%af..%c0%afetc%c0%afpasswd[Image]
+image:..%25c0%25af..%25c0%25af..%25c0%25afetc%25c0%25afpasswd[Image]

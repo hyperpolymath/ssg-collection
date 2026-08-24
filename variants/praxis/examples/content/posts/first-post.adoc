@@ -1,0 +1,18 @@
+== My First Post
+
+This is my first blog post using doit-ssg.
+
+=== Why Static Sites?
+
+Static sites are:
+
+[arabic]
+. *Fast* - No server-side rendering
+. *Secure* - No database to hack
+. *Cheap* - Can be hosted anywhere
+. *Reliable* - No moving parts
+
+=== Conclusion
+
+Static site generators are great for blogs, documentation, and marketing
+sites.

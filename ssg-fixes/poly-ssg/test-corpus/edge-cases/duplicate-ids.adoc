@@ -1,0 +1,19 @@
+== Introduction
+
+Some content.
+
+== Introduction
+
+Same heading again - should get unique ID.
+
+=== Introduction
+
+Third time at different level.
+
+== Test
+
+=== Test
+
+==== Test
+
+===== Test

@@ -1,0 +1,15 @@
+== Hello, World!
+
+This is the first post on my QED-SSG site.
+
+=== Code Example
+
+Here’s a simple example in Lean 4:
+
+[source,lean]
+----
+def main : IO Unit := do
+  IO.println "Hello, World!"
+----
+
+Happy building!

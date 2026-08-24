@@ -1,0 +1,31 @@
+== Welcome to NoteG SSG
+
+NoteG is a *mill-based static site generator* with first-class
+accessibility support.
+
+=== Features
+
+* *Mill-Based Synthesis* - Deterministic builds using operation cards
+* *Accessibility First* - BSL, GSL, ASL, and Makaton support
+* *Formally Verified* - Core engine verified with Ada/SPARK
+* *NoteG Language* - Domain-specific language for templates
+
+=== Quick Start
+
+[source,bash]
+----
+# Install dependencies
+just deps
+
+# Generate site
+just generate
+
+# Serve locally
+just serve
+----
+
+=== Learn More
+
+* link:/docs/user-guide[User Guide]
+* link:/cookbook[Cookbook]
+* link:/docs/api[API Reference]

@@ -1,0 +1,17 @@
+== Hello, World!
+
+This is the first post on my Rats-SSG site.
+
+=== Code Example
+
+Here’s a simple example in Ratfor:
+
+[source,ratfor]
+----
+program hello
+  print *, "Hello, World!"
+  stop
+end
+----
+
+Happy building!

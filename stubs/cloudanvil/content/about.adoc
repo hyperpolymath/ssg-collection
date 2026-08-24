@@ -1,0 +1,20 @@
+== About anvil-ssg
+
+anvil-ssg is part of the poly-ssg ecosystem, demonstrating static site
+generation in Ada with SPARK formal verification.
+
+=== Why Ada/SPARK?
+
+Ada is a statically typed, high-integrity language designed for
+safety-critical systems. SPARK extends Ada with formal verification
+capabilities, allowing mathematical proof of program correctness.
+anvil-ssg demonstrates that web tooling can benefit from the same rigor
+applied to aerospace and medical software, producing provably correct
+static sites.
+
+=== Learn More
+
+* https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp] - The
+unified MCP adapter
+* https://github.com/hyperpolymath/poly-ssg[poly-ssg] - Polyglot SSG
+framework

@@ -1,0 +1,18 @@
+== About QED-SSG
+
+QED-SSG is part of the poly-ssg ecosystem, demonstrating static site
+generation in Lean 4.
+
+=== Why Lean 4?
+
+Lean 4 is both a theorem prover and a general-purpose functional
+programming language. Its dependent type system can prove properties
+about code at compile time. QED-SSG explores how proof-carrying code can
+guarantee correctness of content transformations and output validity.
+
+=== Learn More
+
+* https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp] - The
+unified MCP adapter
+* https://github.com/hyperpolymath/poly-ssg[poly-ssg] - Polyglot SSG
+framework

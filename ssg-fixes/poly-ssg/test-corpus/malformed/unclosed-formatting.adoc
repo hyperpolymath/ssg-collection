@@ -1,0 +1,28 @@
+== Unclosed Elements
+
+**Bold that never closes
+
+*Italic that never closes
+
+`Code that never closes
+
+``` Code block that never closes
+
+[Link without closing paren](url
+
+![Image without closing paren](url
+
+____
+Blockquote without content following
+____
+
+* List item
+** Nested but parent is incomplete
+
+=== More Broken Stuff
+
+**Bold with *nested italic that closes wrong**
+
+**Triple that only closes with two*
+
+`Code with *bold* inside never closes

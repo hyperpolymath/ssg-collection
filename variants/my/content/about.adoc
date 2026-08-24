@@ -1,0 +1,18 @@
+== About my-ssg
+
+my-ssg is part of the poly-ssg ecosystem, demonstrating static site
+generation in Janet.
+
+=== Why Janet?
+
+Janet is a lightweight, embeddable Lisp with a focus on simplicity and C
+interop. It compiles to a small binary with no dependencies, making it
+perfect for portable tooling. my-ssg leverages Janet’s powerful macro
+system and PEG pattern matching for elegant markdown parsing.
+
+=== Learn More
+
+* https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp] - The
+unified MCP adapter
+* https://github.com/hyperpolymath/poly-ssg[poly-ssg] - Polyglot SSG
+framework
