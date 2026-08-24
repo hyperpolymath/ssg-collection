@@ -1,138 +1,97 @@
-// SPDX-License-Identifier: CC-BY-SA-4.0
-// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
-// SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+== poly-ssg
 
-= Poly SSG
-:toc: auto
+A polyglot static site generator framework with MCP integration. Each
+engine implements the same SSG contract in a different programming
+language, bringing unique paradigmatic strengths.
 
-image:https://img.shields.io/badge/RSR-compliant-blue[RSR Compliant]
-image:https://img.shields.io/badge/status-active-green[Status: Active]
-image:https://img.shields.io/badge/License-MPL_2.0-blue.svg[MPL-2.0-or-later,link="https://opensource.org/licenses/MPL-2.0"]
+=== Philosophy
 
-_One contract. Many paradigms. Every paradigm teaches._
+Polyglot by design: Each language brings its paradigm. Forth’s
+stack-thinking, Ada’s contracts, Haskell’s purity—these aren’t
+obstacles, they’re features.
 
-A polyglot static site generator framework where each engine embodies its language's philosophy—from dependently-typed correctness to stack-based minimalism—unified through a common MCP interface.
+No lowest common denominator: Engines aren’t constrained to match each
+other. Forth Estate embraces stack manipulation. Webforge could use
+SPARK proofs.
 
-== Who Is This For?
+MCP as unifier: The protocol layer provides uniformity; the
+implementations provide diversity.
 
-* **Paradigm explorers** — See the same problem solved through functional, logic, parallel, and stack-based lenses
-* **Language enthusiasts** — Each engine is idiomatic, not a transliteration
-* **MCP practitioners** — Switch between engines without changing your tooling
-* **Educators** — Demonstrate that there's no "one true way" to generate sites
+Educational value: Seeing the same problem solved across paradigms
+teaches more than any single implementation.
 
-== Why poly-ssg?
+=== Future Engines Roadmap
 
-=== Paradigm Purity
-
-Each engine embraces its language's strengths. Haskell stays pure. Prolog stays declarative. Forth stays stack-oriented. No lowest-common-denominator compromises.
-
-=== One Contract, Many Implementations
-
-The MCP contract defines _what_ an SSG does. Each engine decides _how_. Your AI assistant, build scripts, and workflows remain unchanged when you switch paradigms.
-
-=== Educational by Design
-
-Static site generation is complex enough to be interesting, simple enough to understand. Comparing implementations reveals:
-
-* Trade-offs between approaches
-* Language idioms through real examples
-* Why certain paradigms excel at certain tasks
-
-=== Production-Ready Satellites
-
-Each engine is a standalone project. Use Casket (Haskell) in production while exploring Ddraig (Idris 2) for provable correctness. They share a contract, not a codebase.
-
-== Engines
-
-[cols="1,1,2"]
+[width="100%",cols="16%,20%,20%,44%",options="header",]
 |===
-|Engine |Language |Paradigmatic Strength
-
-|**Casket**
-|Haskell
-|Pure functional transformations, lazy evaluation
-
-|**Ddraig**
-|Idris 2
-|Dependently-typed, compile-time correctness proofs
-
-|**Estate**
-|Forth
-|Stack-based, minimal dependencies, concatenative composition
-
-|**Parallax**
-|Chapel
-|Data-parallel, scales to thousands of pages without threading pain
-
-|**Prodigy**
-|Prolog
-|Logic-based, declarative site definitions as rules
-
-|**Rescribe**
-|ReScript
-|Type-safe compilation to JavaScript, fast iteration
-
-|**Zigzag**
-|Zig
-|Zero-overhead abstractions, explicit memory control
+|Language |Name |Status |Notes
+|Forth |Forth Estate |In Progress |Stack-based paradigm
+|Ada |Webforge |Planned |SPARK subset for verified templates
+|Chapel |ParallelPress |Planned |Data-parallel builds
+|Haskell |HakyllLite |Planned |Simplified Hakyll
+|Racket |PollenLite |Planned |Programmable publishing
+|Gleam |GleamSite |Planned |BEAM + types
+|OCaml |YoCamlLite |Planned |Applicative pipelines
+|Zig |ZigPress |Considered |Comptime template validation
+|Idris |ProvenPages |Considered |Dependent types for templates
 |===
 
-Additional experimental engines exist for COW, Logo, WebAssembly Text, and Conway's Game of Life—proving computational universality extends to static site generation.
+=== Engine Interface Contract
 
-== Quick Start
+Each engine must:
 
-Each engine is a satellite repository. To use one:
+[arabic]
+. Accept standard invocation:
++
+....
+cd engines/<engine-name>
+<build-command> <source-path> <output-path>
+....
+. Support common frontmatter:
++
+[source,yaml]
+----
+---
+title: string (required)
+date: ISO-8601 date (optional)
+template: string (optional, default: "default")
+tags: list of strings (optional)
+draft: boolean (optional, default: false)
+---
+----
+. Produce valid HTML5 output
+. Exit with code 0 on success, non-zero on failure
+. Write to stdout for progress, stderr for errors
+
+=== Directory Structure
+
+....
+poly-ssg/
+├── engines/
+│   └── forth-estate/     # Gforth-based SSG
+├── docs/
+│   ├── PHILOSOPHY.md
+│   └── ADDING-ENGINE.md
+├── test-corpus/
+│   ├── posts/            # Sample markdown posts
+│   └── templates/        # Shared templates
+└── scripts/
+    └── test-all.sh       # Run tests across engines
+....
+
+=== Quick Start
 
 [source,bash]
 ----
-# Clone the engine you want
-git clone https://github.com/hyperpolymath/casket-ssg
-
-# Or use via the unified MCP interface
-# (poly-ssg-mcp exposes all engines through a single server)
+# Test Forth Estate (requires Gforth >= 0.7)
+cd engines/forth-estate
+gforth forth-estate.fs -e "s\" ../../test-corpus\" s\" output\" build bye"
 ----
 
-== Architecture
+=== Adding a New Engine
 
-----
-                         ┌─────────────────────┐
-                         │   poly-ssg-mcp      │
-                         │   (MCP Server)      │
-                         └──────────┬──────────┘
-                                    │
-           ┌────────────────────────┼────────────────────────┐
-           │                        │                        │
-           ▼                        ▼                        ▼
-    ┌─────────────┐          ┌─────────────┐          ┌─────────────┐
-    │   Casket    │          │   Ddraig    │          │   Estate    │
-    │  (Haskell)  │          │  (Idris 2)  │          │   (Forth)   │
-    └─────────────┘          └─────────────┘          └─────────────┘
-           │                        │                        │
-           └────────────────────────┼────────────────────────┘
-                                    │
-                                    ▼
-                         ┌─────────────────────┐
-                         │   ReScript Adapter  │
-                         │   (Unified Types)   │
-                         └─────────────────────┘
-----
+See docs/ADDING-ENGINE.md for the full guide.
 
-== Integration
+=== License
 
-poly-ssg is part of the poly-mcp ecosystem:
-
-* **poly-ssg-mcp** — Unified MCP server exposing all engines
-* **poly-container-mcp** — Multi-runtime container management
-* **poly-iac-mcp** — Infrastructure as Code tools
-* **poly-git-mcp** — Git forge management
-* **poly-k8s-mcp** — Kubernetes orchestration
-
-== Adding an Engine
-
-See link:docs/ADDING-ENGINE.md[ADDING-ENGINE.md] for the contract specification and implementation guide.
-
-== License
-
-MPL-2.0
-
-This ensures all paradigmatic implementations remain open. Your site content is yours; the tools stay free.
+MIT

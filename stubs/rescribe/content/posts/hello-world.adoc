@@ -1,0 +1,14 @@
+== Hello, World!
+
+This is the first post on my Rescribe-SSG site.
+
+=== Code Example
+
+Here’s a simple example in ReScript:
+
+[source,rescript]
+----
+Js.log("Hello, World!")
+----
+
+Happy building!

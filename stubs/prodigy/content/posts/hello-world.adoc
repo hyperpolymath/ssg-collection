@@ -1,0 +1,18 @@
+== Hello, World!
+
+This is the first post on my prodigy-ssg site.
+
+=== Code Example
+
+Here’s a simple example in Prolog:
+
+[source,prolog]
+----
+:- initialization(main).
+
+main :-
+    write('Hello, World!'), nl,
+    halt.
+----
+
+Happy building!

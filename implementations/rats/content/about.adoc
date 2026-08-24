@@ -1,0 +1,19 @@
+== About Rats-SSG
+
+Rats-SSG is part of the poly-ssg ecosystem, demonstrating static site
+generation in Ratfor.
+
+=== Why Ratfor?
+
+Ratfor (Rational Fortran) is a preprocessor that adds structured
+programming constructs to Fortran. Created at Bell Labs alongside C, it
+represents an important step in programming language evolution. Rats-SSG
+is a nostalgic exploration of text processing using this historically
+significant language.
+
+=== Learn More
+
+* https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp] - The
+unified MCP adapter
+* https://github.com/hyperpolymath/poly-ssg[poly-ssg] - Polyglot SSG
+framework

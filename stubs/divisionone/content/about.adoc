@@ -1,0 +1,20 @@
+== About divisionone-ssg
+
+divisionone-ssg is part of the poly-ssg ecosystem, demonstrating static
+site generation in COBOL.
+
+=== Why COBOL?
+
+COBOL proves that even a 65-year-old language can build modern web
+tooling. Its verbose, self-documenting syntax and exceptional string
+handling capabilities (developed for business report generation)
+translate surprisingly well to document processing. divisionone-ssg is
+both a functional tool and a statement that no language is obsolete if
+it can solve the problem.
+
+=== Learn More
+
+* https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp] - The
+unified MCP adapter
+* https://github.com/hyperpolymath/poly-ssg[poly-ssg] - Polyglot SSG
+framework

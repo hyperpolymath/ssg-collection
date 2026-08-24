@@ -1,0 +1,14 @@
+== Hello, World!
+
+This is the first post on my Pharos-SSG site.
+
+=== Code Example
+
+Here’s a simple example in Pharo Smalltalk:
+
+[source,smalltalk]
+----
+Transcript show: 'Hello, World!'; cr.
+----
+
+Happy building!

@@ -1,0 +1,3 @@
+== Binary After Valid Start
+
+Normal text followed by simulated binary:

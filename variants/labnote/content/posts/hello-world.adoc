@@ -1,0 +1,14 @@
+== Hello, World!
+
+This is the first post on my labnote-ssg site.
+
+=== Code Example
+
+Here’s a simple example in Scilab:
+
+[source,scilab]
+----
+disp("Hello, World!")
+----
+
+Happy building!

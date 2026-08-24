@@ -1,0 +1,17 @@
+== Hello, World!
+
+This is the first post on my Odd-SSG site.
+
+=== Code Example
+
+Here’s a simple example in Forth:
+
+[source,forth]
+----
+: HELLO  ( -- )
+  ." Hello, World!" CR ;
+
+HELLO
+----
+
+Happy building!

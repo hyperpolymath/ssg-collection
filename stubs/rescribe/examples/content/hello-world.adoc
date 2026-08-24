@@ -1,0 +1,29 @@
+== Welcome to Rescribe
+
+This is your first post generated with *rescribe-ssg*, the ReScript
+static site generator.
+
+=== Features
+
+* *Type-safe*: Written entirely in ReScript
+* *Fast*: Compiles to efficient JavaScript
+* *Accessible*: Built-in accessibility support
+
+=== Code Example
+
+Here’s some ReScript code:
+
+[source,rescript]
+----
+let greeting = "Hello from Rescribe!"
+Js.log(greeting)
+----
+
+=== Getting Started
+
+[arabic]
+. Install dependencies: `+just install+`
+. Build the project: `+just build+`
+. Generate your site: `+just generate+`
+
+Happy writing!

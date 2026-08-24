@@ -1,0 +1,21 @@
+== HTML Injection Tests
+
+Click me
+
+=== Event Handlers
+
+Click
+
+Hover
+
+Focus
+
+=== Data URIs
+
+Link
+
+=== CSS Injection
+
+IE specific
+
+=== Comment Tricks

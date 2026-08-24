@@ -1,0 +1,27 @@
+== Hello, World!
+
+This is the first post on my befunge-ssg site.
+
+=== Code Example
+
+Here’s a simple example in Befunge-93:
+
+[source,befunge]
+----
+>              v
+v  ,,,,,"Hello"<
+>48televenrtaS:v
+v              <
+>" !dlroW"     v
+v              <
+>,,,,,,        @
+----
+
+Or the classic concise version:
+
+[source,befunge]
+----
+"!dlroW ,olleH">:#,_@
+----
+
+Happy building!

@@ -1,0 +1,14 @@
+== Hello, World!
+
+This is the first post on my macrauchenia-ssg site.
+
+=== Code Example
+
+Here’s a simple example in OCaml:
+
+[source,ocaml]
+----
+let () = print_endline "Hello, World!"
+----
+
+Happy building!

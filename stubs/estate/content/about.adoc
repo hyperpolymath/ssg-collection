@@ -1,0 +1,18 @@
+== About estate-ssg
+
+estate-ssg is part of the poly-ssg ecosystem, demonstrating static site
+generation in Eiffel.
+
+=== Why Eiffel?
+
+Eiffel pioneered Design by Contract, where preconditions,
+postconditions, and class invariants are first-class language features.
+estate-ssg leverages these contracts to guarantee correctness in site
+generation - ensuring output HTML is valid and all links resolve.
+
+=== Learn More
+
+* https://github.com/hyperpolymath/poly-ssg-mcp[poly-ssg-mcp] - The
+unified MCP adapter
+* https://github.com/hyperpolymath/poly-ssg[poly-ssg] - Polyglot SSG
+framework
