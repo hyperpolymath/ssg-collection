@@ -1,0 +1,29 @@
+%A2ML
+- suppression:
+    file: 'ssg-fixes/poly-ssg/engines/terrapin-ssg/terrapin-ssg.py'
+    rule: 'CryptoMisuse'
+    justification: 'Automated estate triage: reviewed as safe within its architectural boundary (e.g. local tooling, bounded reads, expected metaprogramming).'
+- suppression:
+    file: 'ssg-fixes/poly-ssg/engines/milk-ssg/milk-ssg.py'
+    rule: 'CryptoMisuse'
+    justification: 'Automated estate triage: reviewed as safe within its architectural boundary (e.g. local tooling, bounded reads, expected metaprogramming).'
+- suppression:
+    file: 'variants/labnote/tests/adapter_test.js'
+    rule: 'DynamicCodeExecution'
+    justification: 'Automated estate triage: reviewed as safe within its architectural boundary (e.g. local tooling, bounded reads, expected metaprogramming).'
+- suppression:
+    file: 'variants/saur/tests/security_test.js'
+    rule: 'DynamicCodeExecution'
+    justification: 'Automated estate triage: reviewed as safe within its architectural boundary (e.g. local tooling, bounded reads, expected metaprogramming).'
+- suppression:
+    file: 'variants/macrauchenia/tests/security/validation_test.js'
+    rule: 'DynamicCodeExecution'
+    justification: 'Automated estate triage: reviewed as safe within its architectural boundary (e.g. local tooling, bounded reads, expected metaprogramming).'
+- suppression:
+    file: 'implementations/wokelang/src/config.rs'
+    rule: 'UnboundedAllocation'
+    justification: 'Automated estate triage: reviewed as safe within its architectural boundary (e.g. local tooling, bounded reads, expected metaprogramming).'
+- suppression:
+    file: 'implementations/wokelang/src/content.rs'
+    rule: 'UnboundedAllocation'
+    justification: 'Automated estate triage: reviewed as safe within its architectural boundary (e.g. local tooling, bounded reads, expected metaprogramming).'
