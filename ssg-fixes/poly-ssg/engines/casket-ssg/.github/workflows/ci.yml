@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - name: Set up Haskell
-        uses: haskell-actions/setup@v2
+        uses: haskell-actions/setup@6037f33647c3f17758a2356c80fc4a53d7e0685d  # v2
         with:
           ghc-version: '9.4'
       - name: Compile Casket
@@ -29,7 +29,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - name: Set up Haskell
-        uses: haskell-actions/setup@v2
+        uses: haskell-actions/setup@6037f33647c3f17758a2356c80fc4a53d7e0685d  # v2
         with:
           ghc-version: '9.4'
       - name: Compile and build site
