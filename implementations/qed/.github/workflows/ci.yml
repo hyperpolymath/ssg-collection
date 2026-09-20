@@ -146,12 +146,6 @@ jobs:
           else
             echo "No adapters to test with coverage yet"
           fi
-      - name: Upload coverage
-        uses: codecov/codecov-action@13ce3aa6a8f2324fef00519cbe4deef7cc2e0e61 # v5.3.1
-        with:
-          files: coverage.lcov
-          fail_ci_if_error: false
-        if: hashFiles('coverage.lcov') != ''
   # ============================================================================
   # SECURITY AUDIT JOB
   # ============================================================================

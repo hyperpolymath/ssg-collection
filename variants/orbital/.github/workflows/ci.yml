@@ -34,11 +34,6 @@ jobs:
         run: |
           deno test --allow-run --allow-read --coverage=coverage/ tests/
           deno coverage coverage/ --lcov > coverage/lcov.info
-      - name: Upload coverage
-        uses: codecov/codecov-action@1e68e06f1571e61e06363bc4fc2e0289f7e2c83a # v5.1.2
-        with:
-          files: coverage/lcov.info
-          fail_ci_if_error: false
   security:
     name: Security Scan
     runs-on: ubuntu-latest
