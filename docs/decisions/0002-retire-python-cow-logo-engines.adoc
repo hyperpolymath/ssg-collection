@@ -21,11 +21,15 @@ python entirely".
 
 * Both `.py` files and both nested engine CI files are deleted.
 * Their `.hypatia-ignore` entries are removed.
-* The engines live in COW and Logo:
+* The existing COW and Logo stubs remain:
   `stubs/milk/src/milk-ssg.cow` and `stubs/terrapin/src/terrapin-ssg.logo`.
 
 == Consequences
 
 . No Python remains for these two engines.
+. The COW stub does not run arbitrary COW programs from standard input via
+  the retired `moo` command. The Logo stub does not convert fenced `logo`
+  blocks in Markdown to SVG. Neither workflow has a replacement in this
+  repository.
 . `ssg-fixes/poly-ssg/scripts/test-harness.sh` now skips `milk-ssg` and
   `terrapin-ssg` as "directory not found".
