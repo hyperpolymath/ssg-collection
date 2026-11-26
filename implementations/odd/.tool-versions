@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: MPL-2.0
 # odd-ssg tool versions (asdf)
 deno 1.45.0
-nodejs 22.12.0
 just 1.38.0
