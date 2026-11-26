@@ -135,9 +135,7 @@ cicd_rules/banned_language_file:ssg-fixes/pharos-ssg/ssg/src/Env.res
 cicd_rules/banned_language_file:ssg-fixes/pharos-ssg/ssg/src/Types.res
 cicd_rules/banned_language_file:ssg-fixes/pharos-ssg/ssg/tests/Build_test.res
 cicd_rules/banned_language_file:ssg-fixes/pharos-ssg/tests/e2e/BuildTest.res
-cicd_rules/banned_language_file:ssg-fixes/poly-ssg/engines/milk-ssg/milk-ssg.py
 cicd_rules/banned_language_file:ssg-fixes/poly-ssg/engines/rescribe-ssg/Rescribe.res
-cicd_rules/banned_language_file:ssg-fixes/poly-ssg/engines/terrapin-ssg/terrapin-ssg.py
 cicd_rules/banned_language_file:ssg-fixes/wagasm-ssg/adapters/src/WagasmAdapter.res
 cicd_rules/banned_language_file:ssg-fixes/wagasm-ssg/runtime/Deno.res
 cicd_rules/banned_language_file:ssg-fixes/wagasm-ssg/runtime/Host.res
