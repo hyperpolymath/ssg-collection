@@ -12,7 +12,7 @@
 // be in the Life pattern files in src/ or patterns/.
 //
 // Standard Hyperpolymath bans also apply:
-// - TypeScript BANNED (use ReScript)
+// - TypeScript BANNED (use AffineScript)
 // - Node.js/npm BANNED (use Deno)
 // - Go BANNED (use Rust)
 // - Python BANNED except SaltStack
@@ -90,7 +90,7 @@ async function checkPolicy() {
         violations.push({
           file: relPath,
           reason: "Python outside SaltStack (banned)",
-          fix: "Use ReScript or Rust instead",
+          fix: "Use AffineScript or Rust instead",
         });
       }
     }

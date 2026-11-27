@@ -45,7 +45,7 @@ let LanguagePolicy = {
     },
     javascript = {
       extensions = [".js"],
-      use_case = "Only where ReScript cannot",
+      use_case = "Only where AffineScript cannot",
       notes = "MCP protocol glue, Deno APIs only",
       constraint = "Must be Deno-native, no Node/npm",
     },
@@ -70,7 +70,7 @@ let LanguagePolicy = {
   banned = {
     typescript = {
       extensions = [".ts", ".tsx", ".mts", ".cts"],
-      replacement = "rescript",
+      replacement = "affinescript",
       error = "TypeScript is banned. Use AffineScript instead.",
     },
     nodejs = {
@@ -113,8 +113,8 @@ let LanguagePolicy = {
     python_general = {
       extensions = [".py"],
       exception = "SaltStack only",
-      replacement = "rescript/rust",
-      error = "Python is banned except for SaltStack. Use ReScript or Rust.",
+      replacement = "affinescript/rust",
+      error = "Python is banned except for SaltStack. Use AffineScript or Rust.",
     },
     java = {
       extensions = [".java"],

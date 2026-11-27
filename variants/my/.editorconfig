@@ -53,4 +53,4 @@ indent_size = 4
 # ============================================================================
 # TypeScript: *.ts, *.tsx (use AffineScript instead)
 # Go: *.go (use Rust instead)
-# Python (non-Salt): *.py (use ReScript/Rust instead)
+# Python (non-Salt): *.py (use AffineScript/Rust instead)

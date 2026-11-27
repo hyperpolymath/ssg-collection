@@ -65,7 +65,7 @@ jobs:
             ! -path "./saltstack/*" \
             ! -path "./_salt/*" | head -20)
           if [ -n "$VIOLATIONS" ]; then
-            echo "ERROR: Python files found outside SaltStack (banned - use ReScript/Rust):"
+            echo "ERROR: Python files found outside SaltStack (banned - use AffineScript/Rust):"
             echo "$VIOLATIONS"
             exit 1
           fi

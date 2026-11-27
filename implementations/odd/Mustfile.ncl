@@ -46,7 +46,7 @@ let LanguagePolicy = {
   banned = {
     typescript = {
       extensions = [".ts", ".tsx", ".mts", ".cts"],
-      replacement = "ReScript",
+      replacement = "AffineScript",
     },
     nodejs = {
       indicators = ["package.json", "package-lock.json", "node_modules"],
