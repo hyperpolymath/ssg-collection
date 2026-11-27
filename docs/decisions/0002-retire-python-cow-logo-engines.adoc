@@ -1,0 +1,35 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell (hyperpolymath) <6759885+hyperpolymath@users.noreply.github.com>
+= ADR-0002 — Retire the Python copies of milk-ssg and terrapin-ssg
+:revdate: 2026-11-26
+:status: ACCEPTED
+
+== Context
+
+`ssg-fixes/poly-ssg/engines/milk-ssg/milk-ssg.py` and
+`ssg-fixes/poly-ssg/engines/terrapin-ssg/terrapin-ssg.py` were Python
+interpreters for COW and Logo, absorbed with `ssg-fixes`. Python is
+banned by estate language policy, so both were held in
+`.hypatia-ignore`. Each engine also had a nested
+`.github/workflows/ci.yml` that only ran the Python file. GitHub does
+not run workflows below the repository root, so those never ran here.
+
+== Decision
+
+The owner ruled on 26 Nov 2026: "do them in cow and logo, get rid of
+python entirely".
+
+* Both `.py` files and both nested engine CI files are deleted.
+* Their `.hypatia-ignore` entries are removed.
+* The existing COW and Logo stubs remain:
+  `stubs/milk/src/milk-ssg.cow` and `stubs/terrapin/src/terrapin-ssg.logo`.
+
+== Consequences
+
+. No Python remains for these two engines.
+. The COW stub does not run arbitrary COW programs from standard input via
+  the retired `moo` command. The Logo stub does not convert fenced `logo`
+  blocks in Markdown to SVG. Neither workflow has a replacement in this
+  repository.
+. `ssg-fixes/poly-ssg/scripts/test-harness.sh` now skips `milk-ssg` and
+  `terrapin-ssg` as "directory not found".
