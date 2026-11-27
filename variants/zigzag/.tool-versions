@@ -3,4 +3,3 @@
 # Install: asdf install
 
 zig 0.11.0
-nodejs 20.10.0

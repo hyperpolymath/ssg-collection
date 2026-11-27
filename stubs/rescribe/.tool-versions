@@ -1,5 +1,0 @@
-# SPDX-License-Identifier: MPL-2.0
-# Tool versions for asdf version manager
-# Install: asdf install
-
-nodejs 20.18.1
