@@ -37,7 +37,7 @@ done
 # Check for banned Python files (outside of salt/ directories)
 PY_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.py$' | grep -v '^salt/' | grep -v '^saltstack/' | grep -v '^_salt/' || true)
 if [ -n "$PY_FILES" ]; then
-    echo "[POLICY] ERROR: Python files detected outside SaltStack (banned - use ReScript/Rust):"
+    echo "[POLICY] ERROR: Python files detected outside SaltStack (banned - use AffineScript/Rust):"
     echo "$PY_FILES"
     exit 1
 fi

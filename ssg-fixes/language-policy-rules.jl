@@ -11,8 +11,8 @@ using Base.Filesystem
 
 # Banned extensions and their replacements
 const BANNED_EXTENSIONS = Dict(
-    ".ts" => "ReScript (.res)",
-    ".tsx" => "ReScript (.res)",
+    ".ts" => "AffineScript (.affine)",
+    ".tsx" => "AffineScript (.affine)",
     ".go" => "Rust (.rs)",
 )
 
@@ -96,7 +96,7 @@ function scan_repo(repo_path::String)::Vector{Violation}
                         repo_name,
                         relpath,
                         "Python outside SaltStack",
-                        "Convert to ReScript or Rust"
+                        "Convert to AffineScript or Rust"
                     ))
                 end
             end
@@ -110,7 +110,7 @@ end
     fix_violation(v::Violation, repo_path::String; dry_run::Bool=true) -> Bool
 
 Attempt to fix a violation. Returns true if fixed successfully.
-For now, only deletes banned files. TypeScript→ReScript requires manual conversion.
+For now, only deletes banned files. TypeScript→AffineScript requires manual conversion.
 """
 function fix_violation(v::Violation, repo_path::String; dry_run::Bool=true)::Bool
     filepath = joinpath(repo_path, v.file)

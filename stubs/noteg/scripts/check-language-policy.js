@@ -85,7 +85,7 @@ async function checkPolicy() {
         violations.push({
           file: relPath,
           reason: "Python outside SaltStack (banned)",
-          fix: "Use ReScript or Rust instead",
+          fix: "Use AffineScript or Rust instead",
         });
       }
     }

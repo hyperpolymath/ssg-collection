@@ -80,7 +80,7 @@ This project follows the **Hyperpolymath Standard** language policy:
 * Bash/POSIX Shell (automation)
 
 === Banned
-* TypeScript (use ReScript)
+* TypeScript (use AffineScript)
 * Node.js/npm/Bun (use Deno)
 * Go (use Rust)
 * Makefile (use just/must)
